@@ -36,11 +36,13 @@ class App extends React.Component {
   fetchResource = async (url, temp) => {
     const data = await fetchResource(url);
     const newResources = temp;
-    data.entry.forEach((entry) => {
-      if (entry.fullUrl) {
-        newResources[entry.fullUrl] = entry.resource;
-      }
-    });
+    if (data.entry) {
+      data.entry.forEach((entry) => {
+        if (entry.fullUrl) {
+          newResources[entry.fullUrl] = entry.resource;
+        }
+      });
+    }
     // Not working for SyntheticMass API (?)
     // url = this.getNextPage(data);
     // if (url) {
