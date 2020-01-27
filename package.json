@@ -23,12 +23,6 @@
     "prettier": "./node_modules/.bin/prettier src/**/*.js",
     "stylelint": "./node_modules/.bin/stylelint src/**/*.css"
   },
-  "prettier": {
-    "printWidth": 80,
-    "singleQuote": true,
-    "trailingComma": "all",
-    "bracketSpacing": false
-  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -48,7 +42,6 @@
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "^7.18.0",
     "eslint-plugin-react-hooks": "^1.7.0",
-    "prettier": "^1.19.1",
     "stylelint-config-recommended": "^3.0.0"
   }
 }
