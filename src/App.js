@@ -1,5 +1,5 @@
 import React from 'react';
-import { fetchResource } from './utils/api';
+import fetchResource from './utils/api';
 import {
   baseUrl,
   baseResource,

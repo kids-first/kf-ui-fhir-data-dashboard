@@ -17,11 +17,11 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "./node_modules/.bin/mocha",
     "eject": "react-scripts eject",
-    "eslint": "./node_modules/.bin/eslint src/*.js",
-    "prettier": "./node_modules/.bin/prettier src/*.js",
-    "stylelint": "./node_modules/.bin/stylelint src/*.css"
+    "eslint": "./node_modules/.bin/eslint './src/**/*.js'",
+    "prettier": "./node_modules/.bin/prettier src/**/*.js",
+    "stylelint": "./node_modules/.bin/stylelint src/**/*.css"
   },
   "prettier": {
     "printWidth": 80,
