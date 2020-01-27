@@ -19,6 +19,9 @@ to utilize either the [HAPI FHIR API](http://hapi.fhir.org/) or [Synthea's FHIR 
 set the `REACT_APP_FHIR_API` from the command line, with the options being
 `hapi`, `synthea`, or empty. An empty variable will default to `synthea`.
 
+Due to issues with cross origin requests, a "proxy url" is used instead of hitting the
+API endpoints directly.
+
 ### Authentication with Synthea
 Utilizing the Synthea FHIR API requires a token. Generating the OAuth token is built into
 the app, but the API key and secret pair must be generated manually from the website.
