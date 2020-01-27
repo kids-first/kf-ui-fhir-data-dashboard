@@ -85,9 +85,7 @@ class App extends React.Component {
 
   render() {
     const { results, resultsFetched } = this.state;
-    // Urls in the results list
     const resultList = Object.keys(results).map((resultKey, i) => {
-      // One result
       const listItem = results[resultKey];
       return (
         <div key={resultKey.concat(i)} className="result">
