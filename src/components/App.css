@@ -15,9 +15,3 @@
   outline: none;
   font-size: 16px;
 }
-
-.app_result-list {
-  display: flex;
-  flex-flow: column;
-  justify-content: center;
-}

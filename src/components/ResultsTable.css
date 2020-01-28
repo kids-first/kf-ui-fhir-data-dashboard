@@ -1,0 +1,5 @@
+.results_table {
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+}
