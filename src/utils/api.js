@@ -1,4 +1,4 @@
-import {proxyUrl, oAuthUrl} from '../config';
+import {proxyUrl, oAuthUrl, numberOfResultsPerPage} from '../config';
 
 const fetchToken = async callback =>
   fetch(`${proxyUrl}${oAuthUrl}`, {
@@ -20,8 +20,9 @@ const fetchToken = async callback =>
       return callback();
     });
 
-const fetchWithHeaders = async (url, headers) =>
-  fetch(`${proxyUrl}${url}`, {
+const fetchWithHeaders = async (url, headers) => {
+  const fullUrl = url.concat(`${url.includes('?') ? '&' : '?'}`);
+  return fetch(`${proxyUrl}${fullUrl}_count=${numberOfResultsPerPage}`, {
     headers: {
       ...headers,
       Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
@@ -29,7 +30,12 @@ const fetchWithHeaders = async (url, headers) =>
   })
     .then(res => res.json())
     .then(data => data)
-    .catch(() => fetchToken(() => fetchWithHeaders(url)));
+    .catch(err => {
+      if (err.status === 401) {
+        return fetchToken(() => fetchWithHeaders(url));
+      }
+    });
+};
 
 const fetchResource = async url =>
   fetchWithHeaders(url, {

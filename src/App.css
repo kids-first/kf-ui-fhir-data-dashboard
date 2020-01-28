@@ -5,8 +5,7 @@
 }
 
 .app_query {
-  display: flex;
-  align-items: center;
+  margin: 30px 10px;
 }
 
 .app_query-input {
@@ -21,20 +20,4 @@
   display: flex;
   flex-flow: column;
   justify-content: center;
-}
-
-.result {
-  display: flex;
-  flex-flow: column;
-  border-bottom: 1px solid black;
-  margin: 10px 10px;
-}
-
-.result:first-child {
-  border-top: 1px solid black;
-}
-
-.result-header {
-  font-weight: bold;
-  text-transform: capitalize;
 }

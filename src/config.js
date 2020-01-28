@@ -1,6 +1,7 @@
 export const proxyUrl = 'https://damp-castle-44220.herokuapp.com/';
 export const oAuthUrl = 'https://syntheticmass.mitre.org/oauth2/accesstoken';
 export const baseResource = 'Patient';
+export const numberOfResultsPerPage = 20;
 
 const synthea = 'https://syntheticmass.mitre.org/v1/fhir/';
 const hapi = 'http://hapi.fhir.org/baseR4/';

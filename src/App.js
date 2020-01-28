@@ -1,4 +1,6 @@
 import React from 'react';
+import {Button} from 'semantic-ui-react';
+import {InfiniteLoader, AutoSizer, Table, Column} from 'react-virtualized';
 import fetchResource from './utils/api';
 import {
   baseUrl,
@@ -12,21 +14,17 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      results: {},
+      results: [],
+      nextPageUrl: `${baseUrl}${baseResource}`,
+      totalResults: 0,
       queryInput: '',
       resultsFetched: false,
     };
   }
 
   // When page mounts, fetch all Patients
-  async componentDidMount() {
-    let temp = {};
-    this.setState({resultsFetched: false});
-    temp = await this.fetchResource(
-      `${baseUrl}${baseResource}?_count=100`,
-      temp,
-    );
-    this.setState({results: temp, resultsFetched: true});
+  componentDidMount() {
+    this.fetchResource(`${baseUrl}${baseResource}`);
   }
 
   // Fetches next page if results returned are paginated
@@ -36,33 +34,25 @@ class App extends React.Component {
   };
 
   // Used to fetch a resource (ie. Patients, Observations..)
-  fetchResource = async (url, temp) => {
+  fetchResource = async url => {
+    const currentResults = this.state.results;
     const data = await fetchResource(url);
-    const newResources = temp;
-    if (data.entry) {
-      data.entry.forEach(entry => {
-        if (entry.fullUrl) {
-          newResources[entry.fullUrl] = entry.resource;
-        }
-      });
-    }
-    // Not working for SyntheticMass API (?)
-    // url = this.getNextPage(data);
-    // if (url) {
-    //   return this.fetchResource(url, newResources);
-    // }
-    return newResources;
+    const newResults =
+      data && data.entry ? data.entry.map(entry => entry.resource) : [];
+    const totalResults = currentResults.concat(newResults);
+    const nextPageUrl = data ? this.getNextPage(data) : null;
+    this.setState({
+      results: totalResults,
+      nextPageUrl: nextPageUrl,
+      totalResults: totalResults.length,
+      resultsFetched: true,
+    });
   };
 
   isObject = obj => obj === Object(obj);
 
-  renderArrOfObj = arr =>
-    arr.map((elt, i) => {
-      const str = this.flattenObj(elt, '');
-      return <p key={str.concat(i)}>{str}</p>;
-    });
+  flattenArrOfObj = arr => arr.map((elt, i) => this.flattenObj(elt, ''));
 
-  /* eslint-disable no-param-reassign */
   flattenObj = (obj, str) => {
     Object.keys(obj).forEach(key => {
       if (!omittedFields.includes(key)) {
@@ -75,84 +65,105 @@ class App extends React.Component {
     });
     return str;
   };
-  /* eslint-enable no-param-reassign */
 
   updateQuery = e => {
     this.setState({queryInput: e.target.value});
   };
 
-  queryResource = async () => {
-    const {queryInput} = this.state;
-    let temp = {};
-    this.setState({resultsFetched: false});
-    temp = await this.fetchResource(
-      `${baseUrl}${baseResource}?${queryInput}&_count=100`,
-      temp,
+  queryResource = () => {
+    this.setState(
+      {
+        resultsFetched: false,
+        totalResults: 0,
+        results: [],
+      },
+      async () => {
+        const data = await this.fetchResource(
+          `${baseUrl}${baseResource}?${this.state.queryInput}`,
+        );
+        this.setState({results: data, resultsFetched: true});
+      },
     );
-    this.setState({results: temp, resultsFetched: true});
+  };
+
+  isRowLoaded = ({index}) => !!this.state.results[index];
+
+  cellRenderer = ({
+    cellData,
+    columnData,
+    columnIndex,
+    dataKey,
+    isScrolling,
+    rowData,
+    rowIndex,
+  }) => {
+    if (cellData) {
+      if (!this.isObject(cellData) && !Array.isArray(cellData)) {
+        return <p>{cellData.toString()}</p>;
+      }
+      if (Array.isArray(cellData)) {
+        return <p>{this.flattenArrOfObj(cellData)}</p>;
+      }
+      return <p>{this.flattenObj(cellData, '')}</p>;
+    }
   };
 
   render() {
-    const {results, resultsFetched} = this.state;
-    const resultList = Object.keys(results).map((resultKey, i) => {
-      const listItem = results[resultKey];
-      return (
-        <div key={resultKey.concat(i)} className="result">
-          {baseResourceDisplayFields.map((field, j) => {
-            if (listItem[field]) {
-              if (
-                !this.isObject(listItem[field]) &&
-                !Array.isArray(listItem[field])
-              ) {
-                return (
-                  <React.Fragment key={field.concat(j)}>
-                    <p className="result-header">{`${field}: `}</p>
-                    <p>{listItem[field].toString()}</p>
-                  </React.Fragment>
-                );
-              }
-              if (Array.isArray(listItem[field])) {
-                return (
-                  <div key={field.concat(j)}>
-                    <p className="result-header">{`${field}:`}</p>
-                    {this.renderArrOfObj(listItem[field])}
-                  </div>
-                );
-              }
-              return (
-                <div key={field.concat(j)}>
-                  <p className="result-header">{`${field}:`}</p>
-                  {this.flattenObj(listItem[field], '')}
-                </div>
-              );
-            }
-            return null;
-          })}
-        </div>
-      );
-    });
-
     return (
       <div className="app">
         <h1>Kids First FHIR Cohort Builder</h1>
-        <h2>Query</h2>
         <div className="app_query">
+          <h2>Query</h2>
           <input
             className="app_query-input"
             type="text"
             onChange={e => this.updateQuery(e)}
           />
-          <button
-            type="button"
-            className="app_query-button"
-            onClick={() => this.queryResource()}
-          >
+          <Button primary type="button" onClick={() => this.queryResource()}>
             Search
-          </button>
+          </Button>
         </div>
-        <h2>Results ({resultList.length})</h2>
         <div className="app_result-list">
-          {resultsFetched ? resultList : <p>Loading...</p>}
+          {this.state.resultsFetched ? (
+            <InfiniteLoader
+              isRowLoaded={this.isRowLoaded}
+              loadMoreRows={() => this.fetchResource(this.state.nextPageUrl)}
+              rowCount={this.state.totalResults + 1}
+            >
+              {({onRowsRendered, registerChild}) => (
+                <AutoSizer>
+                  {({width}) => (
+                    <Table
+                      ref={registerChild}
+                      onRowsRendered={onRowsRendered}
+                      width={width}
+                      height={500}
+                      headerHeight={20}
+                      rowHeight={50}
+                      rowCount={this.state.totalResults + 1}
+                      rowGetter={({index}) =>
+                        this.state.results && this.state.results[index]
+                          ? this.state.results[index]
+                          : {}
+                      }
+                    >
+                      {baseResourceDisplayFields.map((field, i) => (
+                        <Column
+                          key={`${field}-${i}`}
+                          label={field}
+                          dataKey={field}
+                          width={width / baseResourceDisplayFields.length}
+                          cellRenderer={this.cellRenderer}
+                        />
+                      ))}
+                    </Table>
+                  )}
+                </AutoSizer>
+              )}
+            </InfiniteLoader>
+          ) : (
+            'Loading...'
+          )}
         </div>
       </div>
     );

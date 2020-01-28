@@ -12,6 +12,9 @@
     "react-bootstrap": "^1.0.0-beta.16",
     "react-dom": "^16.12.0",
     "react-scripts": "3.3.0",
+    "react-virtualized": "^9.21.2",
+    "semantic-ui-css": "^2.4.1",
+    "semantic-ui-react": "^0.88.2",
     "stylelint": "^13.0.0"
   },
   "scripts": {
