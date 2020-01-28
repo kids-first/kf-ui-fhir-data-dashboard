@@ -53,7 +53,7 @@ class ResultsTable extends React.Component {
 
   render() {
     return (
-      <div className="results_table">
+      <div className="results-table">
         <InfiniteLoader
           isRowLoaded={this.isRowLoaded}
           loadMoreRows={() => this.props.fetchResource(this.props.nextPageUrl)}
@@ -61,12 +61,13 @@ class ResultsTable extends React.Component {
         >
           {({onRowsRendered, registerChild}) => (
             <AutoSizer>
-              {({width}) => (
+              {({width, height}) => (
                 <Table
+                  className="results-table__body"
                   ref={registerChild}
                   onRowsRendered={onRowsRendered}
                   width={width}
-                  height={500}
+                  height={height}
                   headerHeight={20}
                   rowHeight={50}
                   rowCount={this.props.totalResults}
@@ -78,11 +79,13 @@ class ResultsTable extends React.Component {
                 >
                   {baseResourceDisplayFields.map((field, i) => (
                     <Column
+                      className="results-table__cell"
                       key={`${field}-${i}`}
                       label={field}
                       dataKey={field}
-                      width={width / baseResourceDisplayFields.length}
                       cellRenderer={this.cellRenderer}
+                      width={1}
+                      flexGrow={1}
                     />
                   ))}
                 </Table>

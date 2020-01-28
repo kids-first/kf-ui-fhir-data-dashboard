@@ -1,5 +1,15 @@
-.results_table {
+.results-table {
   display: flex;
   flex-flow: column;
-  justify-content: center;
+  flex: 1;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.results-table__body > * {
+  outline: none;
+}
+
+.results-table__cell {
+  margin: 0px 10px;
 }
