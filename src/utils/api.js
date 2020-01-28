@@ -21,16 +21,27 @@ const fetchToken = async callback =>
     });
 
 const fetchWithHeaders = async (url, headers) => {
-  const fullUrl = url.concat(`${url.includes('?') ? '&' : '?'}`);
-  return fetch(`${proxyUrl}${fullUrl}_count=${numberOfResultsPerPage}`, {
+  let fullUrl = url;
+  if (!url.includes('_count')) {
+    fullUrl = url
+      .concat(`${url.includes('?') ? '&' : '?'}`)
+      .concat(`_count=${numberOfResultsPerPage}`);
+  }
+  return fetch(`${proxyUrl}${fullUrl}`, {
     headers: {
       ...headers,
       Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
     },
   })
-    .then(res => res.json())
+    .then(res => {
+      if (res.status !== 200) {
+        throw res;
+      }
+      return res.json();
+    })
     .then(data => data)
     .catch(err => {
+      console.log('Error:', err);
       if (err.status === 401) {
         return fetchToken(() => fetchWithHeaders(url));
       }

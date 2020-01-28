@@ -33,6 +33,7 @@ class App extends React.Component {
     if (url) {
       const currentResults = this.state.results;
       const data = await fetchResource(url);
+      console.log('data in fetch', data);
       const newResults =
         data && data.entry ? data.entry.map(entry => entry.resource) : [];
       const totalResults = currentResults.concat(newResults);
