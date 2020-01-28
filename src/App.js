@@ -21,23 +21,26 @@ class App extends React.Component {
   // When page mounts, fetch all Patients
   async componentDidMount() {
     let temp = {};
-    this.setState({ resultsFetched: false });
-    temp = await this.fetchResource(`${baseUrl}${baseResource}?_count=100`, temp);
-    this.setState({ results: temp, resultsFetched: true });
+    this.setState({resultsFetched: false});
+    temp = await this.fetchResource(
+      `${baseUrl}${baseResource}?_count=100`,
+      temp,
+    );
+    this.setState({results: temp, resultsFetched: true});
   }
 
   // Fetches next page if results returned are paginated
-  getNextPage = (data) => {
-    const nextPage = data.link.findIndex((x) => x.relation === 'next');
+  getNextPage = data => {
+    const nextPage = data.link.findIndex(x => x.relation === 'next');
     return nextPage > -1 ? data.link[nextPage].url : null;
-  }
+  };
 
   // Used to fetch a resource (ie. Patients, Observations..)
   fetchResource = async (url, temp) => {
     const data = await fetchResource(url);
     const newResources = temp;
     if (data.entry) {
-      data.entry.forEach((entry) => {
+      data.entry.forEach(entry => {
         if (entry.fullUrl) {
           newResources[entry.fullUrl] = entry.resource;
         }
@@ -49,18 +52,19 @@ class App extends React.Component {
     //   return this.fetchResource(url, newResources);
     // }
     return newResources;
-  }
+  };
 
-  isObject = (obj) => obj === Object(obj);
+  isObject = obj => obj === Object(obj);
 
-  renderArrOfObj = (arr) => arr.map((elt, i) => {
-    const str = this.flattenObj(elt, '');
-    return <p key={str.concat(i)}>{ str }</p>;
-  });
+  renderArrOfObj = arr =>
+    arr.map((elt, i) => {
+      const str = this.flattenObj(elt, '');
+      return <p key={str.concat(i)}>{str}</p>;
+    });
 
   /* eslint-disable no-param-reassign */
   flattenObj = (obj, str) => {
-    Object.keys(obj).forEach((key) => {
+    Object.keys(obj).forEach(key => {
       if (!omittedFields.includes(key)) {
         if (this.isObject(obj[key])) {
           str = str.concat(`${key}: ${this.flattenObj(obj[key], str)}`);
@@ -70,56 +74,60 @@ class App extends React.Component {
       }
     });
     return str;
-  }
+  };
   /* eslint-enable no-param-reassign */
 
-  updateQuery = (e) => {
-    this.setState({ queryInput: e.target.value });
-  }
+  updateQuery = e => {
+    this.setState({queryInput: e.target.value});
+  };
 
   queryResource = async () => {
-    const { queryInput } = this.state;
+    const {queryInput} = this.state;
     let temp = {};
-    this.setState({ resultsFetched: false });
-    temp = await this.fetchResource(`${baseUrl}${baseResource}?${queryInput}&_count=100`, temp);
-    this.setState({ results: temp, resultsFetched: true });
-  }
+    this.setState({resultsFetched: false});
+    temp = await this.fetchResource(
+      `${baseUrl}${baseResource}?${queryInput}&_count=100`,
+      temp,
+    );
+    this.setState({results: temp, resultsFetched: true});
+  };
 
   render() {
-    const { results, resultsFetched } = this.state;
+    const {results, resultsFetched} = this.state;
     const resultList = Object.keys(results).map((resultKey, i) => {
       const listItem = results[resultKey];
       return (
         <div key={resultKey.concat(i)} className="result">
-          {
-            baseResourceDisplayFields.map((field, j) => {
-              if (listItem[field]) {
-                if (!this.isObject(listItem[field]) && !Array.isArray(listItem[field])) {
-                  return (
-                    <React.Fragment key={field.concat(j)}>
-                      <p className="result-header">{ `${field}: ` }</p>
-                      <p>{ listItem[field].toString() }</p>
-                    </React.Fragment>
-                  );
-                }
-                if (Array.isArray(listItem[field])) {
-                  return (
-                    <div key={field.concat(j)}>
-                      <p className="result-header">{ `${field}:` }</p>
-                      { this.renderArrOfObj(listItem[field]) }
-                    </div>
-                  );
-                }
+          {baseResourceDisplayFields.map((field, j) => {
+            if (listItem[field]) {
+              if (
+                !this.isObject(listItem[field]) &&
+                !Array.isArray(listItem[field])
+              ) {
+                return (
+                  <React.Fragment key={field.concat(j)}>
+                    <p className="result-header">{`${field}: `}</p>
+                    <p>{listItem[field].toString()}</p>
+                  </React.Fragment>
+                );
+              }
+              if (Array.isArray(listItem[field])) {
                 return (
                   <div key={field.concat(j)}>
-                    <p className="result-header">{ `${field}:` }</p>
-                    { this.flattenObj(listItem[field], '') }
+                    <p className="result-header">{`${field}:`}</p>
+                    {this.renderArrOfObj(listItem[field])}
                   </div>
                 );
               }
-              return null;
-            })
-          }
+              return (
+                <div key={field.concat(j)}>
+                  <p className="result-header">{`${field}:`}</p>
+                  {this.flattenObj(listItem[field], '')}
+                </div>
+              );
+            }
+            return null;
+          })}
         </div>
       );
     });
@@ -132,7 +140,7 @@ class App extends React.Component {
           <input
             className="app_query-input"
             type="text"
-            onChange={(e) => this.updateQuery(e)}
+            onChange={e => this.updateQuery(e)}
           />
           <button
             type="button"
@@ -142,15 +150,9 @@ class App extends React.Component {
             Search
           </button>
         </div>
-        <h2>
-          Results (
-          { resultList.length }
-          )
-        </h2>
+        <h2>Results ({resultList.length})</h2>
         <div className="app_result-list">
-          {
-            resultsFetched ? resultList : <p>Loading...</p>
-          }
+          {resultsFetched ? resultList : <p>Loading...</p>}
         </div>
       </div>
     );

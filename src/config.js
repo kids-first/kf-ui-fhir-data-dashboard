@@ -5,7 +5,10 @@ export const baseResource = 'Patient';
 const synthea = 'https://syntheticmass.mitre.org/v1/fhir/';
 const hapi = 'http://hapi.fhir.org/baseR4/';
 const getBaseUrl = () => {
-  if (!process.env.REACT_APP_FHIR_API || process.env.REACT_APP_FHIR_API === 'synthea') {
+  if (
+    !process.env.REACT_APP_FHIR_API ||
+    process.env.REACT_APP_FHIR_API === 'synthea'
+  ) {
     return synthea;
   }
   return hapi;
@@ -25,8 +28,4 @@ export const baseResourceDisplayFields = [
   'telecom',
 ];
 
-export const omittedFields = [
-  'coding',
-  'extension',
-  'use',
-];
+export const omittedFields = ['coding', 'extension', 'use'];
