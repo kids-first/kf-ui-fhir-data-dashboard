@@ -33,7 +33,14 @@ class ResultsTable extends React.Component {
     rowData,
     rowIndex,
   }) => {
-    if (cellData) {
+    if (Object.keys(rowData).length === 0) {
+      return (
+        <div className="ui placeholder">
+          <div className="line" />
+          <div className="line" />
+        </div>
+      );
+    } else if (cellData) {
       if (!this.isObject(cellData) && !Array.isArray(cellData)) {
         return <p>{cellData.toString()}</p>;
       }
