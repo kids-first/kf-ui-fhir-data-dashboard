@@ -2,7 +2,7 @@ import {connect} from 'react-redux';
 import {setResources} from '../actions';
 import {fetchAllResources, getResourceCount} from '../utils/api';
 import {baseUrl, resourceCategories} from '../config';
-import AllResources from '../components/AllResources';
+import AllResources from './AllResources';
 
 const fetchResources = async url => {
   let results = await fetchAllResources(url, []);
