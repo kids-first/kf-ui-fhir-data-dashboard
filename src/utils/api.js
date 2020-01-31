@@ -20,14 +20,14 @@ const fetchToken = async callback =>
       return callback();
     });
 
-const fetchWithHeaders = async (url, headers) => {
+const fetchWithHeaders = async (url, headers, count) => {
   let fullUrl = url;
-  if (!url.includes('_count')) {
+  if (!url.includes('_count') && !!count) {
     fullUrl = url
       .concat(`${url.includes('?') ? '&' : '?'}`)
-      .concat(`_count=${numberOfResultsPerPage}`);
+      .concat(`_count=${numberOfResultsPerPage}&_total=accurate`);
   }
-  return fetch(`${proxyUrl}${fullUrl}`, {
+  return fetch(`${fullUrl}`, {
     headers: {
       ...headers,
       Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
@@ -48,10 +48,31 @@ const fetchWithHeaders = async (url, headers) => {
     });
 };
 
-const fetchResource = async url =>
-  fetchWithHeaders(url, {
-    Accept: 'application/fhir+json;charset=utf-8',
-    'Content-Type': 'application/fhir+json;charset=utf-8',
+export const fetchResource = async (url, count = true) =>
+  fetchWithHeaders(
+    url,
+    {
+      Accept: 'application/fhir+json;charset=utf-8',
+      'Content-Type': 'application/fhir+json;charset=utf-8',
+    },
+    count,
+  );
+
+export const fetchAllResources = async (url, allData) =>
+  fetchResource(url, false).then(data => {
+    if (data && data.entry) {
+      allData = allData.concat(data.entry);
+      const nextPage = data.link.findIndex(x => x.relation === 'next');
+      if (nextPage > -1) {
+        const nextPageUrl = data.link[nextPage].url.replace(
+          'localhost',
+          '10.10.1.191',
+        );
+        return fetchAllResources(nextPageUrl, allData);
+      }
+    }
+    return allData;
   });
 
-export default fetchResource;
+export const getResourceCount = async url =>
+  fetchResource(url).then(data => (data ? data.total : 0));

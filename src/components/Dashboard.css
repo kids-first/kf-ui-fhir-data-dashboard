@@ -1,0 +1,21 @@
+.dashboard {
+  display: flex;
+  flex-flow: column;
+}
+
+.dashboard__results {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* Semantic UI Overrides */
+
+.ui.card,
+.ui.card:first-child {
+  margin: 20px 20px;
+}
+
+.ui.card > .content > .header,
+.ui.cards > .card > .content > .header {
+  overflow-wrap: break-word;
+}

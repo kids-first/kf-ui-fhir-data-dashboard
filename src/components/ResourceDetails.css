@@ -1,5 +1,4 @@
-.app {
+.resource-details {
   display: flex;
   flex-flow: column;
-  margin: 10px 10px;
 }
