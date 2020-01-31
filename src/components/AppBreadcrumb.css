@@ -1,5 +1,5 @@
 .ui.breadcrumb,
 .ui.breadcrumb:last-child,
 .ui.breadcrumb:first-child {
-  margin: 10px 0;
+  margin: 10px 0 !important;
 }

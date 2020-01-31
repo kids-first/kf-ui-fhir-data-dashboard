@@ -15,6 +15,7 @@ class AppBreadcrumb extends React.Component {
       <React.Fragment>
         {linkNames.length > 1 && !!linkNames[1] ? (
           <Breadcrumb>
+            <Breadcrumb.Divider icon="left chevron" />
             <Breadcrumb.Section link onClick={() => this.goHome()}>
               Home
             </Breadcrumb.Section>

@@ -12,7 +12,7 @@
 
 .ui.card,
 .ui.card:first-child {
-  margin: 20px 20px;
+  margin: 20px 20px !important;
 }
 
 .ui.card > .content > .header,
