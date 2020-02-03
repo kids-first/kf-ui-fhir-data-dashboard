@@ -2,3 +2,12 @@
   display: flex;
   flex-flow: column;
 }
+
+.resource-details__fields {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.resource-details__fields > * {
+  width: 500px;
+}

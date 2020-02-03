@@ -1,5 +1,4 @@
 import {connect} from 'react-redux';
-import {setResources} from '../actions';
 import {getResourceCount} from '../utils/api';
 import ResourceDetails from './ResourceDetails';
 

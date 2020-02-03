@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {baseUrl} from '../config';
-import Dashboard from './Dashboard';
+import {Card, Icon} from 'semantic-ui-react';
+import {baseUrl, resourceCategories} from '../config';
 import './AllResources.css';
 
 class AllResources extends React.Component {
@@ -23,7 +23,6 @@ class AllResources extends React.Component {
           .fetchAllResources(`${baseUrl}${this.state.resourceType}`)
           .then(() => {
             const results = this.props.resources;
-            console.log('received results', results);
             this.setState({
               totalResults: Object.keys(results).length,
               results,
@@ -34,26 +33,64 @@ class AllResources extends React.Component {
     }
   }
 
-  onResourceClick = resourceType => {
+  onClick = resourceType => {
     this.props.history.push(`/${resourceType}`);
   };
 
   render() {
-    console.log('this.props', this.props);
+    const {resourceTitle, totalResults, results, resultsFetched} = this.state;
     return (
       <div className="all-resources">
         <div
-          className={`ui ${
-            this.state.resultsFetched ? 'disabled' : 'active'
-          } loader`}
+          className={`ui ${resultsFetched ? 'disabled' : 'active'} loader`}
         />
-        <Dashboard
-          items={this.state.results}
-          title={this.state.resourceTitle}
-          resourceType={this.state.resourceType}
-          onClick={this.onResourceClick}
-          total={this.state.totalResults}
-        />
+        <h2>
+          {resourceTitle} ({totalResults})
+        </h2>
+        {resultsFetched ? (
+          <div className="all-resources__results">
+            {Object.keys(resourceCategories).map(category => (
+              <div className="all-resources__results-category" key={category}>
+                <h3>{category}</h3>
+                <div className="all-resources__results-subcategory">
+                  {Object.keys(resourceCategories[category]).map(
+                    subCategory => (
+                      <React.Fragment key={subCategory}>
+                        <h4>{subCategory}</h4>
+                        <div className="all-resources__results-section">
+                          {resourceCategories[category][subCategory].map(
+                            resultType => (
+                              <Card
+                                key={resultType}
+                                onClick={() => this.onClick(resultType)}
+                              >
+                                <Card.Content>
+                                  <Card.Header>{resultType}</Card.Header>
+                                  <Card.Meta>
+                                    Total: {results[resultType].count}
+                                  </Card.Meta>
+                                  <Card.Meta>
+                                    Base type: {results[resultType].baseType}
+                                  </Card.Meta>
+                                  <Card.Description>
+                                    Click to explore {resultType}.
+                                  </Card.Description>
+                                </Card.Content>
+                                <Card.Content extra>
+                                  <Icon name="user" />
+                                </Card.Content>
+                              </Card>
+                            ),
+                          )}
+                        </div>
+                      </React.Fragment>
+                    ),
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : null}
       </div>
     );
   }

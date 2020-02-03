@@ -21,9 +21,9 @@ const fetchToken = async callback =>
     });
 
 const fetchWithHeaders = async (url, headers, count) => {
-  let fullUrl = url;
-  if (!url.includes('_count') && !!count) {
-    fullUrl = url
+  let fullUrl = `${proxyUrl}${url}`;
+  if (!fullUrl.includes('_count') && !!count) {
+    fullUrl = fullUrl
       .concat(`${url.includes('?') ? '&' : '?'}`)
       .concat(`_count=${numberOfResultsPerPage}&_total=accurate`);
   }
@@ -45,16 +45,19 @@ const fetchWithHeaders = async (url, headers, count) => {
       if (err.status === 401) {
         return fetchToken(() => fetchWithHeaders(url));
       }
+      return err;
     });
 };
 
-export const fetchResource = async (url, count = true) =>
+export const fetchResource = async (url, headers, count = true) =>
   fetchWithHeaders(
     url,
-    {
-      Accept: 'application/fhir+json;charset=utf-8',
-      'Content-Type': 'application/fhir+json;charset=utf-8',
-    },
+    headers
+      ? headers
+      : {
+          Accept: 'application/fhir+json;charset=utf-8',
+          'Content-Type': 'application/fhir+json;charset=utf-8',
+        },
     count,
   );
 

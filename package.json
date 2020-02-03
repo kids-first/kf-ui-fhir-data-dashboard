@@ -16,6 +16,7 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.3.0",
     "react-virtualized": "^9.21.2",
+    "recharts": "^2.0.0-beta.1",
     "redux": "^4.0.5",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.88.2",

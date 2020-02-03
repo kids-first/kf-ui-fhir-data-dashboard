@@ -48,24 +48,20 @@ const formatResults = results => {
   return newResults;
 };
 
-const mapStateToProps = (state, ownProps) => {
-  console.log('state', state);
-  return {
-    resources:
-      state && state.resources && state.resources.allResources
-        ? state.resources.allResources
-        : {},
-    allResourcesFetched:
-      state && state.resources && state.resources.allResourcesFetched
-        ? state.resources.allResourcesFetched
-        : false,
-  };
-};
+const mapStateToProps = (state, ownProps) => ({
+  resources:
+    state && state.resources && state.resources.allResources
+      ? state.resources.allResources
+      : {},
+  allResourcesFetched:
+    state && state.resources && state.resources.allResourcesFetched
+      ? state.resources.allResourcesFetched
+      : false,
+});
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     fetchAllResources: async url => {
-      console.log('in props func');
       const results = await fetchResources(url);
       dispatch(setResources(results));
     },

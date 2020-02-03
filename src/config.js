@@ -1,4 +1,3 @@
-export const proxyUrl = 'https://damp-castle-44220.herokuapp.com/';
 export const oAuthUrl = 'https://syntheticmass.mitre.org/oauth2/accesstoken';
 export const numberOfResultsPerPage = 20;
 
@@ -16,7 +15,24 @@ const getBaseUrl = () => {
   return process.env.REACT_APP_FHIR_API;
 };
 
+const useProxyUrl = () => {
+  if (
+    !process.env.REACT_APP_FHIR_API ||
+    process.env.REACT_APP_FHIR_API === 'hapi' ||
+    process.env.REACT_APP_FHIR_API === 'synthea'
+  ) {
+    return true;
+  }
+  return false;
+};
+
 export const baseUrl = getBaseUrl();
+export const proxyUrl = useProxyUrl()
+  ? 'https://damp-castle-44220.herokuapp.com/'
+  : '';
+export const schemaUrl = `${baseUrl}StructureDefinition/`;
+
+export const pieChartColors = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
 export const baseResourceDisplayFields = [
   'id',
