@@ -2,4 +2,9 @@
   display: flex;
   flex-flow: column;
   margin: 10px 10px;
+  align-items: center;
+}
+
+.app img {
+  width: 300px;
 }

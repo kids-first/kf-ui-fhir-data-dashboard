@@ -100,7 +100,7 @@ export class DataPieChart extends React.Component {
             data={data}
             innerRadius={60}
             outerRadius={80}
-            fill="#8884d8"
+            fill="#e83a9c"
             dataKey="value"
             onMouseEnter={this.onPieEnter}
           />

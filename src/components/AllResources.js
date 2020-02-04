@@ -203,9 +203,6 @@ class AllResources extends React.Component {
                                                 Click to explore {resultType}.
                                               </Card.Description>
                                             </Card.Content>
-                                            <Card.Content extra>
-                                              <Icon name="user" />
-                                            </Card.Content>
                                           </Card>
                                         );
                                       }

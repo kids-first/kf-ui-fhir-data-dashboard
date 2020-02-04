@@ -17,7 +17,7 @@ class AppBreadcrumb extends React.Component {
           <Breadcrumb>
             <Breadcrumb.Divider icon="left chevron" />
             <Breadcrumb.Section link onClick={() => this.goHome()}>
-              Home
+              Back
             </Breadcrumb.Section>
           </Breadcrumb>
         ) : null}

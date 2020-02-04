@@ -1,11 +1,17 @@
 .resource-details {
   display: flex;
   flex-flow: column;
+  align-items: center;
+}
+
+.resource-details h2 {
+  margin: 10px 0;
 }
 
 .resource-details__fields {
   display: flex;
   flex-wrap: wrap;
+  margin-top: 10px;
 }
 
 .resource-details__field {
@@ -14,4 +20,10 @@
   flex-flow: column;
   justify-content: center;
   text-align: center;
+}
+
+/* Semantic UI overrides */
+
+.ui.breadcrumb {
+  margin: 0;
 }
