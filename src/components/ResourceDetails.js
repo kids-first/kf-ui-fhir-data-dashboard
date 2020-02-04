@@ -163,7 +163,7 @@ class ResourceDetails extends React.Component {
   formatResults = params =>
     params.map(obj => ({
       name: obj.display,
-      value: obj.count ? obj.count : 0,
+      value: 100, //obj.count ? obj.count : 0,
     }));
 
   render() {
@@ -181,20 +181,14 @@ class ResourceDetails extends React.Component {
         </h2>
         <div className="resource-details__fields">
           {fields.map((field, i) => (
-            <Card key={`${field}-${i}`}>
-              <Card.Content>
-                <Card.Header>{field.fieldName}</Card.Header>
-                <Card.Meta>
-                  {field.queryParams ? (
-                    <DataPieChart
-                      data={this.formatResults(field.queryParams)}
-                    />
-                  ) : (
-                    <p>No query params?</p>
-                  )}
-                </Card.Meta>
-              </Card.Content>
-            </Card>
+            <div className="resource-details__field" key={`${field}-${i}`}>
+              <h3>{field.fieldName}</h3>
+              {field.queryParams ? (
+                <DataPieChart data={this.formatResults(field.queryParams)} />
+              ) : (
+                <p>No query params?</p>
+              )}
+            </div>
           ))}
         </div>
       </div>

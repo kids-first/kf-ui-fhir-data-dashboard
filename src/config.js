@@ -32,8 +32,6 @@ export const proxyUrl = useProxyUrl()
   : '';
 export const schemaUrl = `${baseUrl}StructureDefinition/`;
 
-export const pieChartColors = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
-
 export const baseResourceDisplayFields = [
   'id',
   'address',

@@ -8,6 +8,10 @@
   flex-wrap: wrap;
 }
 
-.resource-details__fields > * {
-  width: 500px;
+.resource-details__field {
+  width: 400px;
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  text-align: center;
 }

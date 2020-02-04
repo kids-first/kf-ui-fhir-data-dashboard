@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {PieChart, Pie, Sector, ResponsiveContainer} from 'recharts';
-import {pieChartColors} from '../config';
 
 const renderActiveShape = props => {
   const RADIAN = Math.PI / 180;
@@ -92,22 +91,21 @@ export class DataPieChart extends React.Component {
 
   render() {
     const {data} = this.props;
-    console.log('chart data', data);
     return (
-      <PieChart width={400} height={400}>
-        <Pie
-          activeIndex={this.state.activeIndex}
-          activeShape={renderActiveShape}
-          data={data}
-          cx={200}
-          cy={200}
-          innerRadius={60}
-          outerRadius={80}
-          fill="#8884d8"
-          dataKey="value"
-          onMouseEnter={this.onPieEnter}
-        />
-      </PieChart>
+      <ResponsiveContainer width="100%" height={300}>
+        <PieChart>
+          <Pie
+            activeIndex={this.state.activeIndex}
+            activeShape={renderActiveShape}
+            data={data}
+            innerRadius={60}
+            outerRadius={80}
+            fill="#8884d8"
+            dataKey="value"
+            onMouseEnter={this.onPieEnter}
+          />
+        </PieChart>
+      </ResponsiveContainer>
     );
   }
 }
