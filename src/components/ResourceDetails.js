@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Card} from 'semantic-ui-react';
 import {fetchResource, getResourceCount} from '../utils/api';
 import {baseUrl, schemaUrl} from '../config';
 import AppBreadcrumb from './AppBreadcrumb';
@@ -13,7 +12,7 @@ class ResourceDetails extends React.Component {
     this.state = {
       resourceType: props.resourceType,
       resultsFetched: props.resultsFetched,
-      total: props.total,
+      total: props.total ? props.total : 0,
       fields: [],
     };
   }
@@ -32,7 +31,7 @@ class ResourceDetails extends React.Component {
         );
       }
       let fields = await this.getFields();
-      fields = await this.getQueryParams(fields);
+      fields = fields ? await this.getQueryParams(fields) : [];
       this.setState(
         {
           resultsFetched: true,
