@@ -78,3 +78,8 @@ export const fetchAllResources = async (url, allData) =>
 
 export const getResourceCount = async url =>
   fetchResource(url).then(data => (data ? data.total : 0));
+
+export const getQueryableAttributes = async url =>
+  fetchResource(url).then(data =>
+    data && data.entry ? data.entry.map(x => x.resource.code) : [],
+  );

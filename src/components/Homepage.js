@@ -68,8 +68,10 @@ class Homepage extends React.Component {
     return resourcesByCategory;
   };
 
-  onClick = resourceType => {
-    this.props.history.push(`/${resourceType}`);
+  onClick = resource => {
+    this.props.history.push(
+      `/${resource.baseType}?name=${resource.name}&url=${resource.url}`,
+    );
   };
 
   handleResultSelect = searchResults => {
@@ -184,9 +186,7 @@ class Homepage extends React.Component {
                                       return (
                                         <Card
                                           key={resourceType}
-                                          onClick={() =>
-                                            this.onClick(resourceType)
-                                          }
+                                          onClick={() => this.onClick(resource)}
                                         >
                                           <Card.Content>
                                             <Card.Header>

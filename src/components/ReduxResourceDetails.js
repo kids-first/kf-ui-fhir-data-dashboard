@@ -1,24 +1,30 @@
 import {connect} from 'react-redux';
 import {getResourceCount} from '../utils/api';
+import queryString from 'query-string';
 import ResourceDetails from './ResourceDetails';
 
 const mapStateToProps = (state, ownProps) => {
-  const resourceType = ownProps.match.params.resourceType;
+  const resourceBaseType = ownProps.match.params.resourceBaseType;
+  const queryValues = queryString.parse(ownProps.location.search);
+  const resourceType = queryValues.name;
+  const resourceUrl = queryValues.url;
   const hasResources =
     state && state.resources && state.resources.allResourcesFetched;
-  const results = hasResources
+  const resource = hasResources
     ? state.resources.allResources[resourceType]
     : {};
   return {
-    total: results.count ? results.count : 0,
+    total: resource.count ? resource.count : 0,
+    resourceBaseType,
     resourceType,
-    resultsFetched: hasResources,
+    resourceUrl,
+    resourceFetched: hasResources,
   };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    getCount: url => getResourceCount(url).then(data => data),
+    getCount: url => getResourceCount(url),
   };
 };
 

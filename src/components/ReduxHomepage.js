@@ -18,6 +18,7 @@ const setResourceCounts = async items =>
         return {
           baseType: item.resource.type,
           name: item.resource.name,
+          url: item.resource.url,
           count: await getResourceCount(`${baseUrl}${item.resource.type}`),
         };
       }

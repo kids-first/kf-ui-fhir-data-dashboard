@@ -8,14 +8,15 @@
   margin: 10px 0;
 }
 
-.resource-details__fields {
+.resource-details__queries {
   display: flex;
   flex-wrap: wrap;
-  margin-top: 10px;
+  justify-content: center;
+  margin-top: 30px;
 }
 
-.resource-details__field {
-  width: 400px;
+.resource-details__query {
+  width: 500px;
   display: flex;
   flex-flow: column;
   justify-content: center;

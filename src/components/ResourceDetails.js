@@ -1,7 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {fetchResource, getResourceCount} from '../utils/api';
-import {baseUrl, schemaUrl} from '../config';
+import {
+  fetchResource,
+  getResourceCount,
+  getQueryableAttributes,
+} from '../utils/api';
+import {baseUrl, schemaUrl, fhirUrl} from '../config';
 import AppBreadcrumb from './AppBreadcrumb';
 import DataPieChart from './DataPieChart';
 import './ResourceDetails.css';
@@ -10,10 +14,12 @@ class ResourceDetails extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      resourceBaseType: props.resourceBaseType,
       resourceType: props.resourceType,
-      resultsFetched: props.resultsFetched,
+      resourceUrl: props.resourceUrl,
+      resourcesFetched: props.resourcesFetched,
       total: props.total ? props.total : 0,
-      fields: [],
+      attributes: [],
     };
   }
 
@@ -22,21 +28,21 @@ class ResourceDetails extends React.Component {
   }
 
   getResource = () => {
-    const cached = this.props.resultsFetched;
-    this.setState({resultsFetched: false}, async () => {
+    const {resourcesFetched, resourceBaseType} = this.state;
+    this.setState({resourcesFetched: false}, async () => {
       let total = this.state.total;
-      if (!cached) {
-        total = await this.props.getCount(
-          `${baseUrl}${this.state.resourceType}`,
-        );
+      if (!resourcesFetched) {
+        total = await this.props.getCount(`${baseUrl}${resourceBaseType}`);
       }
-      let fields = await this.getFields();
-      fields = fields ? await this.getQueryParams(fields) : [];
+      const schema = await this.getSchema();
+      const attributes = schema ? await this.getQueryParams(schema) : [];
       this.setState(
         {
-          resultsFetched: true,
-          total,
-          fields,
+          resourcesFetched: true,
+          total: total ? total : 0,
+          attributes: attributes.filter(
+            attribute => attribute.queryParams.length > 0,
+          ),
         },
         () => {
           this.setQueryResults();
@@ -45,148 +51,226 @@ class ResourceDetails extends React.Component {
     });
   };
 
-  getFields = async () => {
-    const data = await fetchResource(`${schemaUrl}${this.state.resourceType}`);
-    let fields = {};
-    if (data && data.snapshot && data.snapshot.element) {
-      fields = data.snapshot.element
-        .map(field => {
-          let fieldName = null;
-          let fieldNames = field.id.split('.');
-          if (fieldNames.length > 1) {
-            fieldName = fieldNames[fieldNames.length - 1].split('[')[0]; // might need more to this
-          }
-          let fieldType = null;
+  isCodeableConcept = val => val === 'code' || val === 'CodeableConcept';
+
+  getSchema = async () => {
+    const {resourceBaseType, resourceUrl} = this.state;
+    const data = await fetchResource(
+      `${schemaUrl}?type=${resourceBaseType}&url=${resourceUrl}`,
+    );
+    const schema =
+      data && data.entry && data.entry[0] && data.entry[0].resource
+        ? data.entry[0].resource
+        : null;
+    const queryableAttributes = await getQueryableAttributes(
+      `${baseUrl}SearchParameter?base=${resourceBaseType}`,
+    );
+    let resourceAttributes = [];
+    if (schema && schema.snapshot && schema.snapshot.element) {
+      resourceAttributes = this.getSchemaSnapshot(
+        schema.snapshot.element,
+        queryableAttributes,
+      );
+    } else if (schema && schema.differential && schema.differential.element) {
+      resourceAttributes = this.getSchemaDifferential(
+        schema.differential.element,
+        queryableAttributes,
+      );
+    }
+    return resourceAttributes;
+  };
+
+  getSchemaSnapshot = (snapshot, queryableAttributes) =>
+    snapshot
+      .map(attribute => {
+        // don't show if attribute has been removed
+        if (attribute.max !== '0') {
+          // getting the human readable name for the resource attributes
+          let name = null;
+          const periodIndex = attribute.id.indexOf('.');
+          name = attribute.id.split('[')[0]; // might need to look into this
+          name =
+            periodIndex > -1
+              ? name
+                  .substring(periodIndex + 1)
+                  .split('.')
+                  .join('-')
+                  .toLowerCase()
+              : name;
+          let type = null;
           let valueSetUrl = null;
           let queryParams = null;
-          if (field.type) {
-            const codeIndex = field.type.findIndex(obj => obj.code);
-            if (codeIndex > -1 && field.type[codeIndex].code === 'code') {
-              if (field.binding) {
-                fieldType = 'enum';
-                valueSetUrl = field.binding.valueSet;
-              } else {
-                fieldType = 'string'; // not correct
+          if (queryableAttributes.includes(name)) {
+            if (attribute.type) {
+              const codeIndex = attribute.type.findIndex(obj => obj.code); // there can be more than one - [x] types
+              if (
+                codeIndex > -1 &&
+                this.isCodeableConcept(attribute.type[codeIndex].code)
+              ) {
+                if (attribute.binding) {
+                  type = 'enum';
+                  valueSetUrl = attribute.binding.valueSet;
+                }
+              } else if (
+                codeIndex > -1 &&
+                attribute.type[codeIndex].code === 'boolean'
+              ) {
+                type = 'boolean';
+                queryParams = [
+                  {code: 'true', display: 'true'},
+                  {code: 'false', display: 'false'},
+                ];
               }
-            } else if (
-              codeIndex > -1 &&
-              field.type[codeIndex].code === 'boolean'
-            ) {
-              fieldType = 'boolean';
-              queryParams = [
-                {code: 'true', display: 'true'},
-                {code: 'false', display: 'false'},
-              ];
             }
           }
           return {
-            fieldName,
-            fieldType,
+            id: attribute.id,
+            name,
+            type,
             valueSetUrl,
             queryParams,
           };
-        })
-        .filter(obj => obj.fieldName && obj.fieldType);
-      return fields;
-    }
-  };
+        }
+        return {};
+      })
+      .filter(obj => obj.name && obj.type);
 
+  getSchemaDifferential = async (differential, queryableAttributes) => {
+    const {resourceBaseType} = this.state;
+    const data = await fetchResource(
+      `${schemaUrl}?type=${resourceBaseType}&url=${fhirUrl}${resourceBaseType}`,
+    );
+    const snapshot =
+      data &&
+      data.entry &&
+      data.entry[0] &&
+      data.entry[0].resource &&
+      data.entry[0].resource.snapshot &&
+      data.entry[0].resource.snapshot.element
+        ? data.entry[0].resource.snapshot.element
+        : null;
+    let resourceAttributes = [];
+    if (snapshot) {
+      resourceAttributes = this.getSchemaSnapshot(
+        snapshot,
+        queryableAttributes,
+      );
+      const omittedAttributes = differential
+        .filter(attribute => attribute.max === '0')
+        .map(attribute => attribute.id);
+      resourceAttributes = resourceAttributes.filter(
+        attribute => !omittedAttributes.includes(attribute.id),
+      );
+    }
+    return resourceAttributes;
+  };
   // type --> code and no binding = string
   // type --> code and binding = enum --> valueset, compose --> include
   // parse .../valueset/... then concept.map(code)
-  getQueryParams = async fields =>
+  getQueryParams = async attributes =>
     Promise.all(
-      fields.map(async field => {
-        if (field.valueSetUrl) {
-          const url = field.valueSetUrl.split('/ValueSet')[1].split('|')[0];
-          const data = await fetchResource(
-            `${baseUrl}ValueSet${url}`,
-            {},
-            false,
+      attributes.map(async attribute => {
+        if (attribute.valueSetUrl) {
+          const url = attribute.valueSetUrl.split('|')[0]; // versions don't resolve
+          const data = await fetchResource(`${baseUrl}ValueSet?url=${url}`, {});
+          const resource =
+            data && data.entry && data.entry[0] && data.entry[0].resource
+              ? data.entry[0].resource
+              : null;
+          let concepts =
+            resource && resource.compose && resource.compose.include
+              ? resource.compose.include
+                  .map(obj => obj.concept)
+                  .filter(item => !!item)
+                  .flat()
+              : [];
+          const systems = resource.compose.include.map(obj => obj.system);
+          let systemConcepts = await Promise.all(
+            systems.map(async system => {
+              const data = await fetchResource(
+                `${baseUrl}CodeSystem?url=${system}`,
+                {},
+              );
+              return data &&
+                data.entry &&
+                data.entry[0] &&
+                data.entry[0].resource &&
+                data.entry[0].resource.concept
+                ? data.entry[0].resource.concept
+                : null;
+            }),
           );
-          let concepts = data.compose.include
-            .map(obj => obj.concept)
-            .filter(item => !!item);
-          if (concepts.length === 0) {
-            const systems = data.compose.include.map(obj => obj.system);
-            concepts = await Promise.all(
-              systems.map(async system => {
-                system = system.substring(system.lastIndexOf('/'));
-                const data = await fetchResource(
-                  `${baseUrl}CodeSystem${system}`,
-                  {},
-                  false,
-                );
-                return data.concept;
-              }),
-            );
-          }
+          systemConcepts = systemConcepts.flat().filter(item => !!item);
+          concepts.push(...systemConcepts);
           return {
-            ...field,
-            queryParams: concepts.flat(),
+            ...attribute,
+            queryParams: concepts,
           };
         } else {
-          return field;
+          return attribute;
         }
       }),
     );
 
   setQueryResults = async () => {
     let results = await this.getQueryResults();
-    this.setState({fields: results});
+    this.setState({attributes: results});
   };
 
-  getQueryResults = async () => {
-    let fields = this.state.fields;
-    fields = Promise.all(
-      fields.map(async field => {
-        if (field.queryParams) {
-          field.queryParams = await Promise.all(
-            field.queryParams.map(async param => {
-              const data = await getResourceCount(
-                `${baseUrl}${this.state.resourceType}?${field.fieldName}=${param.code}`,
+  getQueryResults = async () =>
+    Promise.all(
+      this.state.attributes.map(async attribute => {
+        if (attribute.queryParams) {
+          attribute.queryParams = await Promise.all(
+            attribute.queryParams.map(async param => {
+              const count = await getResourceCount(
+                `${baseUrl}${this.state.resourceBaseType}?${attribute.name}=${param.code}`,
               );
               return {
                 ...param,
-                count: data ? data.count : 0,
+                count,
               };
             }),
           );
         }
-        return field;
+        return attribute;
       }),
     );
-    return fields;
+
+  formatResults = params => {
+    let sum = 0;
+    let chartResults = params.map(obj => {
+      const count = obj.count ? obj.count : 0;
+      sum += count;
+      return {
+        name: obj.display ? obj.display : obj.code,
+        value: obj.count ? obj.count : 0,
+      };
+    });
+    if (sum < this.state.total) {
+      chartResults.push({name: 'Missing', value: this.state.total - sum});
+    }
+    return chartResults;
   };
 
-  formatResults = params =>
-    params.map(obj => ({
-      name: obj.display,
-      value: 100, //obj.count ? obj.count : 0,
-    }));
-
   render() {
-    const {resourceType, total, fields} = this.state;
+    const {resourceType, total, attributes} = this.state;
     return (
       <div className="resource-details">
         <AppBreadcrumb history={this.props.history} />
         <div
           className={`ui ${
-            this.state.resultsFetched ? 'disabled' : 'active'
+            this.state.resourcesFetched ? 'disabled' : 'active'
           } loader`}
         />
         <h2>
           {resourceType}: {total}
         </h2>
-        <div className="resource-details__fields">
-          {fields.map((field, i) => (
-            <div className="resource-details__field" key={`${field}-${i}`}>
-              <h3>{field.fieldName}</h3>
-              {field.queryParams ? (
-                <DataPieChart data={this.formatResults(field.queryParams)} />
-              ) : (
-                <p>No query params?</p>
-              )}
+        <div className="resource-details__queries">
+          {attributes.map((attribute, i) => (
+            <div className="resource-details__query" key={`${attribute}-${i}`}>
+              <h3>{attribute.name}</h3>
+              <DataPieChart data={this.formatResults(attribute.queryParams)} />
             </div>
           ))}
         </div>
@@ -197,20 +281,23 @@ class ResourceDetails extends React.Component {
 
 ResourceDetails.propTypes = {
   history: PropTypes.object.isRequired,
+  location: PropTypes.shape({
+    search: PropTypes.string.isRequired,
+  }).isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape({
-      resourceType: PropTypes.string.isRequired,
+      resourceBaseType: PropTypes.string.isRequired,
     }).isRequired,
   }).isRequired,
-  results: PropTypes.object,
+  resourceBaseType: PropTypes.string.isRequired,
   resourceType: PropTypes.string.isRequired,
-  hasResources: PropTypes.bool,
-  getCount: PropTypes.func.isRequired,
+  resourceUrl: PropTypes.string.isRequired,
+  resourceFetched: PropTypes.bool,
   total: PropTypes.number,
+  getCount: PropTypes.func.isRequired,
 };
 
 ResourceDetails.defaultProps = {
-  results: {},
   hasResources: false,
   total: 0,
 };

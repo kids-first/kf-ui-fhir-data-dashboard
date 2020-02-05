@@ -31,6 +31,7 @@ export const proxyUrl = useProxyUrl()
   ? 'https://damp-castle-44220.herokuapp.com/'
   : '';
 export const schemaUrl = `${baseUrl}StructureDefinition/`;
+export const fhirUrl = 'http://hl7.org/fhir/StructureDefinition/';
 
 export const baseResourceDisplayFields = [
   'id',

@@ -13,7 +13,7 @@ class App extends React.Component {
           <img src={logo} alt="Kids First" />
           <h1>FHIR Data Dashboard</h1>
           <Switch>
-            <Route path="/:resourceType" component={ReduxResourceDetails} />
+            <Route path="/:resourceBaseType" component={ReduxResourceDetails} />
             <Route path="/" component={ReduxHomepage} />
           </Switch>
         </div>

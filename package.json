@@ -10,6 +10,7 @@
     "jwt-decode": "^2.2.0",
     "lodash": "^4.17.15",
     "prop-types": "^15.7.2",
+    "query-string": "^6.10.1",
     "react": "^16.12.0",
     "react-bootstrap": "^1.0.0-beta.16",
     "react-dom": "^16.12.0",
