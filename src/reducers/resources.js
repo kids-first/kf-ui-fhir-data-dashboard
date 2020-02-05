@@ -5,7 +5,7 @@ const resources = (state = {}, action) => {
     case SET_RESOURCES:
       return {
         ...state,
-        allResources: action.resources,
+        allResources: action.allResources,
         allResourcesFetched: true,
       };
     default:

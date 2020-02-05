@@ -20,9 +20,9 @@ const fetchToken = async callback =>
       return callback();
     });
 
-const fetchWithHeaders = async (url, headers, count) => {
+const fetchWithHeaders = async (url, headers) => {
   let fullUrl = `${proxyUrl}${url}`;
-  if (!fullUrl.includes('_count') && !!count) {
+  if (!fullUrl.includes('_count')) {
     fullUrl = fullUrl
       .concat(`${url.includes('?') ? '&' : '?'}`)
       .concat(`_count=${numberOfResultsPerPage}&_total=accurate`);
@@ -49,7 +49,7 @@ const fetchWithHeaders = async (url, headers, count) => {
     });
 };
 
-export const fetchResource = async (url, headers, count = true) =>
+export const fetchResource = async (url, headers) =>
   fetchWithHeaders(
     url,
     headers
@@ -58,11 +58,10 @@ export const fetchResource = async (url, headers, count = true) =>
           Accept: 'application/fhir+json;charset=utf-8',
           'Content-Type': 'application/fhir+json;charset=utf-8',
         },
-    count,
   );
 
 export const fetchAllResources = async (url, allData) =>
-  fetchResource(url, false).then(data => {
+  fetchResource(url).then(data => {
     if (data && data.entry) {
       allData = allData.concat(data.entry);
       const nextPage = data.link.findIndex(x => x.relation === 'next');

@@ -1,6 +1,6 @@
 export const SET_RESOURCES = 'SET_RESOURCES';
 
-export const setResources = resources => ({
+export const setResources = allResources => ({
   type: SET_RESOURCES,
-  resources,
+  allResources,
 });

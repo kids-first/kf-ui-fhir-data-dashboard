@@ -1,6 +1,6 @@
 import React from 'react';
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
-import ReduxAllResources from './ReduxAllResources';
+import ReduxHomepage from './ReduxHomepage';
 import ReduxResourceDetails from './ReduxResourceDetails';
 import logo from '../img/kf-logo.png';
 import './App.css';
@@ -14,7 +14,7 @@ class App extends React.Component {
           <h1>FHIR Data Dashboard</h1>
           <Switch>
             <Route path="/:resourceType" component={ReduxResourceDetails} />
-            <Route path="/" component={ReduxAllResources} />
+            <Route path="/" component={ReduxHomepage} />
           </Switch>
         </div>
       </Router>
