@@ -130,10 +130,13 @@ class Homepage extends React.Component {
         <div
           className={`ui ${resourcesFetched ? 'disabled' : 'active'} loader`}
         />
-        <h2>
-          {searchResourceTitle} (
-          {getHumanReadableNumber(Object.keys(filteredResources).length)})
-        </h2>
+        <div className="homepage__header">
+          <h2>{searchResourceTitle}:</h2>
+          <h2 className="homepage__count">
+            {getHumanReadableNumber(Object.keys(filteredResources).length)}
+          </h2>
+          <h2>total</h2>
+        </div>
         {resourcesFetched ? (
           <div className="homepage__content">
             <SearchBar

@@ -5,6 +5,22 @@
   width: 80%;
 }
 
+.homepage__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 30px 0;
+}
+
+.homepage__header > * {
+  margin: 0 10px;
+}
+
+.homepage__count {
+  color: var(--d3b-blue);
+  margin: 0;
+}
+
 .homepage__content {
   display: flex;
   flex-flow: column;

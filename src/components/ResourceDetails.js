@@ -279,7 +279,7 @@ class ResourceDetails extends React.Component {
       };
     });
     if (sum < this.state.total) {
-      chartResults.push({name: 'Missing', value: this.state.total - sum});
+      chartResults.push({name: 'No Data', value: this.state.total - sum});
     }
     return chartResults;
   };
@@ -303,7 +303,7 @@ class ResourceDetails extends React.Component {
         />
         <div className="resource-details__header">
           <div className="resource-details__header-title">
-            <h1>{resourceType}</h1>
+            <h2>{resourceType}</h2>
             <p>Base type: {resourceBaseType}</p>
           </div>
           <div className="resource-details__header-total">

@@ -20,6 +20,8 @@
 }
 
 .resource-details__header-total {
+  display: flex;
+  flex-flow: column;
   color: var(--d3b-gray);
 }
 
