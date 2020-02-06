@@ -37,12 +37,24 @@
   margin-top: 30px;
 }
 
+@media screen and (max-width: 768px) {
+  .resource-details__queries {
+    justify-content: center;
+  }
+}
+
 .resource-details__query {
   width: 450px;
   display: flex;
   flex-flow: column;
   text-align: center;
   margin: 20px 0;
+}
+
+@media screen and (max-width: 768px) {
+  .resource-details__query {
+    width: 100%;
+  }
 }
 
 .resource-details__query-count {
