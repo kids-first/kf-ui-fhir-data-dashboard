@@ -18,7 +18,7 @@
 }
 
 .homepage__section-controls > p {
-  color: var(--kf-purple);
+  color: var(--d3b-brightblue);
   margin: 0 5px;
   cursor: pointer;
 }
@@ -56,7 +56,7 @@
 .ui.card > .content > .header,
 .ui.cards > .card > .content > .header {
   overflow-wrap: break-word;
-  color: var(--kf-teal) !important;
+  color: var(--d3b-blue) !important;
 }
 
 .ui.card > .content > .description,
@@ -69,7 +69,7 @@
 }
 
 .ui.input > input:focus {
-  color: var(--kf-teal);
+  color: var(--d3b-blue);
 }
 
 .ui.search > .results {
@@ -78,7 +78,7 @@
 
 i.icon {
   cursor: pointer;
-  color: var(--kf-purple);
+  color: var(--d3b-brightblue);
 }
 
 i.icon.chevron.up,
