@@ -24,20 +24,32 @@ h2,
 h3,
 h4,
 h5 {
-  font-weight: semi-bold;
-  color: var(--d3b-gray);
+  font-weight: 500;
 }
 
 h1 {
   font-size: 32px;
+  color: var(--d3b-gray);
 }
 
 h2 {
   font-size: 24px;
+  color: var(--d3b-gray);
 }
 
 h3 {
   font-size: 18px;
+  color: var(--d3b-gray);
+}
+
+h4 {
+  font-size: 16px;
+  color: var(--d3b-blue);
+}
+
+h5 {
+  font-size: 14px;
+  color: var(--d3b-blue);
 }
 
 a {

@@ -4,8 +4,29 @@
   align-items: center;
 }
 
-.resource-details h2 {
-  margin: 10px 0;
+.resource-details__header {
+  display: flex;
+  align-items: center;
+  margin: 30px;
+  text-align: center;
+}
+
+.resource-details__header-title {
+  display: flex;
+  flex-flow: column;
+  margin-right: 30px;
+  font-size: 18px;
+  color: var(--d3b-gray);
+}
+
+.resource-details__header-total {
+  color: var(--d3b-gray);
+}
+
+.resource-details__count {
+  font-size: 32px;
+  color: var(--d3b-blue);
+  margin: 0;
 }
 
 .resource-details__queries {
@@ -19,6 +40,7 @@
   display: flex;
   flex-flow: column;
   text-align: center;
+  margin: 20px 0;
 }
 
 .resource-details__query-count {

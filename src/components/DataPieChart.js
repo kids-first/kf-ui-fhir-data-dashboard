@@ -100,7 +100,7 @@ export class DataPieChart extends React.Component {
             data={this.props.data.filter(x => x.value > 0)}
             innerRadius={60}
             outerRadius={80}
-            fill="#e83a9c"
+            fill="#41b6e6"
             dataKey="value"
             onMouseEnter={this.onPieEnter}
           />
