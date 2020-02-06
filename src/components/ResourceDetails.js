@@ -185,7 +185,7 @@ class ResourceDetails extends React.Component {
       attributes.map(async attribute => {
         if (attribute.valueSetUrl) {
           const url = attribute.valueSetUrl.split('|')[0]; // versions don't resolve
-          const data = await fetchResource(`${baseUrl}ValueSet?url=${url}`, {});
+          const data = await fetchResource(`${baseUrl}ValueSet?url=${url}`);
           const resource =
             data && data.entry && data.entry[0] && data.entry[0].resource
               ? data.entry[0].resource
@@ -205,7 +205,6 @@ class ResourceDetails extends React.Component {
             systems.map(async system => {
               const data = await fetchResource(
                 `${baseUrl}CodeSystem?url=${system}`,
-                {},
               );
               return data &&
                 data.entry &&

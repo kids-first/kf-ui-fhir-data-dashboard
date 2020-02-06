@@ -25,12 +25,16 @@ const fetchToken = async callback =>
       return callback();
     });
 
-const fetchWithHeaders = async (url, headers) => {
+const fetchWithHeaders = async (url, headers, summary = false) => {
   let fullUrl = `${proxyUrl}${url}`;
-  if (!fullUrl.includes('_count')) {
+  if (!summary && !fullUrl.includes('_count')) {
     fullUrl = fullUrl
       .concat(`${url.includes('?') ? '&' : '?'}`)
       .concat(`_count=${numberOfResultsPerPage}&_total=accurate`);
+  } else if (summary && !fullUrl.includes('_summary')) {
+    fullUrl = fullUrl
+      .concat(`${url.includes('?') ? '&' : '?'}`)
+      .concat('_summary=count');
   }
   return fetch(`${fullUrl}`, {
     headers: {
@@ -54,15 +58,14 @@ const fetchWithHeaders = async (url, headers) => {
     });
 };
 
-export const fetchResource = async (url, headers) =>
+export const fetchResource = async (url, summary = false) =>
   fetchWithHeaders(
     url,
-    headers
-      ? headers
-      : {
-          Accept: 'application/fhir+json;charset=utf-8',
-          'Content-Type': 'application/fhir+json;charset=utf-8',
-        },
+    {
+      Accept: 'application/fhir+json;charset=utf-8',
+      'Content-Type': 'application/fhir+json;charset=utf-8',
+    },
+    summary,
   );
 
 export const fetchAllResources = async (url, allData) =>
@@ -82,7 +85,7 @@ export const fetchAllResources = async (url, allData) =>
   });
 
 export const getResourceCount = async url =>
-  fetchResource(url).then(data => (data ? data.total : 0));
+  fetchResource(url, true).then(data => (data ? data.total : 0));
 
 export const getSearchParams = async url =>
   fetchResource(url).then(data =>
