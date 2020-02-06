@@ -140,6 +140,7 @@ class Homepage extends React.Component {
         {resourcesFetched ? (
           <div className="homepage__content">
             <SearchBar
+              className="homepage__searchbar"
               data={Object.keys(resources).map(key => ({
                 title: resources[key].name,
               }))}

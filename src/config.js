@@ -1,3 +1,6 @@
+export const mobileWidth = 425;
+export const tabletWidth = 768;
+
 export const oAuthUrl = 'https://syntheticmass.mitre.org/oauth2/accesstoken';
 export const numberOfResultsPerPage = 20;
 

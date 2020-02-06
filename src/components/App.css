@@ -5,6 +5,10 @@
   align-items: center;
 }
 
+.app h1 {
+  text-align: center;
+}
+
 .app img {
   height: 100px;
 }

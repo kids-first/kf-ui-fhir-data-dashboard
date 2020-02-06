@@ -1,17 +1,35 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+import {tabletWidth} from '../config';
 import {Search} from 'semantic-ui-react';
 
 export class SearchBar extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      results: this.props.data,
+      results: props.data,
       isLoading: false,
       value: '',
+      fluid: window.innerWidth <= tabletWidth,
     };
   }
+
+  componentDidMount() {
+    window.addEventListener('resize', this.onWindowResize);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.onWindowResize);
+  }
+
+  onWindowResize = () => {
+    if (window.innerWidth > tabletWidth && this.state.fluid) {
+      this.setState({fluid: false});
+    } else if (window.innerWidth <= tabletWidth && !this.state.fluid) {
+      this.setState({fluid: true});
+    }
+  };
 
   handleResultSelect = (e, {result}) => {
     this.setState(
@@ -55,19 +73,19 @@ export class SearchBar extends React.Component {
     const {isLoading, value, results} = this.state;
 
     return (
-      <div>
-        <Search
-          placeholder={'Search for a resource'}
-          loading={isLoading}
-          onResultSelect={this.handleResultSelect}
-          onSearchChange={_.debounce(this.handleSearchChange, 500, {
-            leading: true,
-          })}
-          results={results}
-          value={value}
-          data={this.props.data}
-        />
-      </div>
+      <Search
+        className={this.props.className}
+        input={{fluid: this.state.fluid}}
+        placeholder={'Search for a resource'}
+        loading={isLoading}
+        onResultSelect={this.handleResultSelect}
+        onSearchChange={_.debounce(this.handleSearchChange, 500, {
+          leading: true,
+        })}
+        results={results}
+        value={value}
+        data={this.props.data}
+      />
     );
   }
 }
