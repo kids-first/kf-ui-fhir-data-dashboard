@@ -1,6 +1,6 @@
-# kf-ui-fhir-data-dashboard
+# Kids First FHIR Data Dashboard
 
-💡📊Prototype FHIR data dashboard
+💡📊A prototype data dashboard for any FHIR server. Spin this up in front of your server so people can get a quick visual understanding of what's in this server.
 
 ## Development
 
@@ -17,7 +17,7 @@ More on `create-react-app` [here](https://reactjs.org/docs/create-a-new-react-ap
 
 ### FHIR APIs
 
-Creating a cohort builder over the FHIR API standard means that a user potentially
+Creating a data dashboard over the FHIR API standard means that a user potentially
 has the ability to search over multiple datasets. This application has the ability
 to utilize either the [HAPI FHIR API](http://hapi.fhir.org/) or [Synthea's FHIR API](https://synthea.mitre.org/) from SyntheticMass. To switch between the two,
 set the `REACT_APP_FHIR_API` from the command line, with the options being
