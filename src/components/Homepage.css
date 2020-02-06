@@ -59,6 +59,11 @@
   color: var(--kf-teal) !important;
 }
 
+.ui.card > .content > .description,
+.ui.cards > .card > .content > .description {
+  overflow-wrap: break-word;
+}
+
 .ui.input {
   width: 500px;
 }

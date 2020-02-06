@@ -32,18 +32,7 @@ export const proxyUrl = useProxyUrl()
   : '';
 export const schemaUrl = `${baseUrl}StructureDefinition/`;
 export const fhirUrl = 'http://hl7.org/fhir/StructureDefinition/';
-
-export const baseResourceDisplayFields = [
-  'id',
-  'address',
-  'birthDate',
-  'communication',
-  'gender',
-  'maritalStatus',
-  'multipleBirthBoolean',
-  'name',
-  'telecom',
-];
+export const capabilityStatementUrl = `${proxyUrl}${baseUrl}metadata`;
 
 export const acceptedResourceTypes = [
   'Account',
@@ -57,7 +46,6 @@ export const acceptedResourceTypes = [
   'Binary',
   'BiologicallyDerivedProduct',
   'BodyStructure',
-  'Bundle',
   'CapabilityStatement',
   'CarePlan',
   'CareTeam',

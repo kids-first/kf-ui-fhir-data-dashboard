@@ -1,4 +1,9 @@
-import {proxyUrl, oAuthUrl, numberOfResultsPerPage} from '../config';
+import {
+  proxyUrl,
+  oAuthUrl,
+  numberOfResultsPerPage,
+  capabilityStatementUrl,
+} from '../config';
 
 const fetchToken = async callback =>
   fetch(`${proxyUrl}${oAuthUrl}`, {
@@ -79,7 +84,16 @@ export const fetchAllResources = async (url, allData) =>
 export const getResourceCount = async url =>
   fetchResource(url).then(data => (data ? data.total : 0));
 
-export const getQueryableAttributes = async url =>
+export const getSearchParams = async url =>
   fetchResource(url).then(data =>
     data && data.entry ? data.entry.map(x => x.resource.code) : [],
   );
+
+export const getCapabilityStatement = async resourceType =>
+  fetchResource(capabilityStatementUrl).then(data => {
+    let params =
+      data && data.rest && data.rest[0] && data.rest[0].resource
+        ? data.rest[0].resource.find(x => x.type === resourceType)
+        : [];
+    return params.searchParam ? params.searchParam : [];
+  });

@@ -11,16 +11,19 @@
 .resource-details__queries {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
   margin-top: 30px;
 }
 
 .resource-details__query {
-  width: 500px;
+  width: 450px;
   display: flex;
   flex-flow: column;
-  justify-content: center;
   text-align: center;
+}
+
+.resource-details__query-count {
+  font-size: 24px;
+  margin: 10px 10px;
 }
 
 /* Semantic UI overrides */

@@ -84,12 +84,6 @@ export class DataPieChart extends React.Component {
     };
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (this.props.data !== prevProps.data) {
-      this.setState({filteredData: this.props.data.filter(x => x.value > 0)});
-    }
-  }
-
   onPieEnter = (data, index) => {
     this.setState({
       activeIndex: index,
@@ -103,7 +97,7 @@ export class DataPieChart extends React.Component {
           <Pie
             activeIndex={this.state.activeIndex}
             activeShape={renderActiveShape}
-            data={this.state.filteredData}
+            data={this.props.data.filter(x => x.value > 0)}
             innerRadius={60}
             outerRadius={80}
             fill="#e83a9c"

@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import {
   fetchResource,
   getResourceCount,
-  getQueryableAttributes,
+  getSearchParams,
+  getCapabilityStatement,
 } from '../utils/api';
 import {baseUrl, schemaUrl, fhirUrl} from '../config';
 import AppBreadcrumb from './AppBreadcrumb';
@@ -20,6 +21,7 @@ class ResourceDetails extends React.Component {
       resourcesFetched: props.resourcesFetched,
       total: props.total ? props.total : 0,
       attributes: [],
+      queriesComplete: false,
     };
   }
 
@@ -41,7 +43,8 @@ class ResourceDetails extends React.Component {
           resourcesFetched: true,
           total: total ? total : 0,
           attributes: attributes.filter(
-            attribute => attribute.queryParams.length > 0,
+            attribute =>
+              attribute.queryParams && attribute.queryParams.length > 0,
           ),
         },
         () => {
@@ -62,9 +65,13 @@ class ResourceDetails extends React.Component {
       data && data.entry && data.entry[0] && data.entry[0].resource
         ? data.entry[0].resource
         : null;
-    const queryableAttributes = await getQueryableAttributes(
+    const searchParams = await getSearchParams(
       `${baseUrl}SearchParameter?base=${resourceBaseType}`,
     );
+    const defaultParams = await getCapabilityStatement(
+      resourceBaseType,
+    ).then(data => data.map(param => param.name));
+    const queryableAttributes = new Set(searchParams.concat(defaultParams));
     let resourceAttributes = [];
     if (schema && schema.snapshot && schema.snapshot.element) {
       resourceAttributes = this.getSchemaSnapshot(
@@ -100,7 +107,7 @@ class ResourceDetails extends React.Component {
           let type = null;
           let valueSetUrl = null;
           let queryParams = null;
-          if (queryableAttributes.includes(name)) {
+          if (queryableAttributes.has(name)) {
             if (attribute.type) {
               const codeIndex = attribute.type.findIndex(obj => obj.code); // there can be more than one - [x] types
               if (
@@ -120,6 +127,9 @@ class ResourceDetails extends React.Component {
                   {code: 'true', display: 'true'},
                   {code: 'false', display: 'false'},
                 ];
+              } else {
+                type = 'count';
+                queryParams = [{code: 'false'}];
               }
             }
           }
@@ -161,12 +171,15 @@ class ResourceDetails extends React.Component {
       resourceAttributes = resourceAttributes.filter(
         attribute => !omittedAttributes.includes(attribute.id),
       );
+    } else {
+      resourceAttributes = this.getSchemaSnapshot(
+        differential,
+        queryableAttributes,
+      );
     }
     return resourceAttributes;
   };
-  // type --> code and no binding = string
-  // type --> code and binding = enum --> valueset, compose --> include
-  // parse .../valueset/... then concept.map(code)
+
   getQueryParams = async attributes =>
     Promise.all(
       attributes.map(async attribute => {
@@ -184,7 +197,10 @@ class ResourceDetails extends React.Component {
                   .filter(item => !!item)
                   .flat()
               : [];
-          const systems = resource.compose.include.map(obj => obj.system);
+          const systems =
+            resource && resource.compose && resource.compose.include
+              ? resource.compose.include.map(obj => obj.system)
+              : [];
           let systemConcepts = await Promise.all(
             systems.map(async system => {
               const data = await fetchResource(
@@ -204,7 +220,7 @@ class ResourceDetails extends React.Component {
           concepts.push(...systemConcepts);
           return {
             ...attribute,
-            queryParams: concepts,
+            queryParams: concepts.length < 100 ? concepts : [],
           };
         } else {
           return attribute;
@@ -214,21 +230,25 @@ class ResourceDetails extends React.Component {
 
   setQueryResults = async () => {
     let results = await this.getQueryResults();
-    this.setState({attributes: results});
+    this.setState({attributes: results, queriesComplete: true});
   };
 
   getQueryResults = async () =>
     Promise.all(
       this.state.attributes.map(async attribute => {
         if (attribute.queryParams) {
+          let name = attribute.name;
+          if (attribute.type === 'count') {
+            name = attribute.name.concat(':missing');
+          }
           attribute.queryParams = await Promise.all(
             attribute.queryParams.map(async param => {
               const count = await getResourceCount(
-                `${baseUrl}${this.state.resourceBaseType}?${attribute.name}=${param.code}`,
+                `${baseUrl}${this.state.resourceBaseType}?${name}=${param.code}`,
               );
               return {
                 ...param,
-                count,
+                count: count ? count : 0,
               };
             }),
           );
@@ -236,6 +256,17 @@ class ResourceDetails extends React.Component {
         return attribute;
       }),
     );
+
+  getChartType = attributeType => {
+    switch (attributeType) {
+      case 'enum':
+        return 'pie';
+      case 'boolean':
+        return 'pie';
+      default:
+        return attributeType;
+    }
+  };
 
   formatResults = params => {
     let sum = 0;
@@ -254,25 +285,59 @@ class ResourceDetails extends React.Component {
   };
 
   render() {
-    const {resourceType, total, attributes} = this.state;
+    const {
+      resourceType,
+      total,
+      attributes,
+      resourcesFetched,
+      queriesComplete,
+    } = this.state;
     return (
       <div className="resource-details">
         <AppBreadcrumb history={this.props.history} />
         <div
           className={`ui ${
-            this.state.resourcesFetched ? 'disabled' : 'active'
+            resourcesFetched && queriesComplete ? 'disabled' : 'active'
           } loader`}
         />
         <h2>
           {resourceType}: {total}
         </h2>
+        {resourcesFetched && queriesComplete && attributes.length === 0 ? (
+          <h3>No statistics to display.</h3>
+        ) : null}
         <div className="resource-details__queries">
-          {attributes.map((attribute, i) => (
-            <div className="resource-details__query" key={`${attribute}-${i}`}>
-              <h3>{attribute.name}</h3>
-              <DataPieChart data={this.formatResults(attribute.queryParams)} />
-            </div>
-          ))}
+          {attributes.map((attribute, i) => {
+            const chartType = this.getChartType(attribute.type);
+            if (queriesComplete) {
+              return (
+                <div
+                  className="resource-details__query"
+                  key={`${attribute}-${i}`}
+                >
+                  <h3>{attribute.name}</h3>
+                  {chartType === 'pie' ? (
+                    <DataPieChart
+                      data={this.formatResults(attribute.queryParams)}
+                    />
+                  ) : null}
+                  {chartType === 'count' ? (
+                    <div>
+                      {attribute.queryParams.map((param, i) => (
+                        <h4
+                          key={`${param}-${i}`}
+                          className="resource-details__query-count"
+                        >
+                          {param.count}
+                        </h4>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+              );
+            }
+            return null;
+          })}
         </div>
       </div>
     );
