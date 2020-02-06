@@ -6,6 +6,7 @@ import {
   getSearchParams,
   getCapabilityStatement,
 } from '../utils/api';
+import {getHumanReadableNumber} from '../utils/common';
 import {baseUrl, schemaUrl, fhirUrl} from '../config';
 import AppBreadcrumb from './AppBreadcrumb';
 import DataPieChart from './DataPieChart';
@@ -306,7 +307,9 @@ class ResourceDetails extends React.Component {
             <p>Base type: {resourceBaseType}</p>
           </div>
           <div className="resource-details__header-total">
-            <p className="resource-details__count">{total}</p>
+            <p className="resource-details__count">
+              {getHumanReadableNumber(total)}
+            </p>
             <p>total</p>
           </div>
         </div>
@@ -337,7 +340,7 @@ class ResourceDetails extends React.Component {
                             key={`${param}-${i}`}
                             className="resource-details__count"
                           >
-                            {param.count}
+                            {getHumanReadableNumber(param.count)}
                           </p>
                         ))}
                       </div>

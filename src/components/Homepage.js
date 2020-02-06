@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Card, Icon} from 'semantic-ui-react';
+import {getHumanReadableNumber} from '../utils/common';
 import {baseUrl, resourceCategories} from '../config';
 import SearchBar from './SearchBar';
 import './Homepage.css';
@@ -130,7 +131,8 @@ class Homepage extends React.Component {
           className={`ui ${resourcesFetched ? 'disabled' : 'active'} loader`}
         />
         <h2>
-          {searchResourceTitle} ({Object.keys(filteredResources).length})
+          {searchResourceTitle} (
+          {getHumanReadableNumber(Object.keys(filteredResources).length)})
         </h2>
         {resourcesFetched ? (
           <div className="homepage__content">
@@ -153,7 +155,7 @@ class Homepage extends React.Component {
                 <div className="homepage__section" key={category}>
                   <div className="homepage__section-header">
                     <h3>
-                      {category}: {categoryCount}
+                      {category}: {getHumanReadableNumber(categoryCount)}
                     </h3>
                     <Icon
                       name={showSection ? 'chevron up' : 'chevron down'}
@@ -194,7 +196,9 @@ class Homepage extends React.Component {
                                             </Card.Header>
                                             <Card.Meta>
                                               Total:{' '}
-                                              {resources[resourceType].count}
+                                              {getHumanReadableNumber(
+                                                resources[resourceType].count,
+                                              )}
                                             </Card.Meta>
                                             <Card.Meta>
                                               Base type:{' '}
