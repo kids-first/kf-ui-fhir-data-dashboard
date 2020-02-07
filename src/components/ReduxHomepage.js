@@ -26,7 +26,7 @@ const setResourceCounts = async items =>
   );
 
 const showResourceType = resourceType =>
-  acceptedResourceTypes.includes(resourceType);
+  acceptedResourceTypes.has(resourceType);
 
 const formatResources = items => {
   let newItems = {};
@@ -41,14 +41,9 @@ const formatResources = items => {
 };
 
 const mapStateToProps = (state, ownProps) => ({
-  allResources:
-    state && state.resources && state.resources.allResources
-      ? state.resources.allResources
-      : {},
+  allResources: state && state.resources ? state.resources.allResources : {},
   allResourcesFetched:
-    state && state.resources && state.resources.allResourcesFetched
-      ? state.resources.allResourcesFetched
-      : false,
+    state && state.resources ? state.resources.allResourcesFetched : false,
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => {

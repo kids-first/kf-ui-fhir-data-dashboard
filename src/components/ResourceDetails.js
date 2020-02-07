@@ -1,11 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {
-  fetchResource,
-  getResourceCount,
-  getSearchParams,
-  getCapabilityStatement,
-} from '../utils/api';
 import {getHumanReadableNumber} from '../utils/common';
 import {baseUrl, schemaUrl, fhirUrl} from '../config';
 import AppBreadcrumb from './AppBreadcrumb';
@@ -53,7 +47,13 @@ class ResourceDetails extends React.Component {
   isCodeableConcept = val => val === 'code' || val === 'CodeableConcept';
 
   getSchema = async () => {
-    const {resourceBaseType, resourceUrl} = this.props;
+    const {
+      resourceBaseType,
+      resourceUrl,
+      fetchResource,
+      getSearchParams,
+      getCapabilityStatement,
+    } = this.props;
     const data = await fetchResource(
       `${schemaUrl}?type=${resourceBaseType}&url=${resourceUrl}`,
     );
@@ -143,7 +143,7 @@ class ResourceDetails extends React.Component {
 
   getSchemaDifferential = async (differential, queryableAttributes) => {
     const {resourceBaseType} = this.props;
-    const data = await fetchResource(
+    const data = await this.props.fetchResource(
       `${schemaUrl}?type=${resourceBaseType}&url=${fhirUrl}${resourceBaseType}`,
     );
     const snapshot =
@@ -181,7 +181,9 @@ class ResourceDetails extends React.Component {
       attributes.map(async attribute => {
         if (attribute.valueSetUrl) {
           const url = attribute.valueSetUrl.split('|')[0]; // versions don't resolve
-          const data = await fetchResource(`${baseUrl}ValueSet?url=${url}`);
+          const data = await this.props.fetchResource(
+            `${baseUrl}ValueSet?url=${url}`,
+          );
           const resource =
             data && data.entry && data.entry[0] && data.entry[0].resource
               ? data.entry[0].resource
@@ -199,7 +201,7 @@ class ResourceDetails extends React.Component {
               : [];
           let systemConcepts = await Promise.all(
             systems.map(async system => {
-              const data = await fetchResource(
+              const data = await this.props.fetchResource(
                 `${baseUrl}CodeSystem?url=${system}`,
               );
               return data &&
@@ -215,7 +217,7 @@ class ResourceDetails extends React.Component {
           concepts.push(...systemConcepts);
           return {
             ...attribute,
-            queryParams: concepts.length < 100 ? concepts : [],
+            queryParams: concepts.length < 100 ? concepts : [], // how to handle large sets of parameters? very slow
           };
         } else {
           return attribute;
@@ -238,7 +240,7 @@ class ResourceDetails extends React.Component {
           }
           attribute.queryParams = await Promise.all(
             attribute.queryParams.map(async param => {
-              const count = await getResourceCount(
+              const count = await this.props.getCount(
                 `${baseUrl}${this.props.resourceBaseType}?${name}=${param.code}`,
               );
               return {
@@ -359,6 +361,9 @@ ResourceDetails.propTypes = {
   resourceFetched: PropTypes.bool,
   total: PropTypes.number,
   getCount: PropTypes.func.isRequired,
+  getSearchParams: PropTypes.func.isRequired,
+  getCapabilityStatement: PropTypes.func.isRequired,
+  fetchResource: PropTypes.func.isRequired,
 };
 
 ResourceDetails.defaultProps = {

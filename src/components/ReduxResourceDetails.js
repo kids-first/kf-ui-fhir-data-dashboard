@@ -1,5 +1,10 @@
 import {connect} from 'react-redux';
-import {getResourceCount} from '../utils/api';
+import {
+  getResourceCount,
+  getSearchParams,
+  fetchResource,
+  getCapabilityStatement,
+} from '../utils/api';
 import queryString from 'query-string';
 import ResourceDetails from './ResourceDetails';
 
@@ -25,6 +30,9 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     getCount: url => getResourceCount(url),
+    getSearchParams: url => getSearchParams(url),
+    getCapabilityStatement: url => getCapabilityStatement(url),
+    fetchResource: url => fetchResource(url),
   };
 };
 

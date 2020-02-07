@@ -36,13 +36,11 @@ class Homepage extends React.Component {
   setCategories = resources => {
     let resourcesByCategory = resourceCategories;
     let flatCategories = new Set(
-      Object.keys(resourceCategories)
-        .map(category =>
-          Object.keys(resourceCategories[category])
-            .map(subCategory => resourceCategories[category][subCategory])
-            .flat(),
-        )
-        .flat(),
+      Object.keys(resourceCategories).map(category =>
+        Object.keys(resourceCategories[category]).map(
+          subCategory => resourceCategories[category][subCategory],
+        ),
+      ),
     );
     const uncategorizedResources = Object.keys(resources).filter(
       resource => !flatCategories.has(resources[resource].name),
@@ -51,11 +49,11 @@ class Homepage extends React.Component {
       Object.keys(resourceCategories).forEach(category => {
         Object.keys(resourceCategories[category]).forEach(subCategory => {
           if (
-            resourceCategories[category][subCategory].includes(
+            resourceCategories[category][subCategory].has(
               resources[resource].baseType,
             )
           ) {
-            resourcesByCategory[category][subCategory].push(resource);
+            resourcesByCategory[category][subCategory].add(resource);
           }
         });
       });
@@ -98,14 +96,14 @@ class Homepage extends React.Component {
     const category = resourcesByCategory[categoryName];
     return Object.keys(category)
       .map(subCategory =>
-        category[subCategory].filter(x => filteredResources[x]),
+        [...category[subCategory]].filter(x => filteredResources[x]),
       )
       .flat().length;
   };
 
   getSubCategoryCount = (categoryName, subCategoryName) => {
     const {resourcesByCategory, filteredResources} = this.state;
-    return resourcesByCategory[categoryName][subCategoryName].filter(
+    return [...resourcesByCategory[categoryName][subCategoryName]].filter(
       x => filteredResources[x],
     ).length;
   };
@@ -176,8 +174,10 @@ class Homepage extends React.Component {
                               <React.Fragment key={subCategory}>
                                 <h4>{subCategory}</h4>
                                 <div className="homepage__section-resources">
-                                  {resourcesByCategory[category][
-                                    subCategory
+                                  {[
+                                    ...resourcesByCategory[category][
+                                      subCategory
+                                    ],
                                   ].map(resourceType => {
                                     const resource =
                                       filteredResources[resourceType];

@@ -35,7 +35,7 @@ export const schemaUrl = `${baseUrl}StructureDefinition/`;
 export const fhirUrl = 'http://hl7.org/fhir/StructureDefinition/';
 export const capabilityStatementUrl = `${proxyUrl}${baseUrl}metadata`;
 
-export const acceptedResourceTypes = [
+export const acceptedResourceTypes = new Set([
   'Account',
   'ActivityDefinition',
   'AdverseEvent',
@@ -181,11 +181,11 @@ export const acceptedResourceTypes = [
   'ValueSet',
   'VerificationResult',
   'VisionPrescription',
-];
+]);
 
 export const resourceCategories = {
   Foundation: {
-    Conformance: [
+    Conformance: new Set([
       'CapabilityStatement',
       'StructureDefinition',
       'ImplementationGuide',
@@ -196,22 +196,22 @@ export const resourceCategories = {
       'StructureMap',
       'GraphDefinition',
       'ExampleScenario',
-    ],
-    Terminology: [
+    ]),
+    Terminology: new Set([
       'CodeSystem',
       'ValueSet',
       'ConceptMap',
       'NamingSystem',
       'TerminologyCapabilities',
-    ],
-    Security: ['Provenance', 'AuditEvent', 'Consent'],
-    Documents: [
+    ]),
+    Security: new Set(['Provenance', 'AuditEvent', 'Consent']),
+    Documents: new Set([
       'Composition',
       'DocumentManifest',
       'DocumentReference',
       'CatalogEntry',
-    ],
-    Other: [
+    ]),
+    Other: new Set([
       'Basic',
       'Binary',
       'Bundle',
@@ -220,42 +220,48 @@ export const resourceCategories = {
       'OperationOutcome',
       'Parameters',
       'Subscription',
-    ],
+    ]),
   },
   Base: {
-    Individuals: [
+    Individuals: new Set([
       'Patient',
       'Practitioner',
       'PractitionerRole',
       'RelatedPerson',
       'Person',
       'Group',
-    ],
-    'Entities 1': [
+    ]),
+    'Entities 1': new Set([
       'Organization',
       'OrganizationAffiliation',
       'HealthcareService',
       'Endpoint',
       'Location',
-    ],
-    'Entities 2': [
+    ]),
+    'Entities 2': new Set([
       'Substance',
       'BiologicallyDerivedProduct',
       'Device',
       'DeviceMetric',
-    ],
-    Workflow: [
+    ]),
+    Workflow: new Set([
       'Task',
       'Appointment',
       'AppointmentResponse',
       'Schedule',
       'Slot',
       'VerificationResult',
-    ],
-    Management: ['Encounter', 'EpisodeOfCare', 'Flag', 'List', 'Library'],
+    ]),
+    Management: new Set([
+      'Encounter',
+      'EpisodeOfCare',
+      'Flag',
+      'List',
+      'Library',
+    ]),
   },
   Clinical: {
-    Summary: [
+    Summary: new Set([
       'AllergyIntolerance',
       'AdverseEvent',
       'Condition',
@@ -263,8 +269,8 @@ export const resourceCategories = {
       'FamilyMemberHistory',
       'ClinicalImpression',
       'DetectedIssue',
-    ],
-    Diagnostics: [
+    ]),
+    Diagnostics: new Set([
       'Observation',
       'Media',
       'DiagnosticReport',
@@ -273,8 +279,8 @@ export const resourceCategories = {
       'ImagingStudy',
       'QuestionnaireResponse',
       'MolecularSequence',
-    ],
-    Medications: [
+    ]),
+    Medications: new Set([
       'MedicationRequest',
       'MedicationAdministration',
       'MedicationDispense',
@@ -284,8 +290,8 @@ export const resourceCategories = {
       'Immunization',
       'ImmunizationEvaluation',
       'ImmunizationRecommendation',
-    ],
-    'Care Provision': [
+    ]),
+    'Care Provision': new Set([
       'CarePlan',
       'CareTeam',
       'Goal',
@@ -294,8 +300,8 @@ export const resourceCategories = {
       'VisionPrescription',
       'RiskAssessment',
       'RequestGroup',
-    ],
-    'Request & Response': [
+    ]),
+    'Request & Response': new Set([
       'Communication',
       'CommunicationRequest',
       'DeviceRequest',
@@ -303,30 +309,30 @@ export const resourceCategories = {
       'GuidanceResponse',
       'SupplyRequest',
       'SupplyDelivery',
-    ],
+    ]),
   },
   Financial: {
-    Support: [
+    Support: new Set([
       'Coverage',
       'CoverageEligibilityRequest',
       'CoverageEligibilityResponse',
       'EnrollmentRequest',
       'EnrollmentResponse',
-    ],
-    Billing: ['Claim', 'ClaimResponse', 'Invoice'],
-    Payment: ['PaymentNotice', 'PaymentReconciliation'],
-    General: [
+    ]),
+    Billing: new Set(['Claim', 'ClaimResponse', 'Invoice']),
+    Payment: new Set(['PaymentNotice', 'PaymentReconciliation']),
+    General: new Set([
       'Account',
       'ChargeItem',
       'ChargeItemDefinition',
       'Contract',
       'ExplanationOfBenefit',
       'InsurancePlan',
-    ],
+    ]),
   },
   Specialized: {
-    'Public Health & Research': ['ResearchStudy', 'ResearchSubject'],
-    'Definitional Artifacts': [
+    'Public Health & Research': new Set(['ResearchStudy', 'ResearchSubject']),
+    'Definitional Artifacts': new Set([
       'ActivityDefinition',
       'DeviceDefinition',
       'EventDefinition',
@@ -334,22 +340,22 @@ export const resourceCategories = {
       'PlanDefinition',
       'Questionnaire',
       'SpecimenDefinition',
-    ],
-    'Evidence Based Medicine': [
+    ]),
+    'Evidence Based Medicine': new Set([
       'ResearchDefinition',
       'ResearchElementDefinition',
       'Evidence',
       'EvidenceVariable',
       'EffectEvidenceSynthesis',
       'RiskEvidenceSynthesis',
-    ],
-    'Quality Reporting & Testing': [
+    ]),
+    'Quality Reporting & Testing': new Set([
       'Measure',
       'MeasureReport',
       'TestScript',
       'TestReport',
-    ],
-    'Medication Definition': [
+    ]),
+    'Medication Definition': new Set([
       'MedicinalProduct',
       'MedicinalProductAuthorization',
       'MedicinalProductContraindication',
@@ -366,6 +372,6 @@ export const resourceCategories = {
       'SubstanceReferenceInformation',
       'SubstanceSpecification',
       'SubstanceSourceMaterial',
-    ],
+    ]),
   },
 };
