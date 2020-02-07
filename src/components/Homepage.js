@@ -10,9 +10,7 @@ class Homepage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      resources: props.allResources,
       filteredResources: props.allResources,
-      resourcesFetched: props.allResourcesFetched,
       searchResourceType: 'StructureDefinition',
       searchResourceTitle: 'Resource Types',
       resourcesByCategory: resourceCategories,
@@ -22,20 +20,16 @@ class Homepage extends React.Component {
 
   componentDidMount() {
     if (!this.props.allResourcesFetched) {
-      this.setState({resourcesFetched: false}, () => {
-        this.props
-          .fetchAllResources(`${baseUrl}${this.state.searchResourceType}`)
-          .then(() => {
-            const resources = this.props.allResources;
-            const resourcesByCategory = this.setCategories(resources);
-            this.setState({
-              resources,
-              filteredResources: resources,
-              resourcesFetched: true,
-              resourcesByCategory,
-            });
+      this.props
+        .fetchAllResources(`${baseUrl}${this.state.searchResourceType}`)
+        .then(() => {
+          const resources = this.props.allResources;
+          const resourcesByCategory = this.setCategories(resources);
+          this.setState({
+            filteredResources: resources,
+            resourcesByCategory,
           });
-      });
+        });
     }
   }
 
@@ -76,7 +70,7 @@ class Homepage extends React.Component {
   };
 
   handleResultSelect = searchResults => {
-    const allResources = this.state.resources;
+    const {allResources} = this.props;
     const filteredResources = {};
     searchResults.forEach(
       result => (filteredResources[result.title] = allResources[result.title]),
@@ -119,16 +113,15 @@ class Homepage extends React.Component {
   render() {
     const {
       searchResourceTitle,
-      resources,
-      resourcesFetched,
       filteredResources,
       resourcesByCategory,
       openTabs,
     } = this.state;
+    const {allResources, allResourcesFetched} = this.props;
     return (
       <div className="homepage">
         <div
-          className={`ui ${resourcesFetched ? 'disabled' : 'active'} loader`}
+          className={`ui ${allResourcesFetched ? 'disabled' : 'active'} loader`}
         />
         <div className="homepage__header">
           <h2>{searchResourceTitle}:</h2>
@@ -137,12 +130,12 @@ class Homepage extends React.Component {
           </h2>
           <h2>total</h2>
         </div>
-        {resourcesFetched ? (
+        {allResourcesFetched ? (
           <div className="homepage__content">
             <SearchBar
               className="homepage__searchbar"
-              data={Object.keys(resources).map(key => ({
-                title: resources[key].name,
+              data={Object.keys(allResources).map(key => ({
+                title: allResources[key].name,
               }))}
               handleResultSelect={this.handleResultSelect}
             />
@@ -201,12 +194,16 @@ class Homepage extends React.Component {
                                             <Card.Meta>
                                               Total:{' '}
                                               {getHumanReadableNumber(
-                                                resources[resourceType].count,
+                                                allResources[resourceType]
+                                                  .count,
                                               )}
                                             </Card.Meta>
                                             <Card.Meta>
                                               Base type:{' '}
-                                              {resources[resourceType].baseType}
+                                              {
+                                                allResources[resourceType]
+                                                  .baseType
+                                              }
                                             </Card.Meta>
                                             <Card.Description>
                                               Click to explore {resourceType}.

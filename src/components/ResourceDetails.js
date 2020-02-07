@@ -16,11 +16,7 @@ class ResourceDetails extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      resourceBaseType: props.resourceBaseType,
-      resourceType: props.resourceType,
-      resourceUrl: props.resourceUrl,
-      resourcesFetched: props.resourcesFetched,
-      total: props.total ? props.total : 0,
+      total: props.total,
       attributes: [],
       queriesComplete: false,
     };
@@ -31,17 +27,16 @@ class ResourceDetails extends React.Component {
   }
 
   getResource = () => {
-    const {resourcesFetched, resourceBaseType} = this.state;
-    this.setState({resourcesFetched: false}, async () => {
+    const {resourceBaseType, resourceFetched} = this.props;
+    this.setState({queriesComplete: false}, async () => {
       let total = this.state.total;
-      if (!resourcesFetched) {
+      if (!resourceFetched) {
         total = await this.props.getCount(`${baseUrl}${resourceBaseType}`);
       }
       const schema = await this.getSchema();
       const attributes = schema ? await this.getQueryParams(schema) : [];
       this.setState(
         {
-          resourcesFetched: true,
           total: total ? total : 0,
           attributes: attributes.filter(
             attribute =>
@@ -58,7 +53,7 @@ class ResourceDetails extends React.Component {
   isCodeableConcept = val => val === 'code' || val === 'CodeableConcept';
 
   getSchema = async () => {
-    const {resourceBaseType, resourceUrl} = this.state;
+    const {resourceBaseType, resourceUrl} = this.props;
     const data = await fetchResource(
       `${schemaUrl}?type=${resourceBaseType}&url=${resourceUrl}`,
     );
@@ -147,7 +142,7 @@ class ResourceDetails extends React.Component {
       .filter(obj => obj.name && obj.type);
 
   getSchemaDifferential = async (differential, queryableAttributes) => {
-    const {resourceBaseType} = this.state;
+    const {resourceBaseType} = this.props;
     const data = await fetchResource(
       `${schemaUrl}?type=${resourceBaseType}&url=${fhirUrl}${resourceBaseType}`,
     );
@@ -244,7 +239,7 @@ class ResourceDetails extends React.Component {
           attribute.queryParams = await Promise.all(
             attribute.queryParams.map(async param => {
               const count = await getResourceCount(
-                `${baseUrl}${this.state.resourceBaseType}?${name}=${param.code}`,
+                `${baseUrl}${this.props.resourceBaseType}?${name}=${param.code}`,
               );
               return {
                 ...param,
@@ -285,21 +280,13 @@ class ResourceDetails extends React.Component {
   };
 
   render() {
-    const {
-      resourceBaseType,
-      resourceType,
-      total,
-      attributes,
-      resourcesFetched,
-      queriesComplete,
-    } = this.state;
+    const {total, attributes, queriesComplete} = this.state;
+    const {resourceBaseType, resourceType} = this.props;
     return (
       <div className="resource-details">
         <AppBreadcrumb history={this.props.history} />
         <div
-          className={`ui ${
-            resourcesFetched && queriesComplete ? 'disabled' : 'active'
-          } loader`}
+          className={`ui ${queriesComplete ? 'disabled' : 'active'} loader`}
         />
         <div className="resource-details__header">
           <div className="resource-details__header-title">
@@ -313,7 +300,7 @@ class ResourceDetails extends React.Component {
             <p>total</p>
           </div>
         </div>
-        {resourcesFetched && queriesComplete && attributes.length === 0 ? (
+        {queriesComplete && attributes.length === 0 ? (
           <h3>No statistics to display.</h3>
         ) : null}
         <div className="resource-details__queries">
@@ -375,8 +362,8 @@ ResourceDetails.propTypes = {
 };
 
 ResourceDetails.defaultProps = {
-  hasResources: false,
   total: 0,
+  resourceFetched: false,
 };
 
 export default ResourceDetails;

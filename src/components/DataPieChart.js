@@ -80,7 +80,6 @@ export class DataPieChart extends React.Component {
     super(props);
     this.state = {
       activeIndex: 0,
-      filteredData: [],
     };
   }
 

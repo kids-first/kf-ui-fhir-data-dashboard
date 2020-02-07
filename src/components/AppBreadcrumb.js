@@ -27,7 +27,11 @@ class AppBreadcrumb extends React.Component {
 }
 
 AppBreadcrumb.propTypes = {
-  history: PropTypes.object.isRequired,
+  history: PropTypes.shape({
+    location: PropTypes.shape({
+      pathname: PropTypes.string.isRequired,
+    }).isRequired,
+  }).isRequired,
 };
 
 export default AppBreadcrumb;
