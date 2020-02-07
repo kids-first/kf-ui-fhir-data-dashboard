@@ -2,8 +2,6 @@ export const mobileWidth = 425;
 export const tabletWidth = 768;
 
 export const oAuthUrl = 'https://syntheticmass.mitre.org/oauth2/accesstoken';
-export const numberOfResultsPerPage = 20;
-
 const synthea = 'https://syntheticmass.mitre.org/v1/fhir/';
 const hapi = 'http://hapi.fhir.org/baseR4/';
 const getBaseUrl = () => {

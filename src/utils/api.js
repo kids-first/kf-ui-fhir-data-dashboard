@@ -1,9 +1,4 @@
-import {
-  proxyUrl,
-  oAuthUrl,
-  numberOfResultsPerPage,
-  capabilityStatementUrl,
-} from '../config';
+import {proxyUrl, oAuthUrl, capabilityStatementUrl} from '../config';
 
 const fetchToken = async callback =>
   fetch(`${proxyUrl}${oAuthUrl}`, {
@@ -27,11 +22,7 @@ const fetchToken = async callback =>
 
 const fetchWithHeaders = async (url, headers, summary = false) => {
   let fullUrl = `${proxyUrl}${url}`;
-  if (!summary && !fullUrl.includes('_count')) {
-    fullUrl = fullUrl
-      .concat(`${url.includes('?') ? '&' : '?'}`)
-      .concat(`_count=${numberOfResultsPerPage}&_total=accurate`);
-  } else if (summary && !fullUrl.includes('_summary')) {
+  if (summary && !fullUrl.includes('_summary')) {
     fullUrl = fullUrl
       .concat(`${url.includes('?') ? '&' : '?'}`)
       .concat('_summary=count');
