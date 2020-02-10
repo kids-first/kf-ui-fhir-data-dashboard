@@ -91,7 +91,7 @@ export class DataPieChart extends React.Component {
 
   render() {
     return (
-      <ResponsiveContainer width="90%" height={300}>
+      <ResponsiveContainer width="100%" height={300}>
         <PieChart>
           <Pie
             activeIndex={this.state.activeIndex}

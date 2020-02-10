@@ -57,6 +57,16 @@
   margin: 10px 10px;
 }
 
+.resource-details__query-pie {
+  width: 500px;
+}
+
+@media screen and (max-width: 768px) {
+  .resource-details__query-pie {
+    width: 100%;
+  }
+}
+
 /* Semantic UI overrides */
 
 .ui.breadcrumb {

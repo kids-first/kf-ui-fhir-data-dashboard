@@ -393,9 +393,11 @@ class ResourceDetails extends React.Component {
                         </div>
                       ) : null}
                       {chartType === 'pie' ? (
-                        <DataPieChart
-                          data={this.formatResults(attribute.queryParams)}
-                        />
+                        <div className="resource-details__query-pie">
+                          <DataPieChart
+                            data={this.formatResults(attribute.queryParams)}
+                          />
+                        </div>
                       ) : null}
                     </div>
                   );
