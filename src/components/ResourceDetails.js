@@ -312,6 +312,22 @@ class ResourceDetails extends React.Component {
     }
   };
 
+  getCharts = attributes => {
+    let charts = {
+      count: [],
+      pie: [],
+    };
+    attributes.forEach(attribute => {
+      const chartType = this.getChartType(attribute.type);
+      if (chartType === 'pie') {
+        charts.pie.push(attribute);
+      } else if (chartType === 'count') {
+        charts.count.push(attribute);
+      }
+    });
+    return charts;
+  };
+
   formatResults = params => {
     let sum = 0;
     let chartResults = params.map(obj => {
@@ -331,6 +347,7 @@ class ResourceDetails extends React.Component {
   render() {
     const {total, attributes, queriesComplete} = this.state;
     const {resourceBaseType, resourceType} = this.props;
+    const charts = this.getCharts(attributes);
     return (
       <div className="resource-details">
         <AppBreadcrumb history={this.props.history} />
@@ -353,39 +370,40 @@ class ResourceDetails extends React.Component {
           <h3>No statistics to display.</h3>
         ) : null}
         <div className="resource-details__queries">
-          {attributes
-            .sort(attribute => (attribute.type === 'count' ? -1 : 1))
-            .map((attribute, i) => {
-              const chartType = this.getChartType(attribute.type);
-              if (queriesComplete) {
-                return (
-                  <div
-                    className="resource-details__query"
-                    key={`${attribute}-${i}`}
-                  >
-                    <h3>{attribute.name}</h3>
-                    {chartType === 'pie' ? (
-                      <DataPieChart
-                        data={this.formatResults(attribute.queryParams)}
-                      />
-                    ) : null}
-                    {chartType === 'count' ? (
-                      <div>
-                        {attribute.queryParams.map((param, i) => (
-                          <p
-                            key={`${param}-${i}`}
-                            className="resource-details__count"
-                          >
-                            {getHumanReadableNumber(param.count)}
-                          </p>
-                        ))}
-                      </div>
-                    ) : null}
-                  </div>
-                );
-              }
-              return null;
-            })}
+          {Object.keys(charts).map(chartType => (
+            <div key={chartType} className="resource-details__queries-section">
+              {charts[chartType].map((attribute, i) => {
+                if (queriesComplete) {
+                  return (
+                    <div
+                      className="resource-details__query"
+                      key={`${attribute}-${i}`}
+                    >
+                      <h3>{attribute.name}</h3>
+                      {chartType === 'count' ? (
+                        <div>
+                          {attribute.queryParams.map((param, i) => (
+                            <p
+                              key={`${param}-${i}`}
+                              className="resource-details__count"
+                            >
+                              {getHumanReadableNumber(param.count)}
+                            </p>
+                          ))}
+                        </div>
+                      ) : null}
+                      {chartType === 'pie' ? (
+                        <DataPieChart
+                          data={this.formatResults(attribute.queryParams)}
+                        />
+                      ) : null}
+                    </div>
+                  );
+                }
+                return null;
+              })}
+            </div>
+          ))}
         </div>
       </div>
     );

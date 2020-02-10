@@ -2,6 +2,7 @@
   display: flex;
   flex-flow: column;
   align-items: center;
+  width: 80%;
 }
 
 .resource-details__header {
@@ -32,29 +33,23 @@
 }
 
 .resource-details__queries {
+  width: 100%;
+  display: flex;
+  flex-flow: column;
+}
+
+.resource-details__queries-section {
   display: flex;
   flex-wrap: wrap;
   margin-top: 30px;
 }
 
-@media screen and (max-width: 768px) {
-  .resource-details__queries {
-    justify-content: center;
-  }
-}
-
 .resource-details__query {
-  width: 450px;
   display: flex;
   flex-flow: column;
   text-align: center;
-  margin: 20px 0;
-}
-
-@media screen and (max-width: 768px) {
-  .resource-details__query {
-    width: 100%;
-  }
+  margin: 20px 20px;
+  flex: 1 0 auto;
 }
 
 .resource-details__query-count {
