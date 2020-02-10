@@ -42,6 +42,7 @@
   display: flex;
   flex-wrap: wrap;
   margin-top: 30px;
+  justify-content: center;
 }
 
 .resource-details__query {
@@ -49,12 +50,10 @@
   flex-flow: column;
   text-align: center;
   margin: 20px 20px;
-  flex: 1 0 auto;
 }
 
 .resource-details__query-count {
-  font-size: 24px;
-  margin: 10px 10px;
+  flex: 1 0 auto;
 }
 
 .resource-details__query-pie {
