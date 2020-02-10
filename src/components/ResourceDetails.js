@@ -70,12 +70,12 @@ class ResourceDetails extends React.Component {
     const queryableAttributes = new Set(searchParams.concat(defaultParams));
     let resourceAttributes = [];
     if (schema && schema.snapshot && schema.snapshot.element) {
-      resourceAttributes = this.getSchemaSnapshot(
+      resourceAttributes = await this.getSnapshot(
         schema.snapshot.element,
         queryableAttributes,
       );
     } else if (schema && schema.differential && schema.differential.element) {
-      resourceAttributes = this.getSchemaDifferential(
+      resourceAttributes = await this.getDifferential(
         schema.differential.element,
         queryableAttributes,
       );
@@ -83,65 +83,19 @@ class ResourceDetails extends React.Component {
     return resourceAttributes;
   };
 
-  getSchemaSnapshot = (snapshot, queryableAttributes) =>
-    snapshot
-      .map(attribute => {
-        // don't show if attribute has been removed
-        if (attribute.max !== '0') {
-          // getting the human readable name for the resource attributes
-          let name = null;
-          const periodIndex = attribute.id.indexOf('.');
-          name = attribute.id.split('[')[0]; // might need to look into this
-          name =
-            periodIndex > -1
-              ? name
-                  .substring(periodIndex + 1)
-                  .split('.')
-                  .join('-')
-                  .toLowerCase()
-              : name;
-          let type = null;
-          let valueSetUrl = null;
-          let queryParams = null;
-          if (queryableAttributes.has(name)) {
-            if (attribute.type) {
-              const codeIndex = attribute.type.findIndex(obj => obj.code); // there can be more than one - [x] types
-              if (
-                codeIndex > -1 &&
-                this.isCodeableConcept(attribute.type[codeIndex].code)
-              ) {
-                if (attribute.binding) {
-                  type = 'enum';
-                  valueSetUrl = attribute.binding.valueSet;
-                }
-              } else if (
-                codeIndex > -1 &&
-                attribute.type[codeIndex].code === 'boolean'
-              ) {
-                type = 'boolean';
-                queryParams = [
-                  {code: 'true', display: 'true'},
-                  {code: 'false', display: 'false'},
-                ];
-              } else {
-                type = 'count';
-                queryParams = [{code: 'false'}];
-              }
-            }
-          }
-          return {
-            id: attribute.id,
-            name,
-            type,
-            valueSetUrl,
-            queryParams,
-          };
-        }
-        return {};
-      })
-      .filter(obj => obj.name && obj.type);
+  getSnapshot = async (schema, queryableAttributes) => {
+    const attributes = await this.filterSchema(schema);
+    const uniqueAttributes = [
+      ...new Set(attributes.map(x => x.name)),
+    ].map(name => attributes.find(attribute => attribute.name === name));
+    const resourceAttributes = await this.parseSchema(
+      uniqueAttributes,
+      queryableAttributes,
+    );
+    return resourceAttributes;
+  };
 
-  getSchemaDifferential = async (differential, queryableAttributes) => {
+  getDifferential = async (differential, queryableAttributes) => {
     const {resourceBaseType} = this.props;
     const data = await this.props.fetchResource(
       `${schemaUrl}?type=${resourceBaseType}&url=${fhirUrl}${resourceBaseType}`,
@@ -155,25 +109,118 @@ class ResourceDetails extends React.Component {
       data.entry[0].resource.snapshot.element
         ? data.entry[0].resource.snapshot.element
         : null;
-    let resourceAttributes = [];
+    let snapshotAttributes = [];
     if (snapshot) {
-      resourceAttributes = this.getSchemaSnapshot(
+      snapshotAttributes = await this.getSnapshot(
         snapshot,
         queryableAttributes,
       );
       const omittedAttributes = differential
         .filter(attribute => attribute.max === '0')
         .map(attribute => attribute.id);
-      resourceAttributes = resourceAttributes.filter(
+      snapshotAttributes = snapshotAttributes.filter(
         attribute => !omittedAttributes.includes(attribute.id),
       );
-    } else {
-      resourceAttributes = this.getSchemaSnapshot(
-        differential,
-        queryableAttributes,
-      );
     }
+    const differentialAttributes = await this.getSnapshot(
+      differential,
+      queryableAttributes,
+    );
+    const allAttributes = differentialAttributes.concat(snapshotAttributes);
+    let resourceAttributes = [
+      ...new Set(allAttributes.map(x => x.name)),
+    ].map(name => allAttributes.find(attribute => attribute.name === name));
     return resourceAttributes;
+  };
+
+  parseSchema = (schema, queryableAttributes) =>
+    schema
+      .map(attribute => {
+        let newAttribute = {name: attribute.name, id: attribute.id};
+        if (queryableAttributes.has(attribute.name)) {
+          if (attribute.type) {
+            const codeIndex = attribute.type.findIndex(obj => obj.code); // there can be more than one - [x] types
+            if (
+              codeIndex > -1 &&
+              this.isCodeableConcept(attribute.type[codeIndex].code)
+            ) {
+              if (attribute.binding) {
+                newAttribute.type = 'enum';
+                newAttribute.valueSetUrl = attribute.binding.valueSet;
+              }
+            } else if (
+              codeIndex > -1 &&
+              attribute.type[codeIndex].code === 'boolean'
+            ) {
+              newAttribute.type = 'boolean';
+              newAttribute.queryParams = [
+                {code: 'true', display: 'true'},
+                {code: 'false', display: 'false'},
+              ];
+            } else {
+              newAttribute.type = 'count';
+              newAttribute.queryParams = [{code: 'false'}];
+            }
+          }
+        }
+        return newAttribute;
+      })
+      .filter(obj => obj.name && obj.type);
+
+  filterSchema = async snapshot => {
+    let attributes = await Promise.all(
+      snapshot.map(async attribute => {
+        // don't show if attribute has been removed
+        if (attribute.max !== '0') {
+          // getting the human readable name for the resource attributes
+          if (
+            attribute.path &&
+            attribute.path === `${this.props.resourceBaseType}.extension`
+          ) {
+            attribute.name = attribute.sliceName;
+            if (
+              attribute.type &&
+              attribute.type[0] &&
+              attribute.type[0].profile &&
+              attribute.type[0].profile[0]
+            ) {
+              let data = await this.props.fetchResource(
+                `${schemaUrl}?url=${attribute.type[0].profile[0]}`,
+              );
+              const extension =
+                data && data.entry && data.entry[0] && data.entry[0].resource
+                  ? data.entry[0].resource
+                  : null;
+              if (
+                extension &&
+                extension.differential &&
+                extension.differential &&
+                extension.differential.element
+              ) {
+                const extensionType = extension.differential.element
+                  .map(x => x.type)
+                  .filter(x => !!x)
+                  .flat();
+                attribute.type = extensionType;
+              }
+            }
+          } else {
+            const periodIndex = attribute.id.indexOf('.');
+            attribute.name = attribute.id.split('[')[0]; // might need to look into this
+            attribute.name =
+              periodIndex > -1
+                ? attribute.name
+                    .substring(periodIndex + 1)
+                    .split('.')
+                    .join('-')
+                    .toLowerCase()
+                : attribute.name;
+          }
+        }
+        return attribute;
+      }),
+    );
+    return attributes.filter(attribute => !!attribute.name);
   };
 
   getQueryParams = async attributes =>
