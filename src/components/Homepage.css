@@ -107,8 +107,9 @@
   }
 }
 
+.ui.input.focus > input,
 .ui.input > input:focus {
-  color: var(--d3b-blue);
+  border-color: var(--d3b-brightblue) !important;
 }
 
 .ui.search > .results {
@@ -132,6 +133,13 @@ i.icon.chevron.down {
 .ui.selection.dropdown,
 .ui.selection.dropdown .menu > .item {
   text-align: center;
+}
+
+.ui.selection.active.dropdown:hover,
+.ui.selection.dropdown:focus,
+.ui.selection.active.dropdown,
+.ui.selection.active.dropdown .menu {
+  border-color: var(--d3b-brightblue) !important;
 }
 
 @media screen and (max-width: 768px) {
