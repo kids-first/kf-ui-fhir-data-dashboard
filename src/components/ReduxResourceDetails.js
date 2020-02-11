@@ -24,6 +24,9 @@ const mapStateToProps = (state, ownProps) => {
     resourceType,
     resourceUrl,
     resourceFetched: hasResources,
+    baseUrl: state.resources.baseUrl,
+    schemaUrl: `${state.resources.baseUrl}StructureDefinition`,
+    capabilityStatementUrl: `${state.resources.baseUrl}metadata`,
   };
 };
 
@@ -31,7 +34,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     getCount: url => getResourceCount(url),
     getSearchParams: url => getSearchParams(url),
-    getCapabilityStatement: url => getCapabilityStatement(url),
+    getCapabilityStatement: (url, resourceType) =>
+      getCapabilityStatement(url, resourceType),
     fetchResource: url => fetchResource(url),
   };
 };

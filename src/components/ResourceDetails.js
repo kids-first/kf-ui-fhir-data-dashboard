@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {getHumanReadableNumber} from '../utils/common';
-import {baseUrl, schemaUrl, fhirUrl} from '../config';
+import {fhirUrl} from '../config';
 import AppBreadcrumb from './AppBreadcrumb';
 import DataPieChart from './DataPieChart';
 import './ResourceDetails.css';
@@ -20,8 +20,12 @@ class ResourceDetails extends React.Component {
     this.getResource();
   }
 
+  componentDidUpdate() {
+    window.scrollTo(0, 0);
+  }
+
   getResource = () => {
-    const {resourceBaseType, resourceFetched} = this.props;
+    const {resourceBaseType, resourceFetched, baseUrl} = this.props;
     this.setState({queriesComplete: false}, async () => {
       let total = this.state.total;
       if (!resourceFetched) {
@@ -53,6 +57,9 @@ class ResourceDetails extends React.Component {
       fetchResource,
       getSearchParams,
       getCapabilityStatement,
+      baseUrl,
+      schemaUrl,
+      capabilityStatementUrl,
     } = this.props;
     const data = await fetchResource(
       `${schemaUrl}?type=${resourceBaseType}&url=${resourceUrl}`,
@@ -65,6 +72,7 @@ class ResourceDetails extends React.Component {
       `${baseUrl}SearchParameter?base=${resourceBaseType}`,
     );
     const defaultParams = await getCapabilityStatement(
+      capabilityStatementUrl,
       resourceBaseType,
     ).then(data => data.map(param => param.name));
     const queryableAttributes = new Set(searchParams.concat(defaultParams));
@@ -96,7 +104,7 @@ class ResourceDetails extends React.Component {
   };
 
   getDifferential = async (differential, queryableAttributes) => {
-    const {resourceBaseType} = this.props;
+    const {resourceBaseType, schemaUrl} = this.props;
     const data = await this.props.fetchResource(
       `${schemaUrl}?type=${resourceBaseType}&url=${fhirUrl}${resourceBaseType}`,
     );
@@ -185,7 +193,7 @@ class ResourceDetails extends React.Component {
               attribute.type[0].profile[0]
             ) {
               let data = await this.props.fetchResource(
-                `${schemaUrl}?url=${attribute.type[0].profile[0]}`,
+                `${this.props.schemaUrl}?url=${attribute.type[0].profile[0]}`,
               );
               const extension =
                 data && data.entry && data.entry[0] && data.entry[0].resource
@@ -229,7 +237,7 @@ class ResourceDetails extends React.Component {
         if (attribute.valueSetUrl) {
           const url = attribute.valueSetUrl.split('|')[0]; // versions don't resolve
           const data = await this.props.fetchResource(
-            `${baseUrl}ValueSet?url=${url}`,
+            `${this.props.baseUrl}ValueSet?url=${url}`,
           );
           const resource =
             data && data.entry && data.entry[0] && data.entry[0].resource
@@ -249,7 +257,7 @@ class ResourceDetails extends React.Component {
           let systemConcepts = await Promise.all(
             systems.map(async system => {
               const data = await this.props.fetchResource(
-                `${baseUrl}CodeSystem?url=${system}`,
+                `${this.props.baseUrl}CodeSystem?url=${system}`,
               );
               return data &&
                 data.entry &&
@@ -288,7 +296,7 @@ class ResourceDetails extends React.Component {
           attribute.queryParams = await Promise.all(
             attribute.queryParams.map(async param => {
               const count = await this.props.getCount(
-                `${baseUrl}${this.props.resourceBaseType}?${name}=${param.code}`,
+                `${this.props.baseUrl}${this.props.resourceBaseType}?${name}=${param.code}`,
               );
               return {
                 ...param,
@@ -381,7 +389,7 @@ class ResourceDetails extends React.Component {
                     >
                       <h3>{attribute.name}</h3>
                       {chartType === 'count' ? (
-                        <div>
+                        <div className="resource-details__query-count">
                           {attribute.queryParams.map((param, i) => (
                             <p
                               key={`${param}-${i}`}
@@ -431,6 +439,9 @@ ResourceDetails.propTypes = {
   getSearchParams: PropTypes.func.isRequired,
   getCapabilityStatement: PropTypes.func.isRequired,
   fetchResource: PropTypes.func.isRequired,
+  baseUrl: PropTypes.string.isRequired,
+  schemaUrl: PropTypes.string.isRequired,
+  capabilityStatementUrl: PropTypes.string.isRequired,
 };
 
 ResourceDetails.defaultProps = {

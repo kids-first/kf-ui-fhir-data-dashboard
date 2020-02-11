@@ -1,17 +1,20 @@
 import {connect} from 'react-redux';
-import {setResources} from '../actions';
+import {setResources, setApi} from '../actions';
 import {fetchAllResources, getResourceCount} from '../utils/api';
-import {baseUrl, acceptedResourceTypes} from '../config';
+import {acceptedResourceTypes} from '../config';
 import Homepage from './Homepage';
 
-const getAllResources = async url => {
+const getAllResources = async (baseUrl, resourceType) => {
+  const url = `${baseUrl}${resourceType}`;
   let allResources = await fetchAllResources(url, []);
-  allResources = allResources ? await setResourceCounts(allResources) : [];
+  allResources = allResources
+    ? await setResourceCounts(baseUrl, allResources)
+    : [];
   allResources = formatResources(allResources);
   return allResources;
 };
 
-const setResourceCounts = async items =>
+const setResourceCounts = async (baseUrl, items) =>
   await Promise.all(
     items.map(async item => {
       if (showResourceType(item.resource.type)) {
@@ -44,14 +47,16 @@ const mapStateToProps = (state, ownProps) => ({
   allResources: state && state.resources ? state.resources.allResources : {},
   allResourcesFetched:
     state && state.resources ? state.resources.allResourcesFetched : false,
+  baseUrl: state.resources.baseUrl,
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    fetchAllResources: async url => {
-      const allResources = await getAllResources(url);
+    fetchAllResources: async (baseUrl, resourceType) => {
+      const allResources = await getAllResources(baseUrl, resourceType);
       dispatch(setResources(allResources));
     },
+    setBaseUrl: url => dispatch(setApi(url)),
   };
 };
 

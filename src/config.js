@@ -1,39 +1,18 @@
 export const mobileWidth = 425;
 export const tabletWidth = 768;
 
+export const defaultFhirAPIs = [
+  {key: 'HAPI', text: 'HAPI', value: 'http://hapi.fhir.org/baseR4/'},
+  {key: 'Kids First', text: 'Kids First', value: 'http://10.10.1.191:8000/'},
+];
+
 export const oAuthUrl = 'https://syntheticmass.mitre.org/oauth2/accesstoken';
-const synthea = 'https://syntheticmass.mitre.org/v1/fhir/';
-const hapi = 'http://hapi.fhir.org/baseR4/';
-const getBaseUrl = () => {
-  if (
-    !process.env.REACT_APP_FHIR_API ||
-    process.env.REACT_APP_FHIR_API === 'hapi'
-  ) {
-    return hapi;
-  } else if (process.env.REACT_APP_FHIR_API === 'synthea') {
-    return synthea;
-  }
-  return process.env.REACT_APP_FHIR_API;
-};
 
-const useProxyUrl = () => {
-  if (
-    !process.env.REACT_APP_FHIR_API ||
-    process.env.REACT_APP_FHIR_API === 'hapi' ||
-    process.env.REACT_APP_FHIR_API === 'synthea'
-  ) {
-    return true;
-  }
-  return false;
-};
+export const shouldUseProxyUrl = url =>
+  url.includes('hapi') || url.includes('synthea');
 
-export const baseUrl = getBaseUrl();
-export const proxyUrl = useProxyUrl()
-  ? 'https://damp-castle-44220.herokuapp.com/'
-  : '';
-export const schemaUrl = `${baseUrl}StructureDefinition/`;
+export const proxyUrl = 'https://damp-castle-44220.herokuapp.com/';
 export const fhirUrl = 'http://hl7.org/fhir/StructureDefinition/';
-export const capabilityStatementUrl = `${proxyUrl}${baseUrl}metadata`;
 
 export const acceptedResourceTypes = new Set([
   'Account',

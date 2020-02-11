@@ -124,3 +124,18 @@ i.icon.chevron.up,
 i.icon.chevron.down {
   font-size: 1.5em;
 }
+
+.ui.selection.dropdown {
+  margin-top: 10px;
+}
+
+.ui.selection.dropdown,
+.ui.selection.dropdown .menu > .item {
+  text-align: center;
+}
+
+@media screen and (max-width: 768px) {
+  .ui.selection.dropdown {
+    width: 100%;
+  }
+}

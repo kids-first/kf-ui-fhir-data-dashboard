@@ -1,4 +1,4 @@
-import {proxyUrl, oAuthUrl, capabilityStatementUrl} from '../config';
+import {shouldUseProxyUrl, proxyUrl, oAuthUrl} from '../config';
 
 const fetchToken = async callback =>
   fetch(`${proxyUrl}${oAuthUrl}`, {
@@ -21,7 +21,7 @@ const fetchToken = async callback =>
     });
 
 const fetchWithHeaders = async (url, headers, summary = false) => {
-  let fullUrl = `${proxyUrl}${url}`;
+  let fullUrl = shouldUseProxyUrl(url) ? `${proxyUrl}${url}` : `${url}`;
   if (summary && !fullUrl.includes('_summary')) {
     fullUrl = fullUrl
       .concat(`${url.includes('?') ? '&' : '?'}`)
@@ -83,8 +83,8 @@ export const getSearchParams = async url =>
     data && data.entry ? data.entry.map(x => x.resource.code) : [],
   );
 
-export const getCapabilityStatement = async resourceType =>
-  fetchResource(capabilityStatementUrl).then(data => {
+export const getCapabilityStatement = async (url, resourceType) =>
+  fetchResource(url).then(data => {
     let params =
       data && data.rest && data.rest[0] && data.rest[0].resource
         ? data.rest[0].resource.find(x => x.type === resourceType)

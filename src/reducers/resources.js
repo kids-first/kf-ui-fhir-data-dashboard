@@ -1,6 +1,7 @@
-import {SET_RESOURCES} from '../actions';
+import {SET_RESOURCES, SET_API} from '../actions';
 
 const initialState = {
+  baseUrl: 'http://hapi.fhir.org/baseR4/',
   allResources: {},
   allResourcesFetched: false,
 };
@@ -12,6 +13,13 @@ const resources = (state = {}, action) => {
         ...state,
         allResources: action.allResources,
         allResourcesFetched: true,
+      };
+    case SET_API:
+      return {
+        ...state,
+        baseUrl: action.baseUrl,
+        allResources: {},
+        allResourcesFetched: false,
       };
     default:
       return initialState;

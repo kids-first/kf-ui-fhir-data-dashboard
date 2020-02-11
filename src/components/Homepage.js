@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Card, Icon} from 'semantic-ui-react';
+import {Card, Icon, Dropdown} from 'semantic-ui-react';
 import {getHumanReadableNumber} from '../utils/common';
-import {baseUrl, resourceCategories} from '../config';
+import {resourceCategories, defaultFhirAPIs} from '../config';
 import SearchBar from './SearchBar';
 import './Homepage.css';
 
@@ -20,18 +20,28 @@ class Homepage extends React.Component {
 
   componentDidMount() {
     if (!this.props.allResourcesFetched) {
-      this.props
-        .fetchAllResources(`${baseUrl}${this.state.searchResourceType}`)
-        .then(() => {
-          const resources = this.props.allResources;
-          const resourcesByCategory = this.setCategories(resources);
-          this.setState({
-            filteredResources: resources,
-            resourcesByCategory,
-          });
-        });
+      this.fetchAllResources();
     }
   }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.baseUrl !== prevProps.baseUrl) {
+      this.fetchAllResources();
+    }
+  }
+
+  fetchAllResources = () => {
+    this.props
+      .fetchAllResources(this.props.baseUrl, this.state.searchResourceType)
+      .then(() => {
+        const resources = this.props.allResources;
+        const resourcesByCategory = this.setCategories(resources);
+        this.setState({
+          filteredResources: resources,
+          resourcesByCategory,
+        });
+      });
+  };
 
   setCategories = resources => {
     let resourcesByCategory = resourceCategories;
@@ -108,6 +118,12 @@ class Homepage extends React.Component {
     ).length;
   };
 
+  selectApi = (e, {value}) => {
+    this.setState({filteredResources: {}}, () => {
+      this.props.setBaseUrl(value);
+    });
+  };
+
   render() {
     const {
       searchResourceTitle,
@@ -120,6 +136,13 @@ class Homepage extends React.Component {
       <div className="homepage">
         <div
           className={`ui ${allResourcesFetched ? 'disabled' : 'active'} loader`}
+        />
+        <Dropdown
+          defaultValue={this.props.baseUrl}
+          selection
+          options={defaultFhirAPIs}
+          onChange={this.selectApi}
+          disabled={!this.props.allResourcesFetched}
         />
         <div className="homepage__header">
           <h2>{searchResourceTitle}:</h2>
@@ -194,14 +217,14 @@ class Homepage extends React.Component {
                                             <Card.Meta>
                                               Total:{' '}
                                               {getHumanReadableNumber(
-                                                allResources[resourceType]
+                                                filteredResources[resourceType]
                                                   .count,
                                               )}
                                             </Card.Meta>
                                             <Card.Meta>
                                               Base type:{' '}
                                               {
-                                                allResources[resourceType]
+                                                filteredResources[resourceType]
                                                   .baseType
                                               }
                                             </Card.Meta>
@@ -238,6 +261,7 @@ Homepage.propTypes = {
   fetchAllResources: PropTypes.func.isRequired,
   allResources: PropTypes.object,
   allResourcesFetched: PropTypes.bool,
+  baseUrl: PropTypes.string.isRequired,
 };
 
 Homepage.defaultProps = {
