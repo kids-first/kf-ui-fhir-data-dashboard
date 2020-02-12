@@ -25,11 +25,18 @@ class ResourceDetails extends React.Component {
   }
 
   getResource = () => {
-    const {resourceBaseType, resourceFetched, baseUrl} = this.props;
+    const {
+      resourceBaseType,
+      resourceFetched,
+      resourceUrl,
+      baseUrl,
+    } = this.props;
     this.setState({queriesComplete: false}, async () => {
       let total = this.state.total;
       if (!resourceFetched) {
-        total = await this.props.getCount(`${baseUrl}${resourceBaseType}`);
+        total = await this.props.getCount(
+          `${baseUrl}${resourceBaseType}?_profile=${resourceUrl}`,
+        );
       }
       const schema = await this.getSchema();
       const attributes = schema ? await this.getQueryParams(schema) : [];
@@ -296,7 +303,7 @@ class ResourceDetails extends React.Component {
           attribute.queryParams = await Promise.all(
             attribute.queryParams.map(async param => {
               const count = await this.props.getCount(
-                `${this.props.baseUrl}${this.props.resourceBaseType}?${name}=${param.code}`,
+                `${this.props.baseUrl}${this.props.resourceBaseType}?_profile=${this.props.resourceUrl}&${name}=${param.code}`,
               );
               return {
                 ...param,
