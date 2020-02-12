@@ -27,6 +27,7 @@ class ResourceDetails extends React.Component {
   getResource = () => {
     const {
       resourceBaseType,
+      resourceType,
       resourceFetched,
       resourceUrl,
       baseUrl,
@@ -34,9 +35,11 @@ class ResourceDetails extends React.Component {
     this.setState({queriesComplete: false}, async () => {
       let total = this.state.total;
       if (!resourceFetched) {
-        total = await this.props.getCount(
-          `${baseUrl}${resourceBaseType}?_profile:below=${resourceUrl}`,
-        );
+        let url = `${baseUrl}${resourceBaseType}`;
+        if (resourceBaseType !== resourceType) {
+          url = url.concat(`?_profile:below=${resourceUrl}`);
+        }
+        total = await this.props.getCount(url);
       }
       const schema = await this.getSchema();
       const attributes = schema ? await this.getQueryParams(schema) : [];
@@ -302,9 +305,15 @@ class ResourceDetails extends React.Component {
           }
           attribute.queryParams = await Promise.all(
             attribute.queryParams.map(async param => {
-              const count = await this.props.getCount(
-                `${this.props.baseUrl}${this.props.resourceBaseType}?_profile:below=${this.props.resourceUrl}&${name}=${param.code}`,
-              );
+              let url = `${this.props.baseUrl}${this.props.resourceBaseType}`;
+              if (this.props.resourceBaseType !== this.props.resourceType) {
+                url = url.concat(
+                  `?_profile:below=${this.props.resourceUrl}&${name}=${param.code}`,
+                );
+              } else {
+                url = url.concat(`?${name}=${param.code}`);
+              }
+              const count = await this.props.getCount(url);
               return {
                 ...param,
                 count: count ? count : 0,
