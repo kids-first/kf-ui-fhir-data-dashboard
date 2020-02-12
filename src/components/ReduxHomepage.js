@@ -23,7 +23,7 @@ const setResourceCounts = async (baseUrl, items) =>
           name: item.resource.name,
           url: item.resource.url,
           count: await getResourceCount(
-            `${baseUrl}${item.resource.type}?_profile=${item.resource.url}`,
+            `${baseUrl}${item.resource.type}?_profile:below=${item.resource.url}`,
           ),
         };
       }

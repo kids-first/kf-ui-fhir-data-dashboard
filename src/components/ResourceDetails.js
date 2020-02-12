@@ -35,7 +35,7 @@ class ResourceDetails extends React.Component {
       let total = this.state.total;
       if (!resourceFetched) {
         total = await this.props.getCount(
-          `${baseUrl}${resourceBaseType}?_profile=${resourceUrl}`,
+          `${baseUrl}${resourceBaseType}?_profile:below=${resourceUrl}`,
         );
       }
       const schema = await this.getSchema();
@@ -303,7 +303,7 @@ class ResourceDetails extends React.Component {
           attribute.queryParams = await Promise.all(
             attribute.queryParams.map(async param => {
               const count = await this.props.getCount(
-                `${this.props.baseUrl}${this.props.resourceBaseType}?_profile=${this.props.resourceUrl}&${name}=${param.code}`,
+                `${this.props.baseUrl}${this.props.resourceBaseType}?_profile:below=${this.props.resourceUrl}&${name}=${param.code}`,
               );
               return {
                 ...param,
