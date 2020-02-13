@@ -302,6 +302,7 @@ Homepage.propTypes = {
   allResources: PropTypes.object,
   allResourcesFetched: PropTypes.bool,
   baseUrl: PropTypes.string.isRequired,
+  setBaseUrl: PropTypes.func.isRequired,
 };
 
 Homepage.defaultProps = {

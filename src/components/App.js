@@ -2,6 +2,7 @@ import React from 'react';
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 import ReduxHomepage from './ReduxHomepage';
 import ReduxResourceDetails from './ReduxResourceDetails';
+import ReduxOntologyHomepage from './ReduxOntologyHomepage';
 import logo from '../img/d3b-cube.svg';
 import './App.css';
 
@@ -13,6 +14,7 @@ class App extends React.Component {
           <img src={logo} alt="D3b" />
           <h1>FHIR Data Dashboard</h1>
           <Switch>
+            <Route path="/ontologies" component={ReduxOntologyHomepage} />
             <Route path="/:resourceBaseType" component={ReduxResourceDetails} />
             <Route path="/" component={ReduxHomepage} />
           </Switch>
