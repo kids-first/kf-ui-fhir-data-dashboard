@@ -13,6 +13,7 @@ export const shouldUseProxyUrl = url =>
 
 export const proxyUrl = 'https://damp-castle-44220.herokuapp.com/';
 export const fhirUrl = 'http://hl7.org/fhir/StructureDefinition/';
+export const defaultTableFields = ['id'];
 
 export const acceptedResourceTypes = new Set([
   'Account',
