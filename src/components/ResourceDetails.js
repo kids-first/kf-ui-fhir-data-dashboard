@@ -6,6 +6,10 @@ import {fhirUrl, defaultTableFields} from '../config';
 import AppBreadcrumb from './AppBreadcrumb';
 import DataPieChart from './DataPieChart';
 import ResultsTable from './ResultsTable';
+import {getHumanReadableNumber} from '../utils/common';
+import {fhirUrl} from '../config';
+import AppBreadcrumb from './AppBreadcrumb';
+import DataPieChart from './DataPieChart';
 import './ResourceDetails.css';
 
 class ResourceDetails extends React.Component {
@@ -375,6 +379,7 @@ class ResourceDetails extends React.Component {
     return chartResults;
   };
 
+<<<<<<< HEAD
   getAttributeTableResults = async (attribute, chartType) => {
     this.setState({showModal: true, tableLoaded: false}, async () => {
       const {baseUrl, resourceBaseType, resourceType, resourceUrl} = this.props;
@@ -492,6 +497,7 @@ class ResourceDetails extends React.Component {
             </div>
           ))}
         </div>
+<<<<<<< HEAD
         <Modal
           open={this.state.showModal}
           onClose={() => this.closeModal()}
