@@ -1,0 +1,26 @@
+.results-table {
+  display: flex;
+  flex-flow: column;
+  flex: 1;
+  justify-content: flex-start;
+  width: 100%;
+  height: 500px;
+}
+
+.results-table__body > * {
+  outline: none;
+}
+
+.results-table__row-even {
+  background-color: var(--d3b-lightgray);
+}
+
+.results-table__cell {
+  margin: 0px 10px;
+}
+
+/* React virtualized Table overrides */
+
+.ReactVirtualized__Table__rowColumn {
+  white-space: normal !important;
+}

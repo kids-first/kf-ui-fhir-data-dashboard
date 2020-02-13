@@ -50,6 +50,7 @@
   flex-flow: column;
   text-align: center;
   margin: 20px 20px;
+  cursor: pointer;
 }
 
 .resource-details__query-count {
@@ -70,4 +71,8 @@
 
 .ui.breadcrumb {
   margin: 0;
+}
+
+.ui.active.modal {
+  width: 80%;
 }
