@@ -1,0 +1,14 @@
+.app {
+  display: flex;
+  flex-flow: column;
+  margin: 10px 10px;
+  align-items: center;
+}
+
+.app h1 {
+  text-align: center;
+}
+
+.app img {
+  height: 100px;
+}

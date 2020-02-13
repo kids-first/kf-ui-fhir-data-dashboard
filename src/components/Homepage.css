@@ -1,0 +1,149 @@
+.homepage {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  width: 80%;
+}
+
+@media screen and (max-width: 768px) {
+  .homepage {
+    width: 100%;
+  }
+}
+
+.homepage__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 30px 0;
+}
+
+.homepage__header > * {
+  margin: 0 10px;
+}
+
+.homepage__count {
+  color: var(--d3b-blue);
+  margin: 0;
+}
+
+.homepage__content {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  width: 100%;
+}
+
+@media screen and (max-width: 768px) {
+  .homepage__searchbar {
+    width: 100%;
+  }
+}
+
+.homepage__section-controls {
+  margin-top: 20px;
+  display: flex;
+}
+
+.homepage__section-controls > p {
+  color: var(--d3b-brightblue);
+  margin: 0 5px;
+  cursor: pointer;
+}
+
+.homepage__section {
+  padding: 20px 20px;
+  border: 1px solid lightgray;
+  border-radius: 10px;
+  margin: 10px 0;
+  width: 100%;
+}
+
+.homepage__section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.homepage__section-header > h3 {
+  margin: 0;
+}
+
+.homepage__section-resources {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* Semantic UI Overrides */
+
+.ui.card,
+.ui.card:first-child {
+  margin: 20px 20px !important;
+}
+
+.ui.card,
+.ui.cards > .card {
+  max-width: calc(100% - 40px) !important;
+}
+
+.ui.card > .content > .header,
+.ui.cards > .card > .content > .header {
+  overflow-wrap: break-word;
+  color: var(--d3b-blue) !important;
+}
+
+.ui.card > .content > .description,
+.ui.cards > .card > .content > .description {
+  overflow-wrap: break-word;
+}
+
+.ui.input {
+  width: 500px;
+}
+
+@media screen and (max-width: 768px) {
+  .ui.input {
+    width: auto;
+  }
+}
+
+.ui.input.focus > input,
+.ui.input > input:focus {
+  border-color: var(--d3b-brightblue) !important;
+}
+
+.ui.search > .results {
+  width: 100%;
+}
+
+i.icon {
+  cursor: pointer;
+  color: var(--d3b-brightblue);
+}
+
+i.icon.chevron.up,
+i.icon.chevron.down {
+  font-size: 1.5em;
+}
+
+.ui.selection.dropdown {
+  margin-top: 10px;
+}
+
+.ui.selection.dropdown,
+.ui.selection.dropdown .menu > .item {
+  text-align: center;
+}
+
+.ui.selection.active.dropdown:hover,
+.ui.selection.dropdown:focus,
+.ui.selection.active.dropdown,
+.ui.selection.active.dropdown .menu {
+  border-color: var(--d3b-brightblue) !important;
+}
+
+@media screen and (max-width: 768px) {
+  .ui.selection.dropdown {
+    width: 100%;
+  }
+}

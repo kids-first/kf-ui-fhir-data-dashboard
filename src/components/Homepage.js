@@ -1,0 +1,272 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+import {Card, Icon, Dropdown} from 'semantic-ui-react';
+import {getHumanReadableNumber} from '../utils/common';
+import {resourceCategories, defaultFhirAPIs} from '../config';
+import SearchBar from './SearchBar';
+import './Homepage.css';
+
+class Homepage extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      filteredResources: props.allResources,
+      searchResourceType: 'StructureDefinition',
+      searchResourceTitle: 'Resource Types',
+      resourcesByCategory: resourceCategories,
+      openTabs: Object.keys(resourceCategories),
+    };
+  }
+
+  componentDidMount() {
+    if (!this.props.allResourcesFetched) {
+      this.fetchAllResources();
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.baseUrl !== prevProps.baseUrl) {
+      this.fetchAllResources();
+    }
+  }
+
+  fetchAllResources = () => {
+    this.props
+      .fetchAllResources(this.props.baseUrl, this.state.searchResourceType)
+      .then(() => {
+        const resources = this.props.allResources;
+        const resourcesByCategory = this.setCategories(resources);
+        this.setState({
+          filteredResources: resources,
+          resourcesByCategory,
+        });
+      });
+  };
+
+  setCategories = resources => {
+    let resourcesByCategory = resourceCategories;
+    let flatCategories = new Set(
+      Object.keys(resourceCategories).map(category =>
+        Object.keys(resourceCategories[category]).map(
+          subCategory => resourceCategories[category][subCategory],
+        ),
+      ),
+    );
+    const uncategorizedResources = Object.keys(resources).filter(
+      resource => !flatCategories.has(resources[resource].name),
+    );
+    uncategorizedResources.forEach(resource => {
+      Object.keys(resourceCategories).forEach(category => {
+        Object.keys(resourceCategories[category]).forEach(subCategory => {
+          if (
+            resourceCategories[category][subCategory].has(
+              resources[resource].baseType,
+            )
+          ) {
+            resourcesByCategory[category][subCategory].add(resource);
+          }
+        });
+      });
+    });
+    return resourcesByCategory;
+  };
+
+  onClick = resource => {
+    this.props.history.push(
+      `/${resource.baseType}?name=${resource.name}&url=${resource.url}`,
+    );
+  };
+
+  handleResultSelect = searchResults => {
+    const {allResources} = this.props;
+    const filteredResources = {};
+    searchResults.forEach(
+      result => (filteredResources[result.title] = allResources[result.title]),
+    );
+    this.setState({filteredResources});
+  };
+
+  toggleTab = tab => {
+    let openTabs = this.state.openTabs;
+    const index = openTabs.indexOf(tab);
+    index > -1 ? openTabs.splice(index, 1) : openTabs.push(tab);
+    this.setState({openTabs});
+  };
+
+  expandAllTabs = () => {
+    this.setState({openTabs: Object.keys(this.state.resourcesByCategory)});
+  };
+
+  collapseAllTabs = () => {
+    this.setState({openTabs: []});
+  };
+
+  getCategoryCount = categoryName => {
+    const {resourcesByCategory, filteredResources} = this.state;
+    const category = resourcesByCategory[categoryName];
+    return Object.keys(category)
+      .map(subCategory =>
+        [...category[subCategory]].filter(x => filteredResources[x]),
+      )
+      .flat().length;
+  };
+
+  getSubCategoryCount = (categoryName, subCategoryName) => {
+    const {resourcesByCategory, filteredResources} = this.state;
+    return [...resourcesByCategory[categoryName][subCategoryName]].filter(
+      x => filteredResources[x],
+    ).length;
+  };
+
+  selectApi = (e, {value}) => {
+    this.setState({filteredResources: {}}, () => {
+      this.props.setBaseUrl(value);
+    });
+  };
+
+  render() {
+    const {
+      searchResourceTitle,
+      filteredResources,
+      resourcesByCategory,
+      openTabs,
+    } = this.state;
+    const {allResources, allResourcesFetched} = this.props;
+    return (
+      <div className="homepage">
+        <div
+          className={`ui ${allResourcesFetched ? 'disabled' : 'active'} loader`}
+        />
+        <Dropdown
+          defaultValue={this.props.baseUrl}
+          selection
+          options={defaultFhirAPIs}
+          onChange={this.selectApi}
+          disabled={!this.props.allResourcesFetched}
+        />
+        <div className="homepage__header">
+          <h2>{searchResourceTitle}:</h2>
+          <h2 className="homepage__count">
+            {getHumanReadableNumber(Object.keys(filteredResources).length)}
+          </h2>
+          <h2>total</h2>
+        </div>
+        {allResourcesFetched ? (
+          <div className="homepage__content">
+            <SearchBar
+              className="homepage__searchbar"
+              data={Object.keys(allResources).map(key => ({
+                title: allResources[key].name,
+              }))}
+              handleResultSelect={this.handleResultSelect}
+            />
+            <div className="homepage__section-controls">
+              <p onClick={() => this.expandAllTabs()}>Expand All</p>
+              <p> | </p>
+              <p onClick={() => this.collapseAllTabs()}>Collapse All</p>
+            </div>
+            {Object.keys(resourcesByCategory).map(category => {
+              const categoryCount = this.getCategoryCount(category);
+              const showSection =
+                openTabs.includes(category) && categoryCount > 0;
+              return (
+                <div className="homepage__section" key={category}>
+                  <div className="homepage__section-header">
+                    <h3>
+                      {category}: {getHumanReadableNumber(categoryCount)}
+                    </h3>
+                    <Icon
+                      name={showSection ? 'chevron up' : 'chevron down'}
+                      onClick={() => {
+                        if (categoryCount > 0) {
+                          this.toggleTab(category);
+                        }
+                      }}
+                    />
+                  </div>
+                  {showSection ? (
+                    <div className="homepage__section-subcategory">
+                      {Object.keys(resourcesByCategory[category]).map(
+                        subCategory => {
+                          const subCategoryCount = this.getSubCategoryCount(
+                            category,
+                            subCategory,
+                          );
+                          if (subCategoryCount > 0) {
+                            return (
+                              <React.Fragment key={subCategory}>
+                                <h4>{subCategory}</h4>
+                                <div className="homepage__section-resources">
+                                  {[
+                                    ...resourcesByCategory[category][
+                                      subCategory
+                                    ],
+                                  ].map(resourceType => {
+                                    const resource =
+                                      filteredResources[resourceType];
+                                    if (resource) {
+                                      return (
+                                        <Card
+                                          key={resourceType}
+                                          onClick={() => this.onClick(resource)}
+                                        >
+                                          <Card.Content>
+                                            <Card.Header>
+                                              {resourceType}
+                                            </Card.Header>
+                                            <Card.Meta>
+                                              Total:{' '}
+                                              {getHumanReadableNumber(
+                                                filteredResources[resourceType]
+                                                  .count,
+                                              )}
+                                            </Card.Meta>
+                                            <Card.Meta>
+                                              Base type:{' '}
+                                              {
+                                                filteredResources[resourceType]
+                                                  .baseType
+                                              }
+                                            </Card.Meta>
+                                            <Card.Description>
+                                              Click to explore {resourceType}.
+                                            </Card.Description>
+                                          </Card.Content>
+                                        </Card>
+                                      );
+                                    }
+                                    return null;
+                                  })}
+                                </div>
+                              </React.Fragment>
+                            );
+                          }
+                          return null;
+                        },
+                      )}
+                    </div>
+                  ) : null}
+                </div>
+              );
+            })}
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+}
+
+Homepage.propTypes = {
+  history: PropTypes.object.isRequired,
+  fetchAllResources: PropTypes.func.isRequired,
+  allResources: PropTypes.object,
+  allResourcesFetched: PropTypes.bool,
+  baseUrl: PropTypes.string.isRequired,
+};
+
+Homepage.defaultProps = {
+  allResources: {},
+  allResourcesFetched: false,
+};
+
+export default Homepage;

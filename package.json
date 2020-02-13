@@ -1,0 +1,64 @@
+{
+  "name": "fhir-cohort-builder",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.4.0",
+    "@testing-library/user-event": "^7.2.1",
+    "bootstrap": "^4.4.1",
+    "jwt-decode": "^2.2.0",
+    "lodash": "^4.17.15",
+    "prop-types": "^15.7.2",
+    "query-string": "^6.10.1",
+    "react": "^16.12.0",
+    "react-bootstrap": "^1.0.0-beta.16",
+    "react-dom": "^16.12.0",
+    "react-redux": "^7.1.3",
+    "react-router-dom": "^5.1.2",
+    "react-scripts": "3.3.0",
+    "react-virtualized": "^9.21.2",
+    "recharts": "^2.0.0-beta.1",
+    "redux": "^4.0.5",
+    "semantic-ui-css": "^2.4.1",
+    "semantic-ui-react": "^0.88.2",
+    "stylelint": "^13.0.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "./node_modules/.bin/mocha",
+    "eject": "react-scripts eject",
+    "eslint": "./node_modules/.bin/eslint './src/**/*.js'",
+    "prettier": "./node_modules/.bin/prettier './src/**/*.js'",
+    "stylelint": "./node_modules/.bin/stylelint './src/**/*.css'"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "prettier": {
+    "printWidth": 80,
+    "trailingComma": "all",
+    "singleQuote": true,
+    "bracketSpacing": false
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-plugin-import": "^2.20.0",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-react": "^7.18.0",
+    "eslint-plugin-react-hooks": "^1.7.0",
+    "prettier": "^1.19.1",
+    "stylelint-config-recommended": "^3.0.0"
+  }
+}
