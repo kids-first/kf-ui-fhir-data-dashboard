@@ -68,9 +68,6 @@ class ResultsTable extends React.Component {
         parent={cellParent}
         rowIndex={rowIndex}
       >
-        {Object.keys(rowData).length === 0 ? (
-          <div className="ui active loader" />
-        ) : null}
         {cellData ? <pre>{JSON.stringify(cellData, null, 2)}</pre> : null}
       </CellMeasurer>
     );
