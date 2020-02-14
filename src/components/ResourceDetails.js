@@ -408,7 +408,6 @@ class ResourceDetails extends React.Component {
       attribute.queryParams.forEach(param => {
         totalResults += param.count;
       });
-      console.log('total is', totalResults);
       this.setState({
         tableLoaded: true,
         modalAttribute: attribute.name,
@@ -500,7 +499,10 @@ class ResourceDetails extends React.Component {
           <Modal.Header>{this.props.resourceType}</Modal.Header>
           <Modal.Content>
             <Modal.Description>
-              <Header>Results for {this.state.modalAttribute}</Header>
+              <Header>
+                {this.state.totalResults} results for{' '}
+                {this.state.modalAttribute}
+              </Header>
               {this.state.tableLoaded ? (
                 <ResultsTable
                   fetchResource={this.props.fetchResource}

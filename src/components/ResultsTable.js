@@ -8,6 +8,7 @@ import {
   CellMeasurerCache,
   CellMeasurer,
 } from 'react-virtualized';
+import {Modal} from 'semantic-ui-react';
 import {defaultTableFields} from '../config';
 import './ResultsTable.css';
 const cellCache = new CellMeasurerCache({
@@ -45,6 +46,7 @@ class ResultsTable extends React.Component {
     this.state = {
       results: props.results,
       nextPageUrl: props.nextPageUrl,
+      rowData: null,
     };
   }
   componentDidMount() {
@@ -68,11 +70,13 @@ class ResultsTable extends React.Component {
         parent={cellParent}
         rowIndex={rowIndex}
       >
-        {cellData ? (
-          <pre>{JSON.stringify(cellData, null, 2)}</pre>
-        ) : (
-          <p>No data</p>
-        )}
+        <div className="results-table__row">
+          {cellData ? (
+            <pre>{JSON.stringify(cellData, null, 2)}</pre>
+          ) : (
+            <pre>No data</pre>
+          )}
+        </div>
       </CellMeasurer>
     );
   };
@@ -126,6 +130,14 @@ class ResultsTable extends React.Component {
     }
   };
 
+  onRowClick = ({event, index, rowData}) => {
+    this.setState({rowData});
+  };
+
+  closeModal = () => {
+    this.setState({rowData: null});
+  };
+
   render() {
     return (
       <div className="results-table">
@@ -153,6 +165,7 @@ class ResultsTable extends React.Component {
                   }
                   rowRenderer={this.rowRenderer}
                   rowHeight={this.rowHeight}
+                  onRowClick={this.onRowClick}
                 >
                   {this.props.tableColumns.map((field, i) => (
                     <Column
@@ -170,6 +183,20 @@ class ResultsTable extends React.Component {
             </AutoSizer>
           )}
         </InfiniteLoader>
+        <Modal
+          open={!!this.state.rowData}
+          onClose={() => this.closeModal()}
+          dimmer="inverted"
+        >
+          <Modal.Header>Row Details</Modal.Header>
+          <Modal.Content>
+            <Modal.Description>
+              <div className="results-table__details">
+                <pre>{JSON.stringify(this.state.rowData, null, 2)}</pre>
+              </div>
+            </Modal.Description>
+          </Modal.Content>
+        </Modal>
       </div>
     );
   }
