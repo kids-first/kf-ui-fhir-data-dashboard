@@ -31,6 +31,7 @@ const fetchWithHeaders = async (url, headers, summary = false) => {
     headers: {
       ...headers,
       Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
+      'Cache-Control': 'max-age=3600',
     },
   })
     .then(res => {
