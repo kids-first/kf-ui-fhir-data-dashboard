@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Dropdown, Table} from 'semantic-ui-react';
+import {getHumanReadableNumber} from '../utils/common';
 import {defaultFhirAPIs} from '../config';
 import SearchBar from './SearchBar';
 import './OntologyHomepage.css';
@@ -51,21 +52,32 @@ class OntologyHomepage extends React.Component {
     const {ontologies, ontologiesFetched} = this.props;
     return (
       <div className="ontology-homepage">
-        <Dropdown
-          defaultValue={this.props.baseUrl}
-          selection
-          options={defaultFhirAPIs}
-          onChange={this.selectApi}
-          disabled={!this.props.ontologiesFetched}
-        />
-        <h2>Ontologies</h2>
-        <SearchBar
-          data={Object.keys(ontologies).map(key => ({
-            title: key,
-          }))}
-          handleResultSelect={this.handleResultSelect}
-          placeholder="Search for an ontology"
-        />
+        <div className="ontology-homepage__header">
+          <div className="ontology-homepage__header-title">
+            <h2>Ontologies:</h2>
+            <h2 className="ontology-homepage__count">
+              {getHumanReadableNumber(Object.keys(filteredOntologies).length)}
+            </h2>
+            <h2>total</h2>
+          </div>
+          <Dropdown
+            className="ontology-homepage__dropdown"
+            defaultValue={this.props.baseUrl}
+            selection
+            options={defaultFhirAPIs}
+            onChange={this.selectApi}
+            disabled={!this.props.ontologiesFetched}
+          />
+        </div>
+        <div className="ontology-homepage__search">
+          <SearchBar
+            data={Object.keys(ontologies).map(key => ({
+              title: key,
+            }))}
+            handleResultSelect={this.handleResultSelect}
+            placeholder="Search for an ontology"
+          />
+        </div>
         {ontologiesFetched ? (
           <Table celled>
             <Table.Header>

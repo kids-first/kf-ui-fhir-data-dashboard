@@ -6,7 +6,7 @@ const initialState = {
   allResourcesFetched: false,
 };
 
-const resources = (state = {}, action) => {
+const resources = (state = initialState, action) => {
   switch (action.type) {
     case SET_RESOURCES:
       return {
@@ -22,7 +22,7 @@ const resources = (state = {}, action) => {
         allResourcesFetched: false,
       };
     default:
-      return initialState;
+      return state;
   }
 };
 

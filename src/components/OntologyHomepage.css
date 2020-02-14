@@ -1,8 +1,43 @@
 .ontology-homepage {
   display: flex;
   flex-flow: column;
+  width: 100%;
+  padding: 20px 20px;
+}
+
+.ontology-homepage__header {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  width: 80%;
+  margin: 10px 0 20px 0;
+}
+
+@media screen and (max-width: 768px) {
+  .ontology-homepage__header {
+    flex-flow: column;
+  }
+
+  .ontology-homepage__header > * {
+    width: 100%;
+  }
+}
+
+.ontology-homepage__header-title {
+  display: flex;
+}
+
+.ontology-homepage__header-title h2 {
+  margin: 0 5px;
+}
+
+.ontology-homepage__count {
+  color: var(--d3b-blue);
+}
+
+.ontology-homepage__search {
+  display: flex;
+  flex-flow: row-reverse;
+  flex-grow: 0;
 }
 
 /* Semantic UI overrides */

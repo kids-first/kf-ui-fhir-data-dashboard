@@ -5,7 +5,7 @@ const initialState = {
   ontologiesFetched: false,
 };
 
-const ontologies = (state = {}, action) => {
+const ontologies = (state = initialState, action) => {
   switch (action.type) {
     case SET_ONTOLOGIES:
       return {
@@ -14,7 +14,7 @@ const ontologies = (state = {}, action) => {
         ontologiesFetched: true,
       };
     default:
-      return initialState;
+      return state;
   }
 };
 

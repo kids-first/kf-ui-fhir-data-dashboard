@@ -170,22 +170,29 @@ class Homepage extends React.Component {
         <div
           className={`ui ${allResourcesFetched ? 'disabled' : 'active'} loader`}
         />
-        <Dropdown
-          defaultValue={this.props.baseUrl}
-          selection
-          options={defaultFhirAPIs}
-          onChange={this.selectApi}
-          disabled={!this.props.allResourcesFetched}
-        />
         <div className="homepage__header">
-          <h2>{searchResourceTitle}:</h2>
-          <h2 className="homepage__count">
-            {getHumanReadableNumber(Object.keys(filteredResources).length)}
-          </h2>
-          <h2>total</h2>
+          <div className="homepage__header-title">
+            <h2>{searchResourceTitle}:</h2>
+            <h2 className="homepage__count">
+              {getHumanReadableNumber(Object.keys(filteredResources).length)}
+            </h2>
+            <h2>total</h2>
+          </div>
+          <Dropdown
+            defaultValue={this.props.baseUrl}
+            selection
+            options={defaultFhirAPIs}
+            onChange={this.selectApi}
+            disabled={!this.props.allResourcesFetched}
+          />
         </div>
-        {allResourcesFetched ? (
-          <div className="homepage__content">
+        <div className="homepage__controls">
+          <div className="homepage__controls-tabs">
+            <p onClick={() => this.expandAllTabs()}>Expand All</p>
+            <p> | </p>
+            <p onClick={() => this.collapseAllTabs()}>Collapse All</p>
+          </div>
+          <div className="homepage__header-search">
             <SearchBar
               className="homepage__searchbar"
               data={Object.keys(allResources).map(key => ({
@@ -193,11 +200,10 @@ class Homepage extends React.Component {
               }))}
               handleResultSelect={this.handleResultSelect}
             />
-            <div className="homepage__section-controls">
-              <p onClick={() => this.expandAllTabs()}>Expand All</p>
-              <p> | </p>
-              <p onClick={() => this.collapseAllTabs()}>Collapse All</p>
-            </div>
+          </div>
+        </div>
+        {allResourcesFetched ? (
+          <div className="homepage__content">
             {Object.keys(resourcesByCategory).map(category => {
               const categoryCount = this.getCategoryCount(category);
               const showSection =
