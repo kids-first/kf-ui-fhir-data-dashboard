@@ -380,7 +380,6 @@ class ResourceDetails extends React.Component {
       const {baseUrl, resourceBaseType, resourceType, resourceUrl} = this.props;
       let data = null;
       const allFields = defaultTableFields.concat(attribute.name);
-      const elements = allFields.join(',');
       let url = `${baseUrl}${resourceBaseType}`;
       if (resourceBaseType !== resourceType) {
         url = url.concat(`?_profile:below=${resourceUrl}&`);
@@ -389,10 +388,10 @@ class ResourceDetails extends React.Component {
       }
       if (chartType === 'count') {
         data = await this.props.fetchResource(
-          `${url}${attribute.name}:missing=false&_elements=${elements}`,
+          `${url}${attribute.name}:missing=false`,
         );
       } else {
-        data = await this.props.fetchResource(`${url}_elements=${elements}`);
+        data = await this.props.fetchResource(url);
       }
       let results =
         data && data.entry ? data.entry.map(item => item.resource) : [];
