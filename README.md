@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/fhir-data-dashboard.svg" alt="data tracker logo" width="660px">
+  <img src="public/fhir-data-dashboard.svg" alt="FHIR Data Dashboard logo" width="660px">
 </p>
 <p align="center">
   <a href="https://github.com/kids-first/kf-ui-fhir-data-dashboard/blob/master/LICENSE"><img src="https://img.shields.io/github/license/kids-first/kf-ui-fhir-data-dashboard.svg?style=for-the-badge"></a>
