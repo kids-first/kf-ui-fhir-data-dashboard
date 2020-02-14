@@ -4,3 +4,9 @@
   align-items: center;
   width: 80%;
 }
+
+/* Semantic UI overrides */
+
+.ui.table {
+  overflow: hidden;
+}

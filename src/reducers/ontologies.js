@@ -1,7 +1,7 @@
 import {SET_ONTOLOGIES} from '../actions';
 
 const initialState = {
-  ontologies: [],
+  ontologies: {},
   ontologiesFetched: false,
 };
 

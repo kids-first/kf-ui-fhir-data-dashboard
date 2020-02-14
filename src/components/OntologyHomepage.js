@@ -2,11 +2,19 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Dropdown, Table} from 'semantic-ui-react';
 import {defaultFhirAPIs} from '../config';
+import SearchBar from './SearchBar';
 import './OntologyHomepage.css';
 
 class OntologyHomepage extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      filteredOntologies: props.ontologies,
+    };
+  }
+
   selectApi = (e, {value}) => {
-    this.setState({filteredResources: {}}, () => {
+    this.setState({filteredOntologies: []}, () => {
       this.props.setBaseUrl(value);
     });
   };
@@ -17,11 +25,29 @@ class OntologyHomepage extends React.Component {
     }
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.baseUrl !== prevProps.baseUrl) {
+      this.getOntologies();
+    }
+  }
+
   getOntologies = async () => {
-    this.props.getOntologies(`${this.props.baseUrl}CodeSystem`);
+    this.props.getOntologies(`${this.props.baseUrl}CodeSystem`).then(() => {
+      this.setState({filteredOntologies: this.props.ontologies});
+    });
+  };
+
+  handleResultSelect = searchResults => {
+    const {ontologies} = this.props;
+    let filteredOntologies = {};
+    searchResults.forEach(
+      result => (filteredOntologies[result.title] = ontologies[result.title]),
+    );
+    this.setState({filteredOntologies});
   };
 
   render() {
+    const {filteredOntologies} = this.state;
     const {ontologies, ontologiesFetched} = this.props;
     return (
       <div className="ontology-homepage">
@@ -33,6 +59,13 @@ class OntologyHomepage extends React.Component {
           disabled={!this.props.ontologiesFetched}
         />
         <h2>Ontologies</h2>
+        <SearchBar
+          data={Object.keys(ontologies).map(key => ({
+            title: key,
+          }))}
+          handleResultSelect={this.handleResultSelect}
+          placeholder="Search for an ontology"
+        />
         {ontologiesFetched ? (
           <Table celled>
             <Table.Header>
@@ -42,12 +75,10 @@ class OntologyHomepage extends React.Component {
               </Table.Row>
             </Table.Header>
             <Table.Body>
-              {ontologies.map((result, i) => (
-                <Table.Row key={`${result.name}-${i}`}>
-                  <Table.Cell>{result.name}</Table.Cell>
-                  <Table.Cell>
-                    <a href={result.url}>{result.url}</a>
-                  </Table.Cell>
+              {Object.keys(filteredOntologies).map((key, i) => (
+                <Table.Row key={`${key}-${i}`}>
+                  <Table.Cell>{key}</Table.Cell>
+                  <Table.Cell>{filteredOntologies[key].join(', ')}</Table.Cell>
                 </Table.Row>
               ))}
             </Table.Body>
@@ -61,7 +92,7 @@ class OntologyHomepage extends React.Component {
 }
 
 OntologyHomepage.propTypes = {
-  ontologies: PropTypes.array,
+  ontologies: PropTypes.object,
   baseUrl: PropTypes.string.isRequired,
   setBaseUrl: PropTypes.func.isRequired,
   ontologiesFetched: PropTypes.bool,
@@ -69,7 +100,7 @@ OntologyHomepage.propTypes = {
 };
 
 OntologyHomepage.defaultProps = {
-  ontologies: [],
+  ontologies: {},
   ontologiesFetched: false,
 };
 

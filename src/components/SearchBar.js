@@ -76,7 +76,7 @@ export class SearchBar extends React.Component {
       <Search
         className={this.props.className}
         input={{fluid: this.state.fluid}}
-        placeholder={'Search for a resource'}
+        placeholder={this.props.placeholder}
         loading={isLoading}
         onResultSelect={this.handleResultSelect}
         onSearchChange={_.debounce(this.handleSearchChange, 500, {
@@ -93,11 +93,13 @@ export class SearchBar extends React.Component {
 SearchBar.propTypes = {
   data: PropTypes.array,
   handleResultSelect: PropTypes.func,
+  placeholder: PropTypes.string,
 };
 
 SearchBar.defaultProps = {
   data: [],
   handleResultSelect: () => {},
+  placeholder: 'Search for a resource',
 };
 
 export default SearchBar;
