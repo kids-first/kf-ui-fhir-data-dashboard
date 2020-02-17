@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Card, Icon, Dropdown} from 'semantic-ui-react';
+import Avatar from 'react-avatar';
 import {getHumanReadableNumber} from '../utils/common';
 import {resourceCategories, defaultFhirAPIs} from '../config';
 import SearchBar from './SearchBar';
@@ -124,6 +125,35 @@ class Homepage extends React.Component {
     });
   };
 
+  getIcon = (resourceType, resourceBaseType) => {
+    const iconColor = '#005788';
+    switch (resourceBaseType) {
+      case 'Patient':
+        return <Icon circular inverted name="user" />;
+      case 'Specimen':
+        return <Icon circular inverted name="lab" />;
+      case 'Group':
+        return <Icon circular inverted name="users" />;
+      case 'Condition':
+        return <Icon circular inverted name="bug" />;
+      case 'Observation':
+        return <Icon circular inverted name="eye" />;
+      case 'Practitioner':
+        return <Icon circular inverted name="doctor" />;
+      case 'Encounter':
+        return <Icon circular inverted name="clipboard" />;
+      default:
+        return (
+          <Avatar
+            name={resourceType.split(/(?=[A-Z])/).join(' ')}
+            size={90}
+            round="50px"
+            color={iconColor}
+          />
+        );
+    }
+  };
+
   render() {
     const {
       searchResourceTitle,
@@ -215,13 +245,6 @@ class Homepage extends React.Component {
                                               {resourceType}
                                             </Card.Header>
                                             <Card.Meta>
-                                              Total:{' '}
-                                              {getHumanReadableNumber(
-                                                filteredResources[resourceType]
-                                                  .count,
-                                              )}
-                                            </Card.Meta>
-                                            <Card.Meta>
                                               Base type:{' '}
                                               {
                                                 filteredResources[resourceType]
@@ -229,7 +252,21 @@ class Homepage extends React.Component {
                                               }
                                             </Card.Meta>
                                             <Card.Description>
-                                              Click to explore {resourceType}.
+                                              <div id="homepage__card-description">
+                                                {this.getIcon(
+                                                  resourceType,
+                                                  filteredResources[
+                                                    resourceType
+                                                  ].baseType,
+                                                )}
+                                                <div className="homepage__card-description-count">
+                                                  {getHumanReadableNumber(
+                                                    filteredResources[
+                                                      resourceType
+                                                    ].count,
+                                                  )}
+                                                </div>
+                                              </div>
                                             </Card.Description>
                                           </Card.Content>
                                         </Card>
