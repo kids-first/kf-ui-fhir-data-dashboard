@@ -2,7 +2,11 @@
 
 ## Requests
 
+The following tables list the requests that need to be sent to a FHIR server in order to construct each page of the FHIR Data Dashboard.
+
 ### Homepage
+
+![FHIR Data Dashboard Homepage](./img/homepage.png)
 
 | Step | Request Purpose                                                                                                                                                                    | Request URL                                                                  | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | ---- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -13,6 +17,8 @@
 | 3b   | Then, subtract the counts of resources >underneath that base type (this is the number of resources that have a profile attached) - this is already stored - and return that total. |                                                                              |
 
 ### Details Page
+
+![FHIR Data Dashboard Details Page](./img/details-page.png)
 
 | Step | Request Purpose                                                                                         | Request URL                                                                                                                                                                                                                                 | Notes                                                                                                  |
 | ---- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
@@ -36,11 +42,15 @@
 
 #### Details Table
 
+![FHIR Data Dashboard Details Page](./img/details-table.png)
+
 | Step | Request Purpose                                      | Request URL                                                                                                                                                                                                                                                       | Notes                                                                                                         |
 | ---- | ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | 1    | Get detailed resource results for an attribute query | If it's a base resource:<br>`${baseUrl}/{resourceType}`<br><br>Otherwise:<br>`${baseUrl}/${baseType}?_profile:below=${resourceUrl}`<br><br>This is the full query is the attribute is an enum or boolean. For counts:<br>`${url}?${attribute.name}:missing=false` | Infinite scroll is utilized so the next page of the Bundle is fetched dynamically as opposed to all up front. |
 
 ### Ontology Homepage
+
+![FHIR Data Dashboard Details Page](./img/ontology-homepage.png)
 
 | Step | Request Purpose                                             | Request URL             | Notes                                                                  |
 | ---- | ----------------------------------------------------------- | ----------------------- | ---------------------------------------------------------------------- |
