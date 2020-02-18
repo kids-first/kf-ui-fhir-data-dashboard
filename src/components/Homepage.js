@@ -145,7 +145,10 @@ class Homepage extends React.Component {
       default:
         return (
           <Avatar
-            name={resourceType.split(/(?=[A-Z])/).join(' ')}
+            name={resourceType
+              .split(/(?=[A-Z])/)
+              .slice(0, 4)
+              .join(' ')}
             size={90}
             round="50px"
             color={iconColor}
