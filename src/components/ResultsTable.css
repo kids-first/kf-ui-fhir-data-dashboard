@@ -11,16 +11,18 @@
   outline: none;
 }
 
-.results-table__row {
+.results-table__cell {
   padding: 10px 0;
+  cursor: pointer;
+  margin: 0px 10px;
 }
-
 .results-table__row-even {
   background-color: var(--d3b-lightgray);
 }
 
-.results-table__cell {
-  margin: 0px 10px;
+.results-table__row-even:hover,
+.results-table__row-odd:hover {
+  background-color: var(--d3b-mediumgray);
 }
 
 .results-table__details pre {
@@ -29,6 +31,10 @@
 }
 
 /* React virtualized Table overrides */
+
+.ReactVirtualized__Table__headerRow {
+  background-color: inherit !important;
+}
 
 .ReactVirtualized__Table__rowColumn {
   white-space: normal !important;

@@ -70,7 +70,7 @@ class ResultsTable extends React.Component {
         parent={cellParent}
         rowIndex={rowIndex}
       >
-        <div className="results-table__row">
+        <div className="results-table__cell">
           {cellData ? (
             <pre>{JSON.stringify(cellData, null, 2)}</pre>
           ) : (
