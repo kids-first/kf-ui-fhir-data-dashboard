@@ -1,9 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {Modal, Header} from 'semantic-ui-react';
 import {getHumanReadableNumber} from '../utils/common';
-import {fhirUrl} from '../config';
+import {fhirUrl, defaultTableFields} from '../config';
 import AppBreadcrumb from './AppBreadcrumb';
 import DataPieChart from './DataPieChart';
+import ResultsTable from './ResultsTable';
 import './ResourceDetails.css';
 
 class ResourceDetails extends React.Component {
@@ -13,6 +15,11 @@ class ResourceDetails extends React.Component {
       total: props.total,
       attributes: [],
       queriesComplete: false,
+      showModal: false,
+      modalAttribute: null,
+      nextPageUrl: null,
+      tableResults: [],
+      tableLoaded: false,
     };
   }
 
@@ -27,6 +34,7 @@ class ResourceDetails extends React.Component {
   getResource = () => {
     const {
       resourceBaseType,
+      resourceType,
       resourceFetched,
       resourceUrl,
       baseUrl,
@@ -34,9 +42,11 @@ class ResourceDetails extends React.Component {
     this.setState({queriesComplete: false}, async () => {
       let total = this.state.total;
       if (!resourceFetched) {
-        total = await this.props.getCount(
-          `${baseUrl}${resourceBaseType}?_profile:below=${resourceUrl}`,
-        );
+        let url = `${baseUrl}${resourceBaseType}`;
+        if (resourceBaseType !== resourceType) {
+          url = url.concat(`?_profile:below=${resourceUrl}`);
+        }
+        total = await this.props.getCount(url);
       }
       const schema = await this.getSchema();
       const attributes = schema ? await this.getQueryParams(schema) : [];
@@ -302,9 +312,15 @@ class ResourceDetails extends React.Component {
           }
           attribute.queryParams = await Promise.all(
             attribute.queryParams.map(async param => {
-              const count = await this.props.getCount(
-                `${this.props.baseUrl}${this.props.resourceBaseType}?_profile:below=${this.props.resourceUrl}&${name}=${param.code}`,
-              );
+              let url = `${this.props.baseUrl}${this.props.resourceBaseType}`;
+              if (this.props.resourceBaseType !== this.props.resourceType) {
+                url = url.concat(
+                  `?_profile:below=${this.props.resourceUrl}&${name}=${param.code}`,
+                );
+              } else {
+                url = url.concat(`?${name}=${param.code}`);
+              }
+              const count = await this.props.getCount(url);
               return {
                 ...param,
                 count: count ? count : 0,
@@ -359,6 +375,55 @@ class ResourceDetails extends React.Component {
     return chartResults;
   };
 
+  getAttributeTableResults = async (attribute, chartType) => {
+    this.setState({showModal: true, tableLoaded: false}, async () => {
+      const {baseUrl, resourceBaseType, resourceType, resourceUrl} = this.props;
+      let data = null;
+      const allFields = defaultTableFields.concat(attribute.name);
+      let url = `${baseUrl}${resourceBaseType}`;
+      if (resourceBaseType !== resourceType) {
+        url = url.concat(`?_profile:below=${resourceUrl}&`);
+      } else {
+        url = url.concat('?');
+      }
+      if (chartType === 'count') {
+        data = await this.props.fetchResource(
+          `${url}${attribute.name}:missing=false`,
+        );
+      } else {
+        data = await this.props.fetchResource(url);
+      }
+      let results =
+        data && data.entry ? data.entry.map(item => item.resource) : [];
+      const nextPage = data.link.findIndex(x => x.relation === 'next');
+      let nextPageUrl = null;
+      if (nextPage > -1) {
+        nextPageUrl = data.link[nextPage].url.replace(
+          'localhost',
+          '10.10.1.191',
+        );
+      }
+      let totalResults = 0;
+      attribute.queryParams.forEach(param => {
+        totalResults += param.count;
+      });
+      this.setState({
+        tableLoaded: true,
+        modalAttribute: attribute.name,
+        tableResults: results,
+        nextPageUrl: nextPageUrl,
+        totalResults,
+        tableColumns: allFields,
+      });
+    });
+  };
+
+  closeModal = () => {
+    this.setState({
+      showModal: false,
+    });
+  };
+
   render() {
     const {total, attributes, queriesComplete} = this.state;
     const {resourceBaseType, resourceType} = this.props;
@@ -393,6 +458,9 @@ class ResourceDetails extends React.Component {
                     <div
                       className="resource-details__query"
                       key={`${attribute}-${i}`}
+                      onClick={() =>
+                        this.getAttributeTableResults(attribute, chartType)
+                      }
                     >
                       <h3>{attribute.name}</h3>
                       {chartType === 'count' ? (
@@ -422,6 +490,32 @@ class ResourceDetails extends React.Component {
             </div>
           ))}
         </div>
+        <Modal
+          open={this.state.showModal}
+          onClose={() => this.closeModal()}
+          dimmer="inverted"
+        >
+          <Modal.Header>{this.props.resourceType}</Modal.Header>
+          <Modal.Content>
+            <Modal.Description>
+              <Header>
+                {this.state.totalResults} results for{' '}
+                {this.state.modalAttribute}
+              </Header>
+              {this.state.tableLoaded ? (
+                <ResultsTable
+                  fetchResource={this.props.fetchResource}
+                  results={this.state.tableResults}
+                  nextPageUrl={this.state.nextPageUrl}
+                  totalResults={this.state.totalResults}
+                  tableColumns={this.state.tableColumns}
+                />
+              ) : (
+                <div className="ui active loader" />
+              )}
+            </Modal.Description>
+          </Modal.Content>
+        </Modal>
       </div>
     );
   }

@@ -1,6 +1,7 @@
 import {connect} from 'react-redux';
 import {setResources, setApi} from '../actions';
 import {fetchAllResources, getResourceCount} from '../utils/api';
+import {getBaseResourceCount} from '../utils/common';
 import {acceptedResourceTypes} from '../config';
 import Homepage from './Homepage';
 
@@ -10,6 +11,21 @@ const getAllResources = async (baseUrl, resourceType) => {
   allResources = allResources
     ? await setResourceCounts(baseUrl, allResources)
     : [];
+  allResources = await Promise.all(
+    allResources.map(async resource => {
+      if (resource && resource.baseType === resource.name) {
+        return {
+          ...resource,
+          count: await getBaseResourceCount(
+            baseUrl,
+            resource.baseType,
+            allResources,
+          ),
+        };
+      }
+      return resource;
+    }),
+  );
   allResources = formatResources(allResources);
   return allResources;
 };
