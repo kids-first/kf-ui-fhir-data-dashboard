@@ -1,3 +1,12 @@
+<p align="center">
+  <img src="public/fhir-data-dashboard.svg" alt="FHIR Data Dashboard logo" width="660px">
+</p>
+<p align="center">
+  <a href="https://github.com/kids-first/kf-ui-fhir-data-dashboard/blob/master/LICENSE"><img src="https://img.shields.io/github/license/kids-first/kf-ui-fhir-data-dashboard.svg?style=for-the-badge"></a>
+  <a href="https://circleci.com/gh/kids-first/kf-ui-fhir-data-dashboard"><img src="https://img.shields.io/circleci/project/github/kids-first/kf-ui-fhir-data-dashboard.svg?style=for-the-badge"></a>
+  <a href="https://codecov.io/gh/kids-first/kf-ui-fhir-data-dashboard"><img src="https://img.shields.io/codecov/c/gh/kids-first/kf-ui-fhir-data-dashboard?style=for-the-badge"></a>
+</p>
+
 # Kids First FHIR Data Dashboard
 
 💡📊A prototype data dashboard for any FHIR server. Spin this up in front of your server so people can get a quick visual understanding of what's in this server.
