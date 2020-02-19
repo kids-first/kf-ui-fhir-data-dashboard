@@ -92,3 +92,10 @@ export const getCapabilityStatement = async (url, resourceType) =>
         : [];
     return params.searchParam ? params.searchParam : [];
   });
+
+export const getOntologies = async url =>
+  fetchAllResources(url, []).then(data =>
+    data
+      .map(item => item.resource)
+      .map(resource => ({name: resource.name, url: resource.url})),
+  );

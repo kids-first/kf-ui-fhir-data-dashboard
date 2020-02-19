@@ -56,3 +56,8 @@ h5 {
 a {
   color: var(--d3b-brightblue) !important;
 }
+
+pre {
+  white-space: pre-wrap;
+  word-break: break-all;
+}

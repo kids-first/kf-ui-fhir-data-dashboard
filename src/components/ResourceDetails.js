@@ -436,15 +436,13 @@ class ResourceDetails extends React.Component {
         />
         <div className="resource-details__header">
           <div className="resource-details__header-title">
-            <h2>{resourceType}</h2>
-            <p>Base type: {resourceBaseType}</p>
-          </div>
-          <div className="resource-details__header-total">
+            <h2>{resourceType}:</h2>
             <p className="resource-details__count">
               {getHumanReadableNumber(total)}
             </p>
-            <p>total</p>
+            <h2>total</h2>
           </div>
+          <p>Base type: {resourceBaseType}</p>
         </div>
         {queriesComplete && attributes.length === 0 ? (
           <h3>No statistics to display.</h3>

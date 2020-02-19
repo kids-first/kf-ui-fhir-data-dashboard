@@ -25,11 +25,6 @@
   background-color: var(--d3b-mediumgray);
 }
 
-.results-table__details pre {
-  white-space: pre-wrap;
-  word-break: break-all;
-}
-
 /* React virtualized Table overrides */
 
 .ReactVirtualized__Table__headerRow {
