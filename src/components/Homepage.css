@@ -74,6 +74,33 @@
   cursor: pointer;
 }
 
+.homepage__controls-view {
+  display: flex;
+  margin: 10px 0;
+}
+
+i.icon.homepage__controls-view-icon {
+  margin: 0 0 !important;
+}
+
+i.inverted.bordered.icon.homepage__controls-view-icon,
+i.inverted.circular.icon.homepage__controls-view-icon {
+  background-color: var(--d3b-mediumgray) !important;
+  margin: 0 0 !important;
+}
+
+i.inverted.bordered.icon.homepage__controls-view-icon:hover,
+i.inverted.circular.icon.homepage__controls-view-icon:hover {
+  background-color: var(--d3b-brightblue) !important;
+  margin: 0 0 !important;
+}
+
+i.inverted.bordered.icon.homepage__controls-view-icon--selected,
+i.inverted.circular.icon.homepage__controls-view-icon--selected {
+  background-color: var(--d3b-blue) !important;
+  margin: 0 0 !important;
+}
+
 .homepage__section {
   padding: 20px 20px;
   border: 1px solid lightgray;

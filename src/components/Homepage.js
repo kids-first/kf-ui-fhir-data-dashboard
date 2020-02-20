@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Card, Icon, Dropdown} from 'semantic-ui-react';
+import {Card, Icon, Dropdown, Table} from 'semantic-ui-react';
 import Avatar from 'react-avatar';
 import {getHumanReadableNumber} from '../utils/common';
 import {resourceCategories, defaultFhirAPIs} from '../config';
@@ -16,6 +16,7 @@ class Homepage extends React.Component {
       searchResourceTitle: 'Resource Types',
       resourcesByCategory: resourceCategories,
       openTabs: Object.keys(resourceCategories),
+      cardView: true,
     };
   }
 
@@ -157,12 +158,24 @@ class Homepage extends React.Component {
     }
   };
 
+  toggleView = view => {
+    switch (view) {
+      case 'grid':
+        return this.setState({cardView: true});
+      case 'list':
+        return this.setState({cardView: false});
+      default:
+        return;
+    }
+  };
+
   render() {
     const {
       searchResourceTitle,
       filteredResources,
       resourcesByCategory,
       openTabs,
+      cardView,
     } = this.state;
     const {allResources, allResourcesFetched} = this.props;
     return (
@@ -202,7 +215,27 @@ class Homepage extends React.Component {
             />
           </div>
         </div>
-        {allResourcesFetched ? (
+        <div className="homepage__controls-view">
+          <Icon
+            inverted
+            bordered
+            className={'homepage__controls-view-icon'.concat(
+              !this.state.cardView ? '--selected' : '',
+            )}
+            name="list"
+            onClick={() => this.toggleView('list')}
+          />
+          <Icon
+            className={'homepage__controls-view-icon'.concat(
+              this.state.cardView ? '--selected' : '',
+            )}
+            inverted
+            bordered
+            name="grid layout"
+            onClick={() => this.toggleView('grid')}
+          />
+        </div>
+        {allResourcesFetched && cardView ? (
           <div className="homepage__content">
             {Object.keys(resourcesByCategory).map(category => {
               const categoryCount = this.getCategoryCount(category);
@@ -296,6 +329,28 @@ class Homepage extends React.Component {
               );
             })}
           </div>
+        ) : null}
+        {allResourcesFetched && !cardView ? (
+          <Table celled>
+            <Table.Header>
+              <Table.Row>
+                <Table.HeaderCell>Name</Table.HeaderCell>
+                <Table.HeaderCell>Base Type</Table.HeaderCell>
+                <Table.HeaderCell>URL</Table.HeaderCell>
+                <Table.HeaderCell>#</Table.HeaderCell>
+              </Table.Row>
+            </Table.Header>
+            <Table.Body>
+              {Object.keys(filteredResources).map((key, i) => (
+                <Table.Row key={`${key}-${i}`}>
+                  <Table.Cell>{filteredResources[key].name}</Table.Cell>
+                  <Table.Cell>{filteredResources[key].baseType}</Table.Cell>
+                  <Table.Cell>{filteredResources[key].url}</Table.Cell>
+                  <Table.Cell>{filteredResources[key].count}</Table.Cell>
+                </Table.Row>
+              ))}
+            </Table.Body>
+          </Table>
         ) : null}
       </div>
     );
