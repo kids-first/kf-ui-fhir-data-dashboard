@@ -10,7 +10,6 @@ const fetchWithHeaders = async (url, headers, summary = false) => {
   const encodedStr = btoa(
     `${process.env.REACT_APP_KF_USER}:${process.env.REACT_APP_KF_PW}`,
   );
-  console.log('encoded str', encodedStr);
   return fetch(`${fullUrl}`, {
     headers: {
       ...headers,

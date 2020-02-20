@@ -1,7 +1,7 @@
 import {SET_RESOURCES, SET_API} from '../actions';
 
 const initialState = {
-  baseUrl: 'http://hapi.fhir.org/baseR4/',
+  baseUrl: 'http://10.10.1.191:8000/',
   allResources: {},
   allResourcesFetched: false,
 };
