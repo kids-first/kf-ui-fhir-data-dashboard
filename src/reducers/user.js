@@ -3,6 +3,7 @@ import {defaultFhirServers} from '../config';
 
 const initialState = {
   serverOptions: defaultFhirServers,
+  token: null,
 };
 
 const user = (state = initialState, action) => {
