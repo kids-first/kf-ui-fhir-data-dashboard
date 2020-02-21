@@ -42,6 +42,19 @@
 .app__header-user {
   display: flex;
   color: #fff;
+  margin: 0;
+}
+
+.app__header-info {
+  display: flex;
+  flex-flow: column;
+  align-items: flex-end;
+  flex: 1;
+}
+
+.app__header-user {
+  display: flex;
+  color: #fff;
   margin-bottom: 10px;
   align-items: center;
 }
