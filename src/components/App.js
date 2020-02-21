@@ -1,13 +1,18 @@
 import React from 'react';
-import {BrowserRouter as Router, Switch, Route, Link} from 'react-router-dom';
+import PropTypes from 'prop-types';
+import {BrowserRouter as Router, Switch, Link} from 'react-router-dom';
+import DecisionRoute from './DecisionRoute';
 import ReduxHomepage from './ReduxHomepage';
 import ReduxResourceDetails from './ReduxResourceDetails';
 import ReduxOntologyHomepage from './ReduxOntologyHomepage';
+import ReduxLogin from './ReduxLogin';
 import logo from '../img/d3b-cube.svg';
 import './App.css';
 
 class App extends React.Component {
   render() {
+    const authorized = !!this.props.token;
+    console.log('authorized?', authorized);
     return (
       <Router>
         <div className="app">
@@ -26,14 +31,43 @@ class App extends React.Component {
             </div>
           </div>
           <Switch>
-            <Route path="/ontologies" component={ReduxOntologyHomepage} />
-            <Route path="/:resourceBaseType" component={ReduxResourceDetails} />
-            <Route path="/" component={ReduxHomepage} />
+            <DecisionRoute
+              path="/login"
+              renderComponent={!authorized}
+              component={ReduxLogin}
+              redirectPath="/"
+            />
+            <DecisionRoute
+              path="/ontologies"
+              renderComponent={!!authorized}
+              component={ReduxOntologyHomepage}
+              redirectPath="/login"
+            />
+            <DecisionRoute
+              path="/:resourceBaseType"
+              renderComponent={!!authorized}
+              component={ReduxResourceDetails}
+              redirectPath="/login"
+            />
+            <DecisionRoute
+              path="/"
+              renderComponent={!!authorized}
+              component={ReduxHomepage}
+              redirectPath="/login"
+            />
           </Switch>
         </div>
       </Router>
     );
   }
 }
+
+App.propTypes = {
+  token: PropTypes.string,
+};
+
+App.defaultProps = {
+  token: null,
+};
 
 export default App;
