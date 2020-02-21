@@ -70,7 +70,7 @@ export const getCapabilityStatementSearchParams = async (url, resourceType) =>
       data && data.rest && data.rest[0] && data.rest[0].resource
         ? data.rest[0].resource.find(x => x.type === resourceType)
         : [];
-    return params.searchParam ? params.searchParam : [];
+    return params && params.searchParam ? params.searchParam : [];
   });
 
 export const getOntologies = async url =>

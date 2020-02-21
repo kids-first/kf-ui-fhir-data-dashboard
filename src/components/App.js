@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {BrowserRouter as Router, Switch, Link} from 'react-router-dom';
+import {Button} from 'semantic-ui-react';
 import DecisionRoute from './DecisionRoute';
 import ReduxHomepage from './ReduxHomepage';
 import ReduxResourceDetails from './ReduxResourceDetails';
@@ -21,14 +22,22 @@ class App extends React.Component {
               <img src={logo} alt="D3b" />
               <h1>FHIR Data Dashboard</h1>
             </Link>
-            <div className="app__header-nav">
-              <Link to="/">
-                <div className="app__header-nav-item">Resources</div>
-              </Link>
-              <Link to="/ontologies">
-                <div className="app__header-nav-item">Ontologies</div>
-              </Link>
-            </div>
+            {authorized ? (
+              <div className="app__header-info">
+                <div className="app__header-user">
+                  <p>Welcome, {this.props.username}</p>
+                  <Button onClick={() => this.props.logout()}>Logout</Button>
+                </div>
+                <div className="app__header-nav">
+                  <Link to="/">
+                    <div className="app__header-nav-item">Resources</div>
+                  </Link>
+                  <Link to="/ontologies">
+                    <div className="app__header-nav-item">Ontologies</div>
+                  </Link>
+                </div>
+              </div>
+            ) : null}
           </div>
           <Switch>
             <DecisionRoute
@@ -64,10 +73,13 @@ class App extends React.Component {
 
 App.propTypes = {
   token: PropTypes.string,
+  username: PropTypes.string,
+  logout: PropTypes.func.isRequired,
 };
 
 App.defaultProps = {
   token: null,
+  username: null,
 };
 
 export default App;
