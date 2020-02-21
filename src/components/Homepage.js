@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Card, Icon, Dropdown, Table} from 'semantic-ui-react';
 import Avatar from 'react-avatar';
+import _ from 'lodash';
 import {getHumanReadableNumber} from '../utils/common';
 import {resourceCategories, defaultFhirAPIs} from '../config';
 import SearchBar from './SearchBar';
@@ -12,11 +13,13 @@ class Homepage extends React.Component {
     super(props);
     this.state = {
       filteredResources: props.allResources,
+      listResources: this.mapToSortedList(props.allResources, 'name'),
       searchResourceType: 'StructureDefinition',
       searchResourceTitle: 'Resource Types',
       resourcesByCategory: resourceCategories,
       openTabs: Object.keys(resourceCategories),
-      cardView: true,
+      sortColumn: 'name',
+      sortDirection: 'ascending',
     };
   }
 
@@ -40,10 +43,17 @@ class Homepage extends React.Component {
         const resourcesByCategory = this.setCategories(resources);
         this.setState({
           filteredResources: resources,
+          listResources: this.mapToSortedList(resources, this.state.sortColumn),
           resourcesByCategory,
         });
       });
   };
+
+  mapToSortedList = (map, sortColumn) =>
+    _.chain(map)
+      .toArray()
+      .sortBy([sortColumn])
+      .value();
 
   setCategories = resources => {
     let resourcesByCategory = resourceCategories;
@@ -66,6 +76,8 @@ class Homepage extends React.Component {
             )
           ) {
             resourcesByCategory[category][subCategory].add(resource);
+            resources[resource].module = category;
+            resources[resource].category = subCategory;
           }
         });
       });
@@ -82,10 +94,16 @@ class Homepage extends React.Component {
   handleResultSelect = searchResults => {
     const {allResources} = this.props;
     const filteredResources = {};
-    searchResults.forEach(
-      result => (filteredResources[result.title] = allResources[result.title]),
-    );
-    this.setState({filteredResources});
+    searchResults.forEach(result => {
+      filteredResources[result.title] = allResources[result.title];
+    });
+    this.setState({
+      filteredResources,
+      listResources: this.mapToSortedList(
+        filteredResources,
+        this.state.sortColumn,
+      ),
+    });
   };
 
   toggleTab = tab => {
@@ -161,11 +179,30 @@ class Homepage extends React.Component {
   toggleView = view => {
     switch (view) {
       case 'grid':
-        return this.setState({cardView: true});
+        this.handleSort('name');
+        return this.props.setHomepageView(true);
       case 'list':
-        return this.setState({cardView: false});
+        return this.props.setHomepageView(false);
       default:
         return;
+    }
+  };
+
+  handleSort = selectedColumn => {
+    const {sortColumn, sortDirection, listResources} = this.state;
+
+    if (sortColumn !== selectedColumn) {
+      this.setState({
+        sortColumn: selectedColumn,
+        listResources: _.sortBy(listResources, [selectedColumn]),
+        sortDirection: 'ascending',
+      });
+    } else {
+      this.setState({
+        listResources: listResources.reverse(),
+        sortDirection:
+          sortDirection === 'ascending' ? 'descending' : 'ascending',
+      });
     }
   };
 
@@ -173,11 +210,13 @@ class Homepage extends React.Component {
     const {
       searchResourceTitle,
       filteredResources,
+      listResources,
       resourcesByCategory,
       openTabs,
-      cardView,
+      sortDirection,
+      sortColumn,
     } = this.state;
-    const {allResources, allResourcesFetched} = this.props;
+    const {allResources, allResourcesFetched, cardView} = this.props;
     return (
       <div className="homepage">
         <div
@@ -220,14 +259,14 @@ class Homepage extends React.Component {
             inverted
             bordered
             className={'homepage__controls-view-icon'.concat(
-              !this.state.cardView ? '--selected' : '',
+              !cardView ? '--selected' : '',
             )}
             name="list"
             onClick={() => this.toggleView('list')}
           />
           <Icon
             className={'homepage__controls-view-icon'.concat(
-              this.state.cardView ? '--selected' : '',
+              cardView ? '--selected' : '',
             )}
             inverted
             bordered
@@ -331,22 +370,52 @@ class Homepage extends React.Component {
           </div>
         ) : null}
         {allResourcesFetched && !cardView ? (
-          <Table celled>
+          <Table celled sortable>
             <Table.Header>
               <Table.Row>
-                <Table.HeaderCell>Name</Table.HeaderCell>
-                <Table.HeaderCell>Base Type</Table.HeaderCell>
-                <Table.HeaderCell>URL</Table.HeaderCell>
-                <Table.HeaderCell>#</Table.HeaderCell>
+                <Table.HeaderCell
+                  sorted={sortColumn === 'name' ? sortDirection : null}
+                  onClick={() => this.handleSort('name')}
+                >
+                  Name
+                </Table.HeaderCell>
+                <Table.HeaderCell
+                  sorted={sortColumn === 'baseType' ? sortDirection : null}
+                  onClick={() => this.handleSort('baseType')}
+                >
+                  Base Type
+                </Table.HeaderCell>
+                <Table.HeaderCell
+                  sorted={sortColumn === 'module' ? sortDirection : null}
+                  onClick={() => this.handleSort('module')}
+                >
+                  FHIR Module
+                </Table.HeaderCell>
+                <Table.HeaderCell
+                  sorted={sortColumn === 'category' ? sortDirection : null}
+                  onClick={() => this.handleSort('category')}
+                >
+                  FHIR Category
+                </Table.HeaderCell>
+                <Table.HeaderCell
+                  sorted={sortColumn === 'count' ? sortDirection : null}
+                  onClick={() => this.handleSort('count')}
+                >
+                  #
+                </Table.HeaderCell>
               </Table.Row>
             </Table.Header>
             <Table.Body>
-              {Object.keys(filteredResources).map((key, i) => (
-                <Table.Row key={`${key}-${i}`}>
-                  <Table.Cell>{filteredResources[key].name}</Table.Cell>
-                  <Table.Cell>{filteredResources[key].baseType}</Table.Cell>
-                  <Table.Cell>{filteredResources[key].url}</Table.Cell>
-                  <Table.Cell>{filteredResources[key].count}</Table.Cell>
+              {listResources.map((resource, i) => (
+                <Table.Row
+                  key={`${resource.id}-${i}`}
+                  onClick={() => this.onClick(resource)}
+                >
+                  <Table.Cell>{resource.name}</Table.Cell>
+                  <Table.Cell>{resource.baseType}</Table.Cell>
+                  <Table.Cell>{resource.module}</Table.Cell>
+                  <Table.Cell>{resource.category}</Table.Cell>
+                  <Table.Cell>{resource.count}</Table.Cell>
                 </Table.Row>
               ))}
             </Table.Body>
@@ -364,11 +433,14 @@ Homepage.propTypes = {
   allResourcesFetched: PropTypes.bool,
   baseUrl: PropTypes.string.isRequired,
   setBaseUrl: PropTypes.func.isRequired,
+  cardView: PropTypes.bool,
+  setHomepageView: PropTypes.func.isRequired,
 };
 
 Homepage.defaultProps = {
   allResources: {},
   allResourcesFetched: false,
+  cardView: true,
 };
 
 export default Homepage;

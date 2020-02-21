@@ -1,9 +1,10 @@
-import {SET_RESOURCES, SET_API} from '../actions';
+import {SET_RESOURCES, SET_API, SET_HOMEPAGE_VIEW} from '../actions';
 
 const initialState = {
   baseUrl: 'http://hapi.fhir.org/baseR4/',
   allResources: {},
   allResourcesFetched: false,
+  cardView: true,
 };
 
 const resources = (state = initialState, action) => {
@@ -20,6 +21,11 @@ const resources = (state = initialState, action) => {
         baseUrl: action.baseUrl,
         allResources: {},
         allResourcesFetched: false,
+      };
+    case SET_HOMEPAGE_VIEW:
+      return {
+        ...state,
+        cardView: action.cardView,
       };
     default:
       return state;

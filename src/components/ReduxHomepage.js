@@ -1,5 +1,5 @@
 import {connect} from 'react-redux';
-import {setResources, setApi} from '../actions';
+import {setResources, setApi, setHomepageView} from '../actions';
 import {fetchAllResources, getResourceCount} from '../utils/api';
 import {getBaseResourceCount} from '../utils/common';
 import {acceptedResourceTypes} from '../config';
@@ -66,6 +66,7 @@ const mapStateToProps = (state, ownProps) => ({
   allResourcesFetched:
     state && state.resources ? state.resources.allResourcesFetched : false,
   baseUrl: state.resources.baseUrl,
+  cardView: state.resources.cardView,
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => {
@@ -75,6 +76,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(setResources(allResources));
     },
     setBaseUrl: url => dispatch(setApi(url)),
+    setHomepageView: cardView => dispatch(setHomepageView(cardView)),
   };
 };
 
