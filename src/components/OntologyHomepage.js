@@ -43,7 +43,6 @@ class OntologyHomepage extends React.Component {
 
   getOntologies = async () => {
     this.props.getOntologies(`${this.props.baseUrl}CodeSystem`).then(() => {
-      console.log('this.props.ontologies', this.props.ontologies);
       this.setState({
         filteredOntologies: this.props.ontologies,
         listOntologies: this.mapToArray(this.props.ontologies),
