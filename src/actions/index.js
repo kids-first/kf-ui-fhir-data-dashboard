@@ -40,6 +40,11 @@ export const setUser = (username, password) => {
     password,
   };
 };
+export const setUser = (username, password) => ({
+  type: SET_USER,
+  username,
+  password,
+});
 
 export const clearUser = () => ({
   type: CLEAR_USER,

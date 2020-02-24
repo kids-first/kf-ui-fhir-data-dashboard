@@ -9,7 +9,7 @@ class DecisionRoute extends React.Component {
       redirectPath,
       ...rest
     } = this.props;
-    console.log('this.props', this.props);
+
     return (
       <Route
         {...rest}

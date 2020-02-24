@@ -13,7 +13,7 @@ import './App.css';
 class App extends React.Component {
   render() {
     const authorized = !!this.props.token;
-    console.log('authorized?', authorized);
+
     return (
       <Router>
         <div className="app">

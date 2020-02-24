@@ -25,7 +25,6 @@ class Login extends React.Component {
   };
 
   render() {
-    console.log('this.state', this.state);
     return (
       <div className="login">
         <h2>Login</h2>
