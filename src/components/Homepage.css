@@ -137,20 +137,6 @@ i.inverted.circular.icon.homepage__controls-view-icon--selected {
   font-size: 16px;
 }
 
-.homepage tr {
-  cursor: pointer;
-}
-
-.homepage thead > tr:hover,
-.homepage thead > td:hover {
-  background-color: inherit;
-}
-
-.homepage tr:hover,
-.homepage td:hover {
-  background-color: var(--d3b-hoverblue);
-}
-
 /* Semantic UI Overrides */
 
 .ui.card,

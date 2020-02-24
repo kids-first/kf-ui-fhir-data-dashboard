@@ -1,9 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Dropdown, Table} from 'semantic-ui-react';
+import {Dropdown} from 'semantic-ui-react';
 import {getHumanReadableNumber} from '../utils/common';
 import {defaultFhirAPIs} from '../config';
 import SearchBar from './SearchBar';
+import SortableTable from './SortableTable';
 import './OntologyHomepage.css';
 
 class OntologyHomepage extends React.Component {
@@ -11,6 +12,7 @@ class OntologyHomepage extends React.Component {
     super(props);
     this.state = {
       filteredOntologies: props.ontologies,
+      listOntologies: this.mapToArray(props.ontologies),
     };
   }
 
@@ -32,9 +34,19 @@ class OntologyHomepage extends React.Component {
     }
   }
 
+  mapToArray = map =>
+    Object.keys(map).map((key, i) => ({
+      id: i,
+      name: key,
+      url: map[key],
+    }));
+
   getOntologies = async () => {
     this.props.getOntologies(`${this.props.baseUrl}CodeSystem`).then(() => {
-      this.setState({filteredOntologies: this.props.ontologies});
+      this.setState({
+        filteredOntologies: this.props.ontologies,
+        listOntologies: this.mapToArray(this.props.ontologies),
+      });
     });
   };
 
@@ -44,12 +56,21 @@ class OntologyHomepage extends React.Component {
     searchResults.forEach(
       result => (filteredOntologies[result.title] = ontologies[result.title]),
     );
-    this.setState({filteredOntologies});
+    this.setState({
+      filteredOntologies,
+      listOntologies: this.mapToArray(filteredOntologies),
+    });
   };
 
   render() {
-    const {filteredOntologies} = this.state;
+    const {filteredOntologies, listOntologies} = this.state;
     const {ontologies, ontologiesFetched} = this.props;
+
+    const tableHeaders = [
+      {display: 'Name', sortId: 'name'},
+      {display: 'URL', sortId: 'url'},
+    ];
+
     return (
       <div className="ontology-homepage">
         <div className="ontology-homepage__header">
@@ -79,22 +100,7 @@ class OntologyHomepage extends React.Component {
           />
         </div>
         {ontologiesFetched ? (
-          <Table celled>
-            <Table.Header>
-              <Table.Row>
-                <Table.HeaderCell>Name</Table.HeaderCell>
-                <Table.HeaderCell>URL</Table.HeaderCell>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              {Object.keys(filteredOntologies).map((key, i) => (
-                <Table.Row key={`${key}-${i}`}>
-                  <Table.Cell>{key}</Table.Cell>
-                  <Table.Cell>{filteredOntologies[key].join(', ')}</Table.Cell>
-                </Table.Row>
-              ))}
-            </Table.Body>
-          </Table>
+          <SortableTable headerCells={tableHeaders} data={listOntologies} />
         ) : (
           <div className="ui active loader" />
         )}
