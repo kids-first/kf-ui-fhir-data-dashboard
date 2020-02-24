@@ -35,6 +35,7 @@ const setResourceCounts = async (baseUrl, items) =>
     items.map(async item => {
       if (showResourceType(item.resource.type)) {
         return {
+          id: item.resource.id,
           baseType: item.resource.type,
           name: item.resource.name,
           url: item.resource.url,

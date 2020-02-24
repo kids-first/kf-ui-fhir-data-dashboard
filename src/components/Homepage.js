@@ -380,6 +380,12 @@ class Homepage extends React.Component {
                   Name
                 </Table.HeaderCell>
                 <Table.HeaderCell
+                  sorted={sortColumn === 'id' ? sortDirection : null}
+                  onClick={() => this.handleSort('id')}
+                >
+                  ID
+                </Table.HeaderCell>
+                <Table.HeaderCell
                   sorted={sortColumn === 'baseType' ? sortDirection : null}
                   onClick={() => this.handleSort('baseType')}
                 >
@@ -412,6 +418,7 @@ class Homepage extends React.Component {
                   onClick={() => this.onClick(resource)}
                 >
                   <Table.Cell>{resource.name}</Table.Cell>
+                  <Table.Cell>{resource.id}</Table.Cell>
                   <Table.Cell>{resource.baseType}</Table.Cell>
                   <Table.Cell>{resource.module}</Table.Cell>
                   <Table.Cell>{resource.category}</Table.Cell>

@@ -148,7 +148,7 @@ i.inverted.circular.icon.homepage__controls-view-icon--selected {
 
 .homepage tr:hover,
 .homepage td:hover {
-  background-color: var(--d3b-brightblue);
+  background-color: var(--d3b-hoverblue);
 }
 
 /* Semantic UI Overrides */
