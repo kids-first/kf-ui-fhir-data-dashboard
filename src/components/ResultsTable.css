@@ -22,7 +22,7 @@
 
 .results-table__row-even:hover,
 .results-table__row-odd:hover {
-  background-color: var(--d3b-mediumgray);
+  background-color: var(--d3b-hoverblue);
 }
 
 /* React virtualized Table overrides */

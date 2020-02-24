@@ -5,6 +5,7 @@
   --d3b-lightgray: #f3f3f3;
   --d3b-blue: #005788;
   --d3b-brightblue: #41b6e6;
+  --d3b-hoverblue: rgba(65, 182, 230, 0.4);
 }
 
 body {
