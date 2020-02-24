@@ -1,0 +1,17 @@
+.sortable-table {
+  margin: 20px 0;
+}
+
+.sortable-table tr {
+  cursor: pointer;
+}
+
+.sortable-table thead > tr:hover,
+.sortable-table thead > td:hover {
+  background-color: inherit;
+}
+
+.sortable-table tr:hover,
+.sortable-table td:hover {
+  background-color: var(--d3b-hoverblue);
+}

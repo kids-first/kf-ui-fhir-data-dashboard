@@ -1,11 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Card, Icon, Dropdown, Table} from 'semantic-ui-react';
+import {Card, Icon, Dropdown} from 'semantic-ui-react';
 import Avatar from 'react-avatar';
 import _ from 'lodash';
 import {getHumanReadableNumber} from '../utils/common';
 import {resourceCategories, defaultFhirAPIs} from '../config';
 import SearchBar from './SearchBar';
+import SortableTable from './SortableTable';
 import './Homepage.css';
 
 class Homepage extends React.Component {
@@ -13,13 +14,11 @@ class Homepage extends React.Component {
     super(props);
     this.state = {
       filteredResources: props.allResources,
-      listResources: this.mapToSortedList(props.allResources, 'name'),
+      listResources: _.toArray(props.allResources),
       searchResourceType: 'StructureDefinition',
       searchResourceTitle: 'Resource Types',
       resourcesByCategory: resourceCategories,
       openTabs: Object.keys(resourceCategories),
-      sortColumn: 'name',
-      sortDirection: 'ascending',
     };
   }
 
@@ -43,17 +42,11 @@ class Homepage extends React.Component {
         const resourcesByCategory = this.setCategories(resources);
         this.setState({
           filteredResources: resources,
-          listResources: this.mapToSortedList(resources, this.state.sortColumn),
+          listResources: _.toArray(resources),
           resourcesByCategory,
         });
       });
   };
-
-  mapToSortedList = (map, sortColumn) =>
-    _.chain(map)
-      .toArray()
-      .sortBy([sortColumn])
-      .value();
 
   setCategories = resources => {
     let resourcesByCategory = resourceCategories;
@@ -99,10 +92,7 @@ class Homepage extends React.Component {
     });
     this.setState({
       filteredResources,
-      listResources: this.mapToSortedList(
-        filteredResources,
-        this.state.sortColumn,
-      ),
+      listResources: _.toArray(filteredResources),
     });
   };
 
@@ -179,30 +169,11 @@ class Homepage extends React.Component {
   toggleView = view => {
     switch (view) {
       case 'grid':
-        this.handleSort('name');
         return this.props.setHomepageView(true);
       case 'list':
         return this.props.setHomepageView(false);
       default:
         return;
-    }
-  };
-
-  handleSort = selectedColumn => {
-    const {sortColumn, sortDirection, listResources} = this.state;
-
-    if (sortColumn !== selectedColumn) {
-      this.setState({
-        sortColumn: selectedColumn,
-        listResources: _.sortBy(listResources, [selectedColumn]),
-        sortDirection: 'ascending',
-      });
-    } else {
-      this.setState({
-        listResources: listResources.reverse(),
-        sortDirection:
-          sortDirection === 'ascending' ? 'descending' : 'ascending',
-      });
     }
   };
 
@@ -213,10 +184,16 @@ class Homepage extends React.Component {
       listResources,
       resourcesByCategory,
       openTabs,
-      sortDirection,
-      sortColumn,
     } = this.state;
     const {allResources, allResourcesFetched, cardView} = this.props;
+    const tableHeaders = [
+      {display: 'Name', sortId: 'name'},
+      {display: 'ID', sortId: 'id'},
+      {display: 'Base Type', sortId: 'baseType'},
+      {display: 'FHIR Module', sortId: 'module'},
+      {display: 'FHIR Category', sortId: 'category'},
+      {display: '#', sortId: 'count', func: str => getHumanReadableNumber(str)},
+    ];
     return (
       <div className="homepage">
         <div
@@ -370,63 +347,11 @@ class Homepage extends React.Component {
           </div>
         ) : null}
         {allResourcesFetched && !cardView ? (
-          <Table celled sortable>
-            <Table.Header>
-              <Table.Row>
-                <Table.HeaderCell
-                  sorted={sortColumn === 'name' ? sortDirection : null}
-                  onClick={() => this.handleSort('name')}
-                >
-                  Name
-                </Table.HeaderCell>
-                <Table.HeaderCell
-                  sorted={sortColumn === 'id' ? sortDirection : null}
-                  onClick={() => this.handleSort('id')}
-                >
-                  ID
-                </Table.HeaderCell>
-                <Table.HeaderCell
-                  sorted={sortColumn === 'baseType' ? sortDirection : null}
-                  onClick={() => this.handleSort('baseType')}
-                >
-                  Base Type
-                </Table.HeaderCell>
-                <Table.HeaderCell
-                  sorted={sortColumn === 'module' ? sortDirection : null}
-                  onClick={() => this.handleSort('module')}
-                >
-                  FHIR Module
-                </Table.HeaderCell>
-                <Table.HeaderCell
-                  sorted={sortColumn === 'category' ? sortDirection : null}
-                  onClick={() => this.handleSort('category')}
-                >
-                  FHIR Category
-                </Table.HeaderCell>
-                <Table.HeaderCell
-                  sorted={sortColumn === 'count' ? sortDirection : null}
-                  onClick={() => this.handleSort('count')}
-                >
-                  #
-                </Table.HeaderCell>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              {listResources.map((resource, i) => (
-                <Table.Row
-                  key={`${resource.id}-${i}`}
-                  onClick={() => this.onClick(resource)}
-                >
-                  <Table.Cell>{resource.name}</Table.Cell>
-                  <Table.Cell>{resource.id}</Table.Cell>
-                  <Table.Cell>{resource.baseType}</Table.Cell>
-                  <Table.Cell>{resource.module}</Table.Cell>
-                  <Table.Cell>{resource.category}</Table.Cell>
-                  <Table.Cell>{resource.count}</Table.Cell>
-                </Table.Row>
-              ))}
-            </Table.Body>
-          </Table>
+          <SortableTable
+            headerCells={tableHeaders}
+            data={listResources}
+            onRowClick={this.onClick}
+          />
         ) : null}
       </div>
     );
