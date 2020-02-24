@@ -1,24 +1,4 @@
-import {shouldUseProxyUrl, proxyUrl, oAuthUrl} from '../config';
-
-const fetchToken = async callback =>
-  fetch(`${proxyUrl}${oAuthUrl}`, {
-    method: 'POST',
-    body: JSON.stringify({
-      grantType: 'client_credentials',
-      scopes: 'user/*.read',
-    }),
-    headers: {
-      Accept: 'application/json',
-      Authorization: `Basic ${process.env.REACT_APP_SECRET}`,
-      'Content-Type': 'application/json',
-      Origin: 'https://localhost:3000',
-    },
-  })
-    .then(res => res.json())
-    .then(data => {
-      sessionStorage.setItem('accessToken', data.access_token);
-      return callback();
-    });
+import {shouldUseProxyUrl, proxyUrl} from '../config';
 
 const fetchWithHeaders = async (url, headers, summary = false) => {
   let fullUrl = shouldUseProxyUrl(url) ? `${proxyUrl}${url}` : `${url}`;
@@ -27,10 +7,13 @@ const fetchWithHeaders = async (url, headers, summary = false) => {
       .concat(`${url.includes('?') ? '&' : '?'}`)
       .concat('_summary=count');
   }
+  const encodedStr = btoa(
+    `${process.env.REACT_APP_KF_USER}:${process.env.REACT_APP_KF_PW}`,
+  );
   return fetch(`${fullUrl}`, {
     headers: {
       ...headers,
-      Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
+      Authorization: `Basic ${encodedStr}`,
       'Cache-Control': 'max-age=3600',
     },
   })
@@ -43,9 +26,6 @@ const fetchWithHeaders = async (url, headers, summary = false) => {
     .then(data => data)
     .catch(err => {
       console.log('Error:', err);
-      if (err.status === 401) {
-        return fetchToken(() => fetchWithHeaders(url));
-      }
       return err;
     });
 };
