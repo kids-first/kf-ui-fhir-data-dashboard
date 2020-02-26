@@ -1,4 +1,5 @@
 import {shouldUseProxyUrl, proxyUrl, fhirUrl} from '../config';
+import store from '../store';
 
 const fetchWithHeaders = async (url, headers, summary = false) => {
   let fullUrl = shouldUseProxyUrl(url) ? `${proxyUrl}${url}` : `${url}`;
@@ -7,13 +8,11 @@ const fetchWithHeaders = async (url, headers, summary = false) => {
       .concat(`${url.includes('?') ? '&' : '?'}`)
       .concat('_summary=count');
   }
-  const encodedStr = btoa(
-    `${process.env.REACT_APP_KF_USER}:${process.env.REACT_APP_KF_PW}`,
-  );
+  const token = store.getState().user.token;
   return fetch(`${fullUrl}`, {
     headers: {
       ...headers,
-      Authorization: `Basic ${encodedStr}`,
+      Authorization: `Basic ${token}`,
       'Cache-Control': 'max-age=3600',
     },
   })
