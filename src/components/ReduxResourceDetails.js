@@ -3,7 +3,7 @@ import {
   getResourceCount,
   getSearchParams,
   fetchResource,
-  getCapabilityStatement,
+  getCapabilityStatementSearchParams,
 } from '../utils/api';
 import queryString from 'query-string';
 import ResourceDetails from './ResourceDetails';
@@ -35,7 +35,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     getCount: url => getResourceCount(url),
     getSearchParams: url => getSearchParams(url),
     getCapabilityStatement: (url, resourceType) =>
-      getCapabilityStatement(url, resourceType),
+      getCapabilityStatementSearchParams(url, resourceType),
     fetchResource: url => fetchResource(url),
   };
 };

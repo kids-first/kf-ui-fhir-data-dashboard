@@ -8,8 +8,10 @@ import {
   CellMeasurerCache,
   CellMeasurer,
 } from 'react-virtualized';
-import {Modal} from 'semantic-ui-react';
+import {Modal, Icon} from 'semantic-ui-react';
+import {getReferencedBy} from '../utils/api';
 import {defaultTableFields} from '../config';
+import SortableTable from './SortableTable';
 import './ResultsTable.css';
 const cellCache = new CellMeasurerCache({
   fixedWidth: true,
@@ -47,6 +49,8 @@ class ResultsTable extends React.Component {
       results: props.results,
       nextPageUrl: props.nextPageUrl,
       rowData: null,
+      referenceData: null,
+      loadingReferences: false,
     };
   }
   componentDidMount() {
@@ -71,11 +75,28 @@ class ResultsTable extends React.Component {
         rowIndex={rowIndex}
       >
         <div className="results-table__cell">
-          {cellData ? (
+          {columnIndex === this.props.tableColumns.length ? (
+            <div className="results-table__cell-icons">
+              <Icon
+                name="info circle"
+                size="big"
+                onClick={() => this.onViewInfo(rowData)}
+                title="See the full payload for this row"
+              />
+              <Icon
+                name="connectdevelop"
+                size="big"
+                onClick={() => this.onViewReferences(rowData)}
+                title="See resources that reference this row"
+              />
+            </div>
+          ) : null}
+          {columnIndex < this.props.tableColumns.length && cellData ? (
             <pre>{JSON.stringify(cellData, null, 2)}</pre>
-          ) : (
+          ) : null}
+          {columnIndex < this.props.tableColumns.length && !cellData ? (
             <pre>No data</pre>
-          )}
+          ) : null}
         </div>
       </CellMeasurer>
     );
@@ -130,15 +151,56 @@ class ResultsTable extends React.Component {
     }
   };
 
-  onRowClick = ({event, index, rowData}) => {
+  onViewInfo = rowData => {
     this.setState({rowData});
   };
 
+  onViewReferences = rowData => {
+    this.setState({referenceData: rowData});
+    this.fetchReferences(rowData);
+  };
+
+  fetchReferences = async rowData => {
+    console.log('fetching for ID', rowData.id);
+    this.setState(
+      {loadingReferences: true, referenceData: {id: rowData.id}},
+      async () => {
+        let references = await getReferencedBy(
+          `${this.props.baseUrl}`,
+          rowData.resourceType,
+          rowData.id,
+        );
+        const referenceData = this.state.referenceData;
+        referenceData.referencedBy = references;
+        console.log('references', references);
+        this.setState({
+          referenceData,
+          loadingReferences: false,
+        });
+      },
+    );
+  };
+
   closeModal = () => {
-    this.setState({rowData: null});
+    this.setState({rowData: null, referenceData: null});
+  };
+
+  onReferenceRowClick = item => {
+    console.log('item', item);
+    this.props.history.push(
+      `/${item.resourceType}?name=${item.name}&url=${item.profile}`,
+    );
+    this.closeModal();
+    this.props.closeModal();
   };
 
   render() {
+    const referencedByTableHeaders = [
+      {display: 'ID', sortId: 'id'},
+      {display: 'Resource Type', sortId: 'resourceType'},
+      {display: 'Resource Name', sortId: 'name'},
+      {display: 'Profile', sortId: 'profile'},
+    ];
     return (
       <div className="results-table">
         <InfiniteLoader
@@ -165,7 +227,6 @@ class ResultsTable extends React.Component {
                   }
                   rowRenderer={this.rowRenderer}
                   rowHeight={this.rowHeight}
-                  onRowClick={this.onRowClick}
                 >
                   {this.props.tableColumns.map((field, i) => (
                     <Column
@@ -173,11 +234,19 @@ class ResultsTable extends React.Component {
                       key={`${field}-${i}`}
                       label={field}
                       dataKey={field}
-                      width={width / this.props.tableColumns.length}
+                      width={width / this.props.tableColumns.length - 100}
                       flexGrow={0}
                       cellRenderer={this.measuredCellRenderer}
                     />
                   ))}
+                  <Column
+                    className="results-table__cell"
+                    label=""
+                    dataKey=""
+                    width={100}
+                    flexGrow={0}
+                    cellRenderer={this.measuredCellRenderer}
+                  />
                 </Table>
               )}
             </AutoSizer>
@@ -197,6 +266,43 @@ class ResultsTable extends React.Component {
             </Modal.Description>
           </Modal.Content>
         </Modal>
+        <Modal
+          open={!!this.state.referenceData}
+          onClose={() => this.closeModal()}
+          dimmer="inverted"
+        >
+          <Modal.Header>Reference Information</Modal.Header>
+          <Modal.Content>
+            <Modal.Description>
+              <div className="results-table__details">
+                <div
+                  className={`ui ${
+                    this.state.loadingReferences ? 'active' : 'disabled'
+                  } loader`}
+                />
+                {this.state.referenceData ? (
+                  <div>
+                    <h3>
+                      Resources that reference {this.state.referenceData.id}:
+                    </h3>
+                    <SortableTable
+                      headerCells={referencedByTableHeaders}
+                      data={
+                        this.state.referenceData.referencedBy
+                          ? this.state.referenceData.referencedBy
+                          : []
+                      }
+                      onRowClick={this.onReferenceRowClick}
+                    />
+                    <h3>
+                      Resources that {this.state.referenceData.id} references:
+                    </h3>
+                  </div>
+                ) : null}
+              </div>
+            </Modal.Description>
+          </Modal.Content>
+        </Modal>
       </div>
     );
   }
@@ -205,6 +311,9 @@ class ResultsTable extends React.Component {
 export default ResultsTable;
 
 ResultsTable.propTypes = {
+  closeModal: PropTypes.func,
+  history: PropTypes.object.isRequired,
+  baseUrl: PropTypes.string.isRequired,
   fetchResource: PropTypes.func.isRequired,
   results: PropTypes.array,
   nextPageUrl: PropTypes.string,
@@ -213,6 +322,7 @@ ResultsTable.propTypes = {
 };
 
 ResultsTable.defaultProps = {
+  closeModal: () => {},
   results: [],
   nextPageUrl: null,
   totalResults: 0,

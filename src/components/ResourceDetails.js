@@ -502,6 +502,9 @@ class ResourceDetails extends React.Component {
               </Header>
               {this.state.tableLoaded ? (
                 <ResultsTable
+                  closeModal={this.closeModal}
+                  history={this.props.history}
+                  baseUrl={this.props.baseUrl}
                   fetchResource={this.props.fetchResource}
                   results={this.state.tableResults}
                   nextPageUrl={this.state.nextPageUrl}

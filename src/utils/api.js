@@ -64,7 +64,7 @@ export const getSearchParams = async url =>
     data && data.entry ? data.entry.map(x => x.resource.code) : [],
   );
 
-export const getCapabilityStatement = async (url, resourceType) =>
+export const getCapabilityStatementSearchParams = async (url, resourceType) =>
   fetchResource(url).then(data => {
     let params =
       data && data.rest && data.rest[0] && data.rest[0].resource
@@ -79,3 +79,58 @@ export const getOntologies = async url =>
       .map(item => item.resource)
       .map(resource => ({name: resource.name, url: resource.url})),
   );
+
+export const getCapabilityStatementReferences = async (url, resourceType) =>
+  fetchResource(url).then(data => {
+    console.log(
+      'all data',
+      data && data.rest && data.rest[0] && data.rest[0].resource
+        ? data.rest[0].resource
+        : null,
+    );
+    let references =
+      data && data.rest && data.rest[0] && data.rest[0].resource
+        ? data.rest[0].resource.filter(x =>
+            x.searchInclude.includes(`${x.type}:${resourceType.toLowerCase()}`),
+          )
+        : [];
+    return references;
+  });
+
+export const getReferencedBy = async (url, baseType, id) => {
+  let allReferences = await getCapabilityStatementReferences(
+    `${url}metadata`,
+    baseType,
+  );
+  let resourceReferences = await Promise.all(
+    allReferences.map(async ref => {
+      const data = await fetchAllResources(
+        `${url}${ref.type}?${baseType.toLowerCase()}=${baseType}/${id}`,
+        [],
+      );
+      return data.flat();
+    }),
+  );
+  resourceReferences = [].concat
+    .apply([], resourceReferences)
+    .map(item => item.resource)
+    .map(item => ({
+      ...item,
+      profile: item.meta ? item.meta.profile : `${fhirUrl}${item.resourceType}`,
+    }));
+  console.log('resourceReferences1', resourceReferences);
+  resourceReferences = await Promise.all(
+    resourceReferences.map(async ref => {
+      const data = await fetchResource(
+        `${url}StructureDefinition?url=${ref.profile[0]}`,
+      );
+      const name =
+        data && data.entry && data.entry[0] && data.entry[0].resource
+          ? data.entry[0].resource.name
+          : null;
+      return {...ref, name};
+    }),
+  );
+  console.log('resourceReferences2', resourceReferences);
+  return resourceReferences;
+};
