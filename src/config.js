@@ -1,10 +1,23 @@
 export const mobileWidth = 425;
 export const tabletWidth = 768;
 
-export const defaultFhirAPIs = [
-  {key: 'HAPI', text: 'HAPI', value: 'http://hapi.fhir.org/baseR4/'},
-  {key: 'Kids First', text: 'Kids First', value: 'http://10.10.1.191:8000/'},
+export const defaultFhirServers = [
+  {
+    name: 'HAPI',
+    url: 'http://hapi.fhir.org/baseR4/',
+    authRequired: false,
+  },
+  {
+    name: 'Kids First',
+    url: 'http://10.10.1.191:8000/',
+    authRequired: true,
+  },
 ];
+export const defaultServerDropdownOptions = defaultFhirServers.map(server => ({
+  key: server.name,
+  text: server.name,
+  value: server.url,
+}));
 
 export const oAuthUrl = 'https://syntheticmass.mitre.org/oauth2/accesstoken';
 

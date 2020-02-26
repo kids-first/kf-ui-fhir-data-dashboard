@@ -5,6 +5,7 @@ import App from './App';
 const mapStateToProps = (state, ownProps) => ({
   token: state.user ? state.user.token : null,
   username: state.user ? state.user.username : null,
+  baseUrl: state.resources ? state.resources.baseUrl : '',
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => {

@@ -1,8 +1,18 @@
 .login {
   display: flex;
   flex-flow: column;
-  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
   padding: 20px 20px;
+}
+
+.login__content {
+  display: flex;
+  flex-flow: column;
+  padding: 30px 30px;
+  border: 1px solid var(--d3b-blue);
+  border-radius: 10px;
 }
 
 .login .ui.input {

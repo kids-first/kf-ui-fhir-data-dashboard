@@ -8,11 +8,15 @@ import ReduxResourceDetails from './ReduxResourceDetails';
 import ReduxOntologyHomepage from './ReduxOntologyHomepage';
 import ReduxLogin from './ReduxLogin';
 import logo from '../img/d3b-cube.svg';
+import {defaultFhirServers} from '../config';
 import './App.css';
 
 class App extends React.Component {
   render() {
-    const authorized = !!this.props.token;
+    const serverConfig = defaultFhirServers.find(
+      x => x.url === this.props.baseUrl,
+    );
+    const authorized = serverConfig.authRequired ? !!this.props.token : true;
 
     return (
       <Router>
@@ -24,10 +28,12 @@ class App extends React.Component {
             </Link>
             {authorized ? (
               <div className="app__header-info">
-                <div className="app__header-user">
-                  <p>Welcome, {this.props.username}</p>
-                  <Button onClick={() => this.props.logout()}>Logout</Button>
-                </div>
+                {serverConfig.authRequired ? (
+                  <div className="app__header-user">
+                    <p>Welcome, {this.props.username}</p>
+                    <Button onClick={() => this.props.logout()}>Logout</Button>
+                  </div>
+                ) : null}
                 <div className="app__header-nav">
                   <Link to="/">
                     <div className="app__header-nav-item">Resources</div>
@@ -72,6 +78,7 @@ class App extends React.Component {
 }
 
 App.propTypes = {
+  baseUrl: PropTypes.string.isRequired,
   token: PropTypes.string,
   username: PropTypes.string,
   logout: PropTypes.func.isRequired,

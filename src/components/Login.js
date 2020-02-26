@@ -27,16 +27,18 @@ class Login extends React.Component {
   render() {
     return (
       <div className="login">
-        <h2>Login</h2>
-        <Input
-          placeholder="Enter your username"
-          onBlur={this.handleUsernameChange}
-        />
-        <Input
-          placeholder="Enter your password"
-          onBlur={this.handlePasswordChange}
-        />
-        <Button onClick={() => this.login()}>Login</Button>
+        <div className="login__content">
+          <h2>Login</h2>
+          <Input
+            placeholder="Enter your username"
+            onBlur={this.handleUsernameChange}
+          />
+          <Input
+            placeholder="Enter your password"
+            onBlur={this.handlePasswordChange}
+          />
+          <Button onClick={() => this.login()}>Login</Button>
+        </div>
       </div>
     );
   }

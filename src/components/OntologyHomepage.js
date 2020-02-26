@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Dropdown} from 'semantic-ui-react';
 import {getHumanReadableNumber} from '../utils/common';
-import {defaultFhirAPIs} from '../config';
+import {defaultServerDropdownOptions} from '../config';
 import SearchBar from './SearchBar';
 import SortableTable from './tables/SortableTable';
 import './OntologyHomepage.css';
@@ -85,7 +85,7 @@ class OntologyHomepage extends React.Component {
             className="ontology-homepage__dropdown"
             defaultValue={this.props.baseUrl}
             selection
-            options={defaultFhirAPIs}
+            options={defaultServerDropdownOptions}
             onChange={this.selectApi}
             disabled={!this.props.ontologiesFetched}
           />
