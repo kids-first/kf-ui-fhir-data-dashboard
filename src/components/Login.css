@@ -15,6 +15,11 @@
   border-radius: 10px;
 }
 
+.login__content form {
+  display: flex;
+  flex-flow: column;
+}
+
 .login .ui.input {
   margin: 10px 0;
 }

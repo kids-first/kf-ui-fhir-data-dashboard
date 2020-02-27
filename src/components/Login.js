@@ -20,7 +20,8 @@ class Login extends React.Component {
     this.setState({password: e.target.value});
   };
 
-  login = () => {
+  login = e => {
+    e.preventDefault();
     this.props.setUser(this.state.username, this.state.password);
   };
 
@@ -29,15 +30,20 @@ class Login extends React.Component {
       <div className="login">
         <div className="login__content">
           <h2>Login</h2>
-          <Input
-            placeholder="Enter your username"
-            onBlur={this.handleUsernameChange}
-          />
-          <Input
-            placeholder="Enter your password"
-            onBlur={this.handlePasswordChange}
-          />
-          <Button onClick={() => this.login()}>Login</Button>
+          <form onSubmit={this.login}>
+            <Input
+              placeholder="Enter your username"
+              onChange={this.handleUsernameChange}
+              autoComplete="username"
+            />
+            <Input
+              type="password"
+              placeholder="Enter your password"
+              onChange={this.handlePasswordChange}
+              autoComplete="current-password"
+            />
+            <Button type="submit">Login</Button>
+          </form>
         </div>
       </div>
     );
