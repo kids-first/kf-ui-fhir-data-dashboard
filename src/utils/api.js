@@ -110,13 +110,17 @@ export const getReferencedBy = async (url, baseType, id) => {
     .map(item => item.resource)
     .map(item => ({
       ...item,
-      profile: item.meta ? item.meta.profile : `${fhirUrl}${item.resourceType}`,
+      profile:
+        item.meta && item.meta.profile
+          ? item.meta.profile
+          : [`${fhirUrl}${item.resourceType}`],
     }));
   resourceReferences = await Promise.all(
     resourceReferences.map(async ref => {
       const data = await fetchResource(
         `${url}StructureDefinition?url=${ref.profile[0]}`,
       );
+      console.log('data', data);
       const name =
         data && data.entry && data.entry[0] && data.entry[0].resource
           ? data.entry[0].resource.name
@@ -124,5 +128,5 @@ export const getReferencedBy = async (url, baseType, id) => {
       return {...ref, name};
     }),
   );
-  return resourceReferences;
+  return resourceReferences.filter(ref => ref.name);
 };
