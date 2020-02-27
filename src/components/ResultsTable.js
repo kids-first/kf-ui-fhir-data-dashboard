@@ -161,18 +161,32 @@ class ResultsTable extends React.Component {
   };
 
   fetchReferences = async rowData => {
-    console.log('fetching for ID', rowData.id);
     this.setState(
       {loadingReferences: true, referenceData: {id: rowData.id}},
       async () => {
-        let references = await getReferencedBy(
-          `${this.props.baseUrl}`,
+        const references = await getReferencedBy(
+          this.props.baseUrl,
           rowData.resourceType,
           rowData.id,
         );
+        let uniqueReferences = {};
+        references.forEach(reference => {
+          const mapValue =
+            uniqueReferences[
+              [reference.resourceType, reference.name, reference.profile]
+            ];
+          if (!!mapValue) {
+            uniqueReferences[
+              [reference.resourceType, reference.name, reference.profile]
+            ] = {...mapValue, total: mapValue.total + 1};
+          } else {
+            uniqueReferences[
+              [reference.resourceType, reference.name, reference.profile]
+            ] = {...reference, total: 1};
+          }
+        });
         const referenceData = this.state.referenceData;
-        referenceData.referencedBy = references;
-        console.log('references', references);
+        referenceData.referencedBy = Object.values(uniqueReferences);
         this.setState({
           referenceData,
           loadingReferences: false,
@@ -186,7 +200,6 @@ class ResultsTable extends React.Component {
   };
 
   onReferenceRowClick = item => {
-    console.log('item', item);
     this.props.history.push(
       `/${item.resourceType}?name=${item.name}&url=${item.profile}`,
     );
@@ -196,10 +209,10 @@ class ResultsTable extends React.Component {
 
   render() {
     const referencedByTableHeaders = [
-      {display: 'ID', sortId: 'id'},
       {display: 'Resource Type', sortId: 'resourceType'},
       {display: 'Resource Name', sortId: 'name'},
       {display: 'Profile', sortId: 'profile'},
+      {display: 'Total References', sortId: 'total'},
     ];
     return (
       <div className="results-table">
@@ -294,9 +307,6 @@ class ResultsTable extends React.Component {
                       }
                       onRowClick={this.onReferenceRowClick}
                     />
-                    <h3>
-                      Resources that {this.state.referenceData.id} references:
-                    </h3>
                   </div>
                 ) : null}
               </div>

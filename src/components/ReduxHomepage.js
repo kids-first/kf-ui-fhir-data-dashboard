@@ -1,7 +1,6 @@
 import {connect} from 'react-redux';
 import {setResources, setApi, setHomepageView} from '../actions';
 import {fetchAllResources, getResourceCount} from '../utils/api';
-import {getBaseResourceCount} from '../utils/common';
 import {acceptedResourceTypes} from '../config';
 import Homepage from './Homepage';
 
@@ -11,21 +10,6 @@ const getAllResources = async (baseUrl, resourceType) => {
   allResources = allResources
     ? await setResourceCounts(baseUrl, allResources)
     : [];
-  allResources = await Promise.all(
-    allResources.map(async resource => {
-      if (resource && resource.baseType === resource.name) {
-        return {
-          ...resource,
-          count: await getBaseResourceCount(
-            baseUrl,
-            resource.baseType,
-            allResources,
-          ),
-        };
-      }
-      return resource;
-    }),
-  );
   allResources = formatResources(allResources);
   return allResources;
 };
@@ -33,15 +17,18 @@ const getAllResources = async (baseUrl, resourceType) => {
 const setResourceCounts = async (baseUrl, items) =>
   await Promise.all(
     items.map(async item => {
+      let countUrl = `${baseUrl}${item.resource.type}`;
+      countUrl =
+        item.resource.type !== item.resource.name
+          ? countUrl.concat(`?_profile:below=${item.resource.url}`)
+          : countUrl;
       if (showResourceType(item.resource.type)) {
         return {
           id: item.resource.id,
           baseType: item.resource.type,
           name: item.resource.name,
           url: item.resource.url,
-          count: await getResourceCount(
-            `${baseUrl}${item.resource.type}?_profile:below=${item.resource.url}`,
-          ),
+          count: await getResourceCount(countUrl),
         };
       }
     }),

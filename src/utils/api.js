@@ -82,12 +82,6 @@ export const getOntologies = async url =>
 
 export const getCapabilityStatementReferences = async (url, resourceType) =>
   fetchResource(url).then(data => {
-    console.log(
-      'all data',
-      data && data.rest && data.rest[0] && data.rest[0].resource
-        ? data.rest[0].resource
-        : null,
-    );
     let references =
       data && data.rest && data.rest[0] && data.rest[0].resource
         ? data.rest[0].resource.filter(x =>
@@ -118,7 +112,6 @@ export const getReferencedBy = async (url, baseType, id) => {
       ...item,
       profile: item.meta ? item.meta.profile : `${fhirUrl}${item.resourceType}`,
     }));
-  console.log('resourceReferences1', resourceReferences);
   resourceReferences = await Promise.all(
     resourceReferences.map(async ref => {
       const data = await fetchResource(
@@ -131,6 +124,5 @@ export const getReferencedBy = async (url, baseType, id) => {
       return {...ref, name};
     }),
   );
-  console.log('resourceReferences2', resourceReferences);
   return resourceReferences;
 };

@@ -27,8 +27,17 @@ class ResourceDetails extends React.Component {
     this.getResource();
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
     window.scrollTo(0, 0);
+    if (
+      this.props.resourceBaseType !== prevProps.resourceBaseType ||
+      this.props.resourceType !== prevProps.resourceType ||
+      this.props.resourceUrl !== prevProps.resourceUrl
+    ) {
+      this.setState({total: this.props.total}, () => {
+        this.getResource();
+      });
+    }
   }
 
   getResource = () => {
