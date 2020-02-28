@@ -1,7 +1,12 @@
 import {shouldUseProxyUrl, proxyUrl, fhirUrl, abortController} from '../config';
 import store from '../store';
 
-const fetchWithHeaders = async (url, headers, summary = false) => {
+const fetchWithHeaders = async (
+  url,
+  headers,
+  abortController,
+  summary = false,
+) => {
   let fullUrl = shouldUseProxyUrl(url) ? `${proxyUrl}${url}` : `${url}`;
   if (summary && !fullUrl.includes('_summary')) {
     fullUrl = fullUrl
@@ -26,43 +31,59 @@ const fetchWithHeaders = async (url, headers, summary = false) => {
     .then(data => data)
     .catch(err => {
       console.log('Error:', err);
-      return err;
+      throw err;
     });
 };
 
-export const fetchResource = async (url, summary = false) =>
+export const fetchResource = async (url, abortController, summary = false) =>
   fetchWithHeaders(
     url,
     {
       Accept: 'application/fhir+json;charset=utf-8',
       'Content-Type': 'application/fhir+json;charset=utf-8',
     },
+    abortController,
     summary,
-  );
-
-export const fetchAllResources = async (url, allData) =>
-  fetchResource(url).then(data => {
-    if (data && data.entry) {
-      allData = allData.concat(data.entry);
-      const nextPage = data.link.findIndex(x => x.relation === 'next');
-      if (nextPage > -1) {
-        const nextPageUrl = data.link[nextPage].url.replace(
-          'localhost',
-          '10.10.1.191',
-        );
-        return fetchAllResources(nextPageUrl, allData);
-      }
-    }
-    return allData;
+  ).catch(err => {
+    throw err;
   });
 
-export const getResourceCount = async url =>
-  fetchResource(url, true).then(data => (data ? data.total : 0));
+export const fetchAllResources = async (url, allData, abortController) =>
+  fetchResource(url, abortController)
+    .then(data => {
+      console.log('data is', data);
+      if (data && data.entry) {
+        allData = allData.concat(data.entry);
+        const nextPage = data.link.findIndex(x => x.relation === 'next');
+        if (nextPage > -1) {
+          const nextPageUrl = data.link[nextPage].url.replace(
+            'localhost',
+            '10.10.1.191',
+          );
+          return fetchAllResources(nextPageUrl, allData, abortController);
+        }
+      }
+      return allData;
+    })
+    .catch(err => {
+      throw err;
+    });
 
-export const getSearchParams = async url =>
-  fetchResource(url).then(data =>
-    data && data.entry ? data.entry.map(x => x.resource.code) : [],
-  );
+export const getResourceCount = async (url, abortController) =>
+  fetchResource(url, abortController, true)
+    .then(data => (data ? data.total : 0))
+    .catch(err => {
+      throw err;
+    });
+
+export const getSearchParams = async (url, abortController) =>
+  fetchResource(url, abortController)
+    .then(data =>
+      data && data.entry ? data.entry.map(x => x.resource.code) : [],
+    )
+    .catch(err => {
+      throw err;
+    });
 
 export const getCapabilityStatementSearchParams = async (url, resourceType) =>
   fetchResource(url).then(data => {

@@ -19,6 +19,7 @@ class OntologyHomepage extends React.Component {
       filteredOntologies: props.ontologies,
       listOntologies: this.mapToArray(props.ontologies),
       ontologiesFetched: props.ontologiesFetched,
+      abortController: props.abortController,
     };
   }
 
@@ -43,7 +44,7 @@ class OntologyHomepage extends React.Component {
 
   componentWillUnmount() {
     this._isMounted = false;
-    abortFetch();
+    this.props.abortController.abort();
   }
 
   mapToArray = map =>
@@ -132,6 +133,7 @@ OntologyHomepage.propTypes = {
   getOntologies: PropTypes.func.isRequired,
   loadingMessage: PropTypes.string,
   serverOptions: PropTypes.array,
+  abortController: PropTypes.object.isRequired,
 };
 
 OntologyHomepage.defaultProps = {

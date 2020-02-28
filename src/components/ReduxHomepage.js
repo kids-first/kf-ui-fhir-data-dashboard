@@ -10,33 +10,46 @@ import {getBaseResourceCount} from '../utils/common';
 import {acceptedResourceTypes} from '../config';
 import Homepage from './Homepage';
 
-const getAllResources = async (baseUrl, resourceType, dispatch) => {
+const getAllResources = async (baseUrl, resourceType, abortController, dispatch) => {
   const url = `${baseUrl}${resourceType}`;
-  let allResources = await fetchAllResources(url, []);
   dispatch(setLoadingMessage('Getting resource totals...'));
-  allResources = allResources
-    ? await setResourceCounts(baseUrl, allResources)
-    : [];
-  allResources = await Promise.all(
-    allResources.map(async resource => {
-      if (resource && resource.baseType === resource.name) {
-        return {
-          ...resource,
-          count: await getBaseResourceCount(
-            baseUrl,
-            resource.baseType,
-            allResources,
-          ),
-        };
-      }
-      return resource;
-    }),
-  );
-  allResources = formatResources(allResources);
-  return allResources;
+  return await fetchAllResources(url, [], abortController)
+    .then(async allResources => {
+      allResources = allResources
+        ? await setResourceCounts(baseUrl, allResources, abortController)
+        : [];
+      return await Promise.all(
+        allResources.map(async resource => {
+          if (resource && resource.baseType === resource.name) {
+            return {
+              ...resource,
+              count: await getBaseResourceCount(
+                baseUrl,
+                resource.baseType,
+                allResources,
+                abortController,
+              ),
+            };
+          }
+          return resource;
+        }),
+      )
+        .then(allResources => {
+          allResources = formatResources(allResources);
+          return allResources;
+        })
+        .catch(err => {
+          console.log('err in redux', err);
+          throw err;
+        });
+    })
+    .catch(err => {
+      console.log('err in redux', err);
+      throw err;
+    });
 };
 
-const setResourceCounts = async (baseUrl, items) =>
+const setResourceCounts = async (baseUrl, items, abortController) =>
   await Promise.all(
     items.map(async item => {
       let countUrl = `${baseUrl}${item.resource.type}`;
@@ -45,13 +58,22 @@ const setResourceCounts = async (baseUrl, items) =>
           ? countUrl.concat(`?_profile:below=${item.resource.url}`)
           : countUrl;
       if (showResourceType(item.resource.type)) {
-        return {
-          id: item.resource.id,
-          baseType: item.resource.type,
-          name: item.resource.name,
-          url: item.resource.url,
-          count: await getResourceCount(countUrl),
-        };
+        return await getResourceCount(
+          `${baseUrl}${item.resource.type}?_profile:below=${item.resource.url}`,
+          abortController,
+        )
+          .then(count => {
+            return {
+              id: item.resource.id,
+              baseType: item.resource.type,
+              name: item.resource.name,
+              url: item.resource.url,
+              count,
+            };
+          })
+          .catch(err => {
+            throw err;
+          });
       }
     }),
   );
@@ -83,6 +105,7 @@ const mapStateToProps = (state, ownProps) => ({
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
+<<<<<<< HEAD
     fetchAllResources: async (baseUrl, resourceType) => {
       dispatch(setLoadingMessage('Fetching all resources...'));
       const allResources = await getAllResources(
@@ -91,6 +114,17 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         dispatch,
       );
       dispatch(setResources(allResources));
+=======
+    fetchAllResources: async (baseUrl, resourceType, abortController) => {
+      await getAllResources(baseUrl, resourceType, abortController)
+        .then(allResources => {
+          console.log('allResources', allResources);
+          dispatch(setResources(allResources));
+        })
+        .catch(err => {
+          throw err;
+        });
+>>>>>>> :construction: WIP
     },
     setBaseUrl: url => dispatch(setApi(url)),
     setHomepageView: cardView => dispatch(setHomepageView(cardView)),

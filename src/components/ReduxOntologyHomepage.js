@@ -3,6 +3,8 @@ import {setOntologies, setApi, setLoadingMessage} from '../actions';
 import {getOntologies} from '../utils/api';
 import OntologyHomepage from './OntologyHomepage';
 
+const ontologyAbortController = new AbortController();
+
 const groupOntologies = ontologies => {
   const groupedOntologies = {};
   ontologies.forEach(item => {
@@ -26,6 +28,7 @@ const mapStateToProps = (state, ownProps) => ({
   baseUrl: state.resources.baseUrl,
   loadingMessage: state.resources.loadingMessage,
   serverOptions: state.user ? state.user.serverOptions : [],
+  abortController: ontologyAbortController,
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => {
@@ -33,9 +36,14 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     setBaseUrl: url => dispatch(setApi(url)),
     getOntologies: async url => {
       dispatch(setLoadingMessage('Fetching all ontologies...'));
-      const ontologies = await getOntologies(url);
-      const groupedOntologies = groupOntologies(ontologies);
-      dispatch(setOntologies(groupedOntologies));
+      const ontologies = await getOntologies(url, ontologyAbortController)
+        .then(ontologies => {
+          const groupedOntologies = groupOntologies(ontologies);
+          dispatch(setOntologies(groupedOntologies));
+        })
+        .catch(err => {
+          throw err;
+        });
     },
   };
 };

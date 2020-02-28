@@ -61,8 +61,3 @@ export const getBaseResourceCount = async (baseUrl, baseType, resources) => {
   }
   return total - sum;
 };
-
-export const abortFetch = () => {
-  console.log('aborting');
-  abortController.abort();
-};

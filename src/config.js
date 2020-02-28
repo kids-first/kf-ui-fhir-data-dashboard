@@ -1,8 +1,6 @@
 export const mobileWidth = 425;
 export const tabletWidth = 768;
 
-export const abortController = new AbortController();
-
 export const defaultFhirServers = [
   {
     name: 'HAPI',
