@@ -25,13 +25,15 @@ class Homepage extends React.Component {
       searchResourceTitle: 'Resource Types',
       resourcesByCategory: resourceCategories,
       openTabs: Object.keys(resourceCategories),
-      abortController: props.abortController,
+      abortController: new AbortController(),
     };
   }
 
   componentDidMount() {
+    console.log('did mount');
     this._isMounted = true;
     if (!this.props.allResourcesFetched) {
+      console.log('not fetched');
       this.fetchAllResources();
     }
   }
@@ -43,13 +45,18 @@ class Homepage extends React.Component {
   }
 
   componentWillUnmount() {
+    console.log('unmounting');
     this._isMounted = false;
-    abortFetch();
+    this.state.abortController.abort();
   }
 
   fetchAllResources = () => {
     this.props
-      .fetchAllResources(this.props.baseUrl, this.state.searchResourceType)
+      .fetchAllResources(
+        this.props.baseUrl,
+        this.state.searchResourceType,
+        this.state.abortController,
+      )
       .then(() => {
         if (this._isMounted) {
           const resources = this.props.allResources;
