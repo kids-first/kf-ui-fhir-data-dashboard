@@ -5,7 +5,7 @@ import {getHumanReadableNumber} from '../utils/common';
 import {fhirUrl, defaultTableFields} from '../config';
 import AppBreadcrumb from './AppBreadcrumb';
 import DataPieChart from './DataPieChart';
-import ResultsTable from './ResultsTable';
+import ResultsTable from './tables/ResultsTable';
 import './ResourceDetails.css';
 
 class ResourceDetails extends React.Component {

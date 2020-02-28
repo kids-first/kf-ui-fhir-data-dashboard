@@ -6,7 +6,7 @@ import _ from 'lodash';
 import {getHumanReadableNumber} from '../utils/common';
 import {resourceCategories, defaultFhirAPIs} from '../config';
 import SearchBar from './SearchBar';
-import SortableTable from './SortableTable';
+import SortableTable from './tables/SortableTable';
 import './Homepage.css';
 
 class Homepage extends React.Component {

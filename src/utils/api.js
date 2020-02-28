@@ -120,7 +120,6 @@ export const getReferencedBy = async (url, baseType, id) => {
       const data = await fetchResource(
         `${url}StructureDefinition?url=${ref.profile[0]}`,
       );
-      console.log('data', data);
       const name =
         data && data.entry && data.entry[0] && data.entry[0].resource
           ? data.entry[0].resource.name

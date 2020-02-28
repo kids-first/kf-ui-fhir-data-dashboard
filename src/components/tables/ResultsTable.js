@@ -9,9 +9,8 @@ import {
   CellMeasurer,
 } from 'react-virtualized';
 import {Modal, Icon} from 'semantic-ui-react';
-import {getReferencedBy} from '../utils/api';
-import {defaultTableFields} from '../config';
-import SortableTable from './SortableTable';
+import {defaultTableFields} from '../../config';
+import ReferenceTable from './ReferenceTable';
 import './ResultsTable.css';
 const cellCache = new CellMeasurerCache({
   fixedWidth: true,
@@ -49,8 +48,7 @@ class ResultsTable extends React.Component {
       results: props.results,
       nextPageUrl: props.nextPageUrl,
       rowData: null,
-      referenceData: null,
-      loadingReferences: false,
+      showReferences: false,
     };
   }
   componentDidMount() {
@@ -156,47 +154,11 @@ class ResultsTable extends React.Component {
   };
 
   onViewReferences = rowData => {
-    this.setState({referenceData: rowData});
-    this.fetchReferences(rowData);
-  };
-
-  fetchReferences = async rowData => {
-    this.setState(
-      {loadingReferences: true, referenceData: {id: rowData.id}},
-      async () => {
-        const references = await getReferencedBy(
-          this.props.baseUrl,
-          rowData.resourceType,
-          rowData.id,
-        );
-        let uniqueReferences = {};
-        references.forEach(reference => {
-          const mapValue =
-            uniqueReferences[
-              [reference.resourceType, reference.name, reference.profile]
-            ];
-          if (!!mapValue) {
-            uniqueReferences[
-              [reference.resourceType, reference.name, reference.profile]
-            ] = {...mapValue, total: mapValue.total + 1};
-          } else {
-            uniqueReferences[
-              [reference.resourceType, reference.name, reference.profile]
-            ] = {...reference, total: 1};
-          }
-        });
-        const referenceData = this.state.referenceData;
-        referenceData.referencedBy = Object.values(uniqueReferences);
-        this.setState({
-          referenceData,
-          loadingReferences: false,
-        });
-      },
-    );
+    this.setState({rowData, showReferences: true});
   };
 
   closeModal = () => {
-    this.setState({rowData: null, referenceData: null});
+    this.setState({rowData: null, showReferences: false});
   };
 
   onReferenceRowClick = item => {
@@ -280,36 +242,22 @@ class ResultsTable extends React.Component {
           </Modal.Content>
         </Modal>
         <Modal
-          open={!!this.state.referenceData}
+          open={this.state.showReferences}
           onClose={() => this.closeModal()}
           dimmer="inverted"
         >
           <Modal.Header>Reference Information</Modal.Header>
           <Modal.Content>
             <Modal.Description>
-              <div className="results-table__details">
-                <div
-                  className={`ui ${
-                    this.state.loadingReferences ? 'active' : 'disabled'
-                  } loader`}
-                />
-                {this.state.referenceData ? (
-                  <div>
-                    <h3>
-                      Resources that reference {this.state.referenceData.id}:
-                    </h3>
-                    <SortableTable
-                      headerCells={referencedByTableHeaders}
-                      data={
-                        this.state.referenceData.referencedBy
-                          ? this.state.referenceData.referencedBy
-                          : []
-                      }
-                      onRowClick={this.onReferenceRowClick}
-                    />
-                  </div>
-                ) : null}
-              </div>
+              <ReferenceTable
+                onClick={this.onReferenceRowClick}
+                tableHeaders={referencedByTableHeaders}
+                resourceId={this.state.rowData ? this.state.rowData.id : ''}
+                resourceType={
+                  this.state.rowData ? this.state.rowData.resourceType : ''
+                }
+                baseUrl={this.props.baseUrl}
+              />
             </Modal.Description>
           </Modal.Content>
         </Modal>
