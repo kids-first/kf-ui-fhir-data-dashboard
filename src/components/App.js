@@ -12,8 +12,10 @@ class App extends React.Component {
       <Router>
         <div className="app">
           <div className="app__header">
-            <img src={logo} alt="D3b" />
-            <h1>FHIR Data Dashboard</h1>
+            <Link className="app__header-banner" to="/">
+              <img src={logo} alt="D3b" />
+              <h1>FHIR Data Dashboard</h1>
+            </Link>
             <div className="app__header-nav">
               <Link to="/">
                 <div className="app__header-nav-item">Resources</div>
