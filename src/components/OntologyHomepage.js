@@ -1,12 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Dropdown} from 'semantic-ui-react';
-import {getHumanReadableNumber, getDropdownOptions} from '../utils/common';
+import {
+  getHumanReadableNumber,
+  getDropdownOptions,
+  abortFetch,
+} from '../utils/common';
 import SearchBar from './SearchBar';
 import SortableTable from './tables/SortableTable';
 import './OntologyHomepage.css';
 
 class OntologyHomepage extends React.Component {
+  _isMounted = false;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -23,6 +29,7 @@ class OntologyHomepage extends React.Component {
   };
 
   componentDidMount() {
+    this._isMounted = true;
     if (!this.props.ontologiesFetched) {
       this.getOntologies();
     }
@@ -32,6 +39,11 @@ class OntologyHomepage extends React.Component {
     if (this.props.baseUrl !== prevProps.baseUrl) {
       this.getOntologies();
     }
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
+    abortFetch();
   }
 
   mapToArray = map =>

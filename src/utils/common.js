@@ -1,4 +1,5 @@
 import {getResourceCount, fetchAllResources} from './api';
+import {abortController} from '../config';
 
 export const getHumanReadableNumber = value =>
   value.toLocaleString(navigator.language, {minimumFractionDigits: 0});
@@ -59,4 +60,9 @@ export const getBaseResourceCount = async (baseUrl, baseType, resources) => {
     });
   }
   return total - sum;
+};
+
+export const abortFetch = () => {
+  console.log('aborting');
+  abortController.abort();
 };

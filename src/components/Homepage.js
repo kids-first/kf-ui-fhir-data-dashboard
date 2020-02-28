@@ -3,13 +3,19 @@ import PropTypes from 'prop-types';
 import {Card, Icon, Dropdown} from 'semantic-ui-react';
 import Avatar from 'react-avatar';
 import _ from 'lodash';
-import {getHumanReadableNumber, getDropdownOptions} from '../utils/common';
+import {
+  getHumanReadableNumber,
+  getDropdownOptions,
+  abortFetch,
+} from '../utils/common';
 import {resourceCategories} from '../config';
 import SearchBar from './SearchBar';
 import SortableTable from './tables/SortableTable';
 import './Homepage.css';
 
 class Homepage extends React.Component {
+  _isMounted = false;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -19,10 +25,12 @@ class Homepage extends React.Component {
       searchResourceTitle: 'Resource Types',
       resourcesByCategory: resourceCategories,
       openTabs: Object.keys(resourceCategories),
+      abortController: props.abortController,
     };
   }
 
   componentDidMount() {
+    this._isMounted = true;
     if (!this.props.allResourcesFetched) {
       this.fetchAllResources();
     }
@@ -34,17 +42,24 @@ class Homepage extends React.Component {
     }
   }
 
+  componentWillUnmount() {
+    this._isMounted = false;
+    abortFetch();
+  }
+
   fetchAllResources = () => {
     this.props
       .fetchAllResources(this.props.baseUrl, this.state.searchResourceType)
       .then(() => {
-        const resources = this.props.allResources;
-        const resourcesByCategory = this.setCategories(resources);
-        this.setState({
-          filteredResources: resources,
-          listResources: _.toArray(resources),
-          resourcesByCategory,
-        });
+        if (this._isMounted) {
+          const resources = this.props.allResources;
+          const resourcesByCategory = this.setCategories(resources);
+          this.setState({
+            filteredResources: resources,
+            listResources: _.toArray(resources),
+            resourcesByCategory,
+          });
+        }
       });
   };
 
