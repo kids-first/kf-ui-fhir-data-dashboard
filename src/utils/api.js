@@ -1,4 +1,4 @@
-import {shouldUseProxyUrl, proxyUrl, fhirUrl} from '../config';
+import {shouldUseProxyUrl, proxyUrl, fhirUrl, abortController} from '../config';
 import store from '../store';
 
 const fetchWithHeaders = async (url, headers, summary = false) => {
@@ -10,6 +10,7 @@ const fetchWithHeaders = async (url, headers, summary = false) => {
   }
   const token = store.getState().user.token;
   return fetch(`${fullUrl}`, {
+    signal: abortController.signal,
     headers: {
       ...headers,
       Authorization: `Basic ${token}`,
