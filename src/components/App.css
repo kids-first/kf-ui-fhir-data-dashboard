@@ -23,8 +23,14 @@
   }
 }
 
-.app__header h1 {
+.app__header-banner {
+  display: flex;
+  align-items: center;
+}
+
+.app__header-banner h1 {
   color: #fff;
+  margin: 0;
 }
 
 .app__header-nav {
