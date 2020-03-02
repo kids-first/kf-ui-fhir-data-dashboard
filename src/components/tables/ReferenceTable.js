@@ -32,18 +32,22 @@ class ReferenceTable extends React.Component {
       );
       let uniqueReferences = {};
       references.forEach(reference => {
-        const mapValue =
-          uniqueReferences[
-            [reference.resourceType, reference.name, reference.profile]
-          ];
+        const mapValue = uniqueReferences[reference.profile];
         if (!!mapValue) {
-          uniqueReferences[
-            [reference.resourceType, reference.name, reference.profile]
-          ] = {...mapValue, total: mapValue.total + 1};
+          uniqueReferences[reference.profile] = {
+            ...mapValue,
+            total: mapValue.total + 1,
+            children: mapValue.children.concat(reference),
+          };
         } else {
-          uniqueReferences[
-            [reference.resourceType, reference.name, reference.profile]
-          ] = {...reference, total: 1};
+          uniqueReferences[reference.profile] = {
+            id: `${reference.resourceType}-${reference.name}`,
+            resourceType: reference.resourceType,
+            name: reference.name,
+            profile: reference.profile,
+            total: 1,
+            children: [reference],
+          };
         }
       });
       const referenceData = Object.values(uniqueReferences);
@@ -68,7 +72,7 @@ class ReferenceTable extends React.Component {
             <SortableTable
               headerCells={this.props.tableHeaders}
               data={this.state.referenceData}
-              onRowClick={this.props.onClick}
+              rowChildren={true}
             />
           </div>
         ) : null}

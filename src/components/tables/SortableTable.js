@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Table} from 'semantic-ui-react';
+import {Table, Icon} from 'semantic-ui-react';
 import _ from 'lodash';
 import './SortableTable.css';
 
@@ -11,6 +11,7 @@ class SortableTable extends React.Component {
       sortColumn: props.headerCells[0].sortId,
       sortDirection: 'ascending',
       sortedData: _.sortBy(props.data, props.headerCells[0].sortId),
+      activeIndex: -1,
     };
   }
 
@@ -25,13 +26,13 @@ class SortableTable extends React.Component {
   handleSort = selectedColumn => {
     const {sortColumn, sortDirection, sortedData} = this.state;
 
-    if (sortColumn !== selectedColumn) {
+    if (selectedColumn && sortColumn !== selectedColumn) {
       this.setState({
         sortColumn: selectedColumn,
         sortedData: _.sortBy(sortedData, [selectedColumn]),
         sortDirection: 'ascending',
       });
-    } else {
+    } else if (selectedColumn) {
       this.setState({
         sortedData: sortedData.reverse(),
         sortDirection:
@@ -40,8 +41,23 @@ class SortableTable extends React.Component {
     }
   };
 
+  toggleIndex = index => {
+    const currentIndex = this.state.activeIndex;
+    this.setState({
+      activeIndex: currentIndex === index ? -1 : index,
+    });
+  };
+
+  renderIcon = index =>
+    this.state.activeIndex === index ? 'caret up' : 'caret down';
+
+  onRowClick = (item, index) => {
+    this.toggleIndex(index);
+    this.props.onRowClick(item);
+  };
+
   render() {
-    const {headerCells, onRowClick} = this.props;
+    const {headerCells, rowChildren} = this.props;
     const {sortDirection, sortColumn, sortedData} = this.state;
 
     return (
@@ -62,21 +78,45 @@ class SortableTable extends React.Component {
           </Table.Header>
           <Table.Body>
             {sortedData.map((item, i) => (
-              <Table.Row
-                key={`${item.id}-${i}`}
-                onClick={() => onRowClick(item)}
-              >
-                {headerCells.map(cell => (
-                  <Table.Cell key={`${item.id}-${cell.sortId}-${i}`}>
-                    {cell.func && item[cell.sortId] !== null
-                      ? cell.func(item[cell.sortId])
-                      : null}
-                    {!cell.func && item[cell.sortId] !== null
-                      ? item[cell.sortId]
-                      : null}
-                  </Table.Cell>
-                ))}
-              </Table.Row>
+              <React.Fragment key={i}>
+                <Table.Row
+                  key={`${item.id}-${i}`}
+                  onClick={() => this.onRowClick(item, i)}
+                >
+                  {headerCells.map((cell, j) => {
+                    const icon =
+                      rowChildren && j === 0 ? (
+                        <Icon
+                          name={this.renderIcon(i)}
+                          onClick={() => this.toggleIndex(i)}
+                        />
+                      ) : null;
+                    return (
+                      <Table.Cell key={`${item.id}-${cell.sortId}-${i}`}>
+                        {icon}
+                        {cell.sortId && cell.func && item[cell.sortId] !== null
+                          ? cell.func(item[cell.sortId])
+                          : null}
+                        {cell.sortId && !cell.func && item[cell.sortId] !== null
+                          ? item[cell.sortId]
+                          : null}
+                      </Table.Cell>
+                    );
+                  })}
+                </Table.Row>
+                {this.props.rowChildren && this.state.activeIndex === i
+                  ? item.children.map((child, j) => (
+                      <Table.Row
+                        key={`${child.id}-${j}`}
+                        className="sortable-table__child-row"
+                      >
+                        <Table.Cell colSpan="4">
+                          <p>{child.id}</p>
+                        </Table.Cell>
+                      </Table.Row>
+                    ))
+                  : null}
+              </React.Fragment>
             ))}
           </Table.Body>
         </Table>
@@ -98,12 +138,14 @@ SortableTable.propTypes = {
       id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     }),
   ),
+  rowChildren: PropTypes.bool,
   onRowClick: PropTypes.func,
 };
 
 SortableTable.defaultProps = {
   headerCells: [],
   data: [],
+  rowChildren: false,
   onRowClick: () => {},
 };
 

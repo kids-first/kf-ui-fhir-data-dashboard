@@ -16,3 +16,9 @@
 .sortable-table td:hover {
   background-color: var(--d3b-hoverblue);
 }
+
+.sortable-table__child-row:hover,
+.sortable-table__child-row td:hover {
+  background-color: inherit !important;
+  cursor: default;
+}
