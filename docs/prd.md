@@ -4,7 +4,7 @@
 
 ### Background
 
-[FHIR](http://hl7.org/fhir/) is a standard created by HL7 that enables a common data representation and associated APIs across diverse biomedical datasets. FHIR also provides core set of concepts in the biomedical space, with the capacity for extensibility that allows for self-describing data model customization when needed. With the appropriate tooling and services, this provides the potential for interoperability among different clinical and research studies and institutions. Using a standard data representation greatly alleviates current pain points by reducing the manual work involved in transcribing and mapping from one data model to another. Increased interoperability allows for a wider ecosystem of reusable tools, as well as automation around data discovery and analysis. FHIR is the ideal standard as it has existing infrastructure, community, and documents supporting it, is technology agnostic, and is extensible to fit multiple use cases.
+[FHIR](http://hl7.org/fhir/) is a standard created by HL7 that enables a common data representation and associated APIs across diverse biomedical datasets. FHIR also provides a core set of concepts in the biomedical space, with the capacity for extensibility that allows for self-describing data model customization when needed. With the appropriate tooling and services, this provides the potential for interoperability among different clinical and research studies and institutions. Using a standard data representation greatly alleviates current pain points by reducing the manual work involved in transcribing and mapping from one data model to another. Increased interoperability allows for a wider ecosystem of reusable tools, as well as automation around data discovery and analysis. FHIR is the ideal standard as it has existing infrastructure, community, and documents supporting it, is technology agnostic, and is extensible to fit multiple use cases.
 
 ### Description
 
@@ -20,10 +20,13 @@ The FHIR Data Dashboard is an open source web application that utilizes the FHIR
 | 4   | As an exploratory researcher, I want to be able to see what ontologies are in a data model, so that I can determine if the data set includes information necessary for my research.                                  |
 | 5   | As a researcher, I want to be able to see an overview of multiple data sets, to determine if doing an analysis over the datasets would yield notable scientific discoveries.                                         |
 | 6   | As a data modeler, I want to be able to view aggregations of data in general resources (such as Observation) and drill down to specific entities in order to identify concrete use cases for data model adjustments. |
+| 7   | As a data engineer, I want to be able to see what resources reference a given resource ID, in order to validate and test the data ingest process.                                                                    |
 
 ### Design Specifications and Diagrams
 
-[See the technical design document here.](./design.md)
+#### Relevant Links
+
+- [See the technical design document here.](./design.md)
 
 ### Outstanding Questions
 
@@ -38,3 +41,7 @@ The FHIR Data Dashboard is an open source web application that utilizes the FHIR
    b. Under the hood, this means ingesting the arbitrary data and data model, converting it to a FHIR data model, and then pointing the dashboard to the converted FHIR data model \
    c. At a high level, the selling point is that data models in any form can be combined and a snapshot of the combined data sets can be quickly visualized, without manual migration \
    d. (Far) Down the road, this could mean easy data analysis across multiple data sets, regardless of their original format and model
+
+### Suggestions to Review
+
+1. The use cases and value proposition seem a little broad/unfocused - in the use cases we have internal use cases as well as external, might need to hone in on one or the other, or risk going too operational with the functionality
