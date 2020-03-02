@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {Modal} from 'semantic-ui-react';
 import {getReferencedBy} from '../../utils/api';
 import SortableTable from './SortableTable';
 import './ReferenceTable.css';
@@ -10,6 +11,7 @@ class ReferenceTable extends React.Component {
     this.state = {
       loadingReferences: false,
       referenceData: [],
+      showChildModal: null,
     };
   }
 
@@ -58,6 +60,14 @@ class ReferenceTable extends React.Component {
     });
   };
 
+  onChildRowClick = child => {
+    this.setState({showChildModal: child});
+  };
+
+  closeModal = () => {
+    this.setState({showChildModal: null});
+  };
+
   render() {
     return (
       <div className="reference-table">
@@ -73,7 +83,26 @@ class ReferenceTable extends React.Component {
               headerCells={this.props.tableHeaders}
               data={this.state.referenceData}
               rowChildren={true}
+              onChildRowClick={this.onChildRowClick}
             />
+            <Modal
+              open={!!this.state.showChildModal}
+              onClose={() => this.closeModal()}
+              dimmer="inverted"
+            >
+              <Modal.Header>
+                {this.state.showChildModal
+                  ? this.state.showChildModal.id
+                  : null}
+              </Modal.Header>
+              <Modal.Content>
+                <Modal.Description>
+                  <pre>
+                    {JSON.stringify(this.state.showChildModal, null, 2)}
+                  </pre>
+                </Modal.Description>
+              </Modal.Content>
+            </Modal>
           </div>
         ) : null}
       </div>

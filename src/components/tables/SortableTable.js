@@ -110,7 +110,10 @@ class SortableTable extends React.Component {
                         key={`${child.id}-${j}`}
                         className="sortable-table__child-row"
                       >
-                        <Table.Cell colSpan="4">
+                        <Table.Cell
+                          colSpan={headerCells.length}
+                          onClick={() => this.props.onChildRowClick(child)}
+                        >
                           <p>{child.id}</p>
                         </Table.Cell>
                       </Table.Row>
@@ -140,6 +143,7 @@ SortableTable.propTypes = {
   ),
   rowChildren: PropTypes.bool,
   onRowClick: PropTypes.func,
+  onChildRowClick: PropTypes.func,
 };
 
 SortableTable.defaultProps = {
@@ -147,6 +151,7 @@ SortableTable.defaultProps = {
   data: [],
   rowChildren: false,
   onRowClick: () => {},
+  onChildRowClick: () => {},
 };
 
 export default SortableTable;
