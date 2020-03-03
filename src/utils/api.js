@@ -1,4 +1,5 @@
 import {shouldUseProxyUrl, proxyUrl, fhirUrl, abortController} from '../config';
+import {logErrors} from './common';
 import store from '../store';
 
 const fetchWithHeaders = async (
@@ -15,7 +16,7 @@ const fetchWithHeaders = async (
   }
   const token = store.getState().user.token;
   return fetch(`${fullUrl}`, {
-    signal: abortController.signal,
+    signal: abortController ? abortController.signal : null,
     headers: {
       ...headers,
       Authorization: `Basic ${token}`,
@@ -30,7 +31,7 @@ const fetchWithHeaders = async (
     })
     .then(data => data)
     .catch(err => {
-      console.log('Error:', err);
+      logErrors('Error:', err);
       throw err;
     });
 };
@@ -51,7 +52,6 @@ export const fetchResource = async (url, abortController, summary = false) =>
 export const fetchAllResources = async (url, allData, abortController) =>
   fetchResource(url, abortController)
     .then(data => {
-      console.log('data is', data);
       if (data && data.entry) {
         allData = allData.concat(data.entry);
         const nextPage = data.link.findIndex(x => x.relation === 'next');

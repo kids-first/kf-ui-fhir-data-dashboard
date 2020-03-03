@@ -5,21 +5,20 @@ import {
   getHumanReadableNumber,
   getDropdownOptions,
   abortFetch,
+  logErrors,
 } from '../utils/common';
 import SearchBar from './SearchBar';
 import SortableTable from './tables/SortableTable';
 import './OntologyHomepage.css';
 
 class OntologyHomepage extends React.Component {
-  _isMounted = false;
-
   constructor(props) {
     super(props);
     this.state = {
       filteredOntologies: props.ontologies,
       listOntologies: this.mapToArray(props.ontologies),
+      abortController: new AbortController(),
       ontologiesFetched: props.ontologiesFetched,
-      abortController: props.abortController,
     };
   }
 
@@ -30,7 +29,6 @@ class OntologyHomepage extends React.Component {
   };
 
   componentDidMount() {
-    this._isMounted = true;
     if (!this.props.ontologiesFetched) {
       this.getOntologies();
     }
@@ -43,8 +41,7 @@ class OntologyHomepage extends React.Component {
   }
 
   componentWillUnmount() {
-    this._isMounted = false;
-    this.props.abortController.abort();
+    this.state.abortController.abort();
   }
 
   mapToArray = map =>
@@ -55,13 +52,19 @@ class OntologyHomepage extends React.Component {
     }));
 
   getOntologies = async () => {
-    this.props.getOntologies(`${this.props.baseUrl}CodeSystem`).then(() => {
-      this.setState({
-        filteredOntologies: this.props.ontologies,
-        listOntologies: this.mapToArray(this.props.ontologies),
-        ontologiesFetched: true,
-      });
-    });
+    this.props
+      .getOntologies(
+        `${this.props.baseUrl}CodeSystem`,
+        this.state.abortController,
+      )
+      .then(() => {
+        this.setState({
+          filteredOntologies: this.props.ontologies,
+          listOntologies: this.mapToArray(this.props.ontologies),
+          ontologiesFetched: true,
+        });
+      })
+      .catch(err => logErrors('Error fetching ontologies:', err));
   };
 
   handleResultSelect = searchResults => {

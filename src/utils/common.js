@@ -61,3 +61,7 @@ export const getBaseResourceCount = async (baseUrl, baseType, resources) => {
   }
   return total - sum;
 };
+
+export const logErrors = (msg, error) => {
+  console.log(msg, error);
+};

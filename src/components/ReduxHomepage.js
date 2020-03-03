@@ -10,7 +10,12 @@ import {getBaseResourceCount} from '../utils/common';
 import {acceptedResourceTypes} from '../config';
 import Homepage from './Homepage';
 
-const getAllResources = async (baseUrl, resourceType, abortController, dispatch) => {
+const getAllResources = async (
+  baseUrl,
+  resourceType,
+  abortController,
+  dispatch,
+) => {
   const url = `${baseUrl}${resourceType}`;
   dispatch(setLoadingMessage('Getting resource totals...'));
   return await fetchAllResources(url, [], abortController)
@@ -39,12 +44,10 @@ const getAllResources = async (baseUrl, resourceType, abortController, dispatch)
           return allResources;
         })
         .catch(err => {
-          console.log('err in redux', err);
           throw err;
         });
     })
     .catch(err => {
-      console.log('err in redux', err);
       throw err;
     });
 };
@@ -105,26 +108,15 @@ const mapStateToProps = (state, ownProps) => ({
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-<<<<<<< HEAD
-    fetchAllResources: async (baseUrl, resourceType) => {
-      dispatch(setLoadingMessage('Fetching all resources...'));
-      const allResources = await getAllResources(
-        baseUrl,
-        resourceType,
-        dispatch,
-      );
-      dispatch(setResources(allResources));
-=======
     fetchAllResources: async (baseUrl, resourceType, abortController) => {
-      await getAllResources(baseUrl, resourceType, abortController)
+      dispatch(setLoadingMessage('Fetching all resources...'));
+      await getAllResources(baseUrl, resourceType, abortController, dispatch)
         .then(allResources => {
-          console.log('allResources', allResources);
           dispatch(setResources(allResources));
         })
         .catch(err => {
           throw err;
         });
->>>>>>> :construction: WIP
     },
     setBaseUrl: url => dispatch(setApi(url)),
     setHomepageView: cardView => dispatch(setHomepageView(cardView)),

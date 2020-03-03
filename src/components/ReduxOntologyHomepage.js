@@ -3,8 +3,6 @@ import {setOntologies, setApi, setLoadingMessage} from '../actions';
 import {getOntologies} from '../utils/api';
 import OntologyHomepage from './OntologyHomepage';
 
-const ontologyAbortController = new AbortController();
-
 const groupOntologies = ontologies => {
   const groupedOntologies = {};
   ontologies.forEach(item => {
