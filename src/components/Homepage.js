@@ -7,6 +7,7 @@ import {
   getHumanReadableNumber,
   getDropdownOptions,
   abortFetch,
+  logErrors,
 } from '../utils/common';
 import {resourceCategories} from '../config';
 import SearchBar from './SearchBar';
@@ -14,8 +15,6 @@ import SortableTable from './tables/SortableTable';
 import './Homepage.css';
 
 class Homepage extends React.Component {
-  _isMounted = false;
-
   constructor(props) {
     super(props);
     this.state = {
@@ -30,10 +29,7 @@ class Homepage extends React.Component {
   }
 
   componentDidMount() {
-    console.log('did mount');
-    this._isMounted = true;
     if (!this.props.allResourcesFetched) {
-      console.log('not fetched');
       this.fetchAllResources();
     }
   }
@@ -45,8 +41,6 @@ class Homepage extends React.Component {
   }
 
   componentWillUnmount() {
-    console.log('unmounting');
-    this._isMounted = false;
     this.state.abortController.abort();
   }
 
@@ -58,16 +52,15 @@ class Homepage extends React.Component {
         this.state.abortController,
       )
       .then(() => {
-        if (this._isMounted) {
-          const resources = this.props.allResources;
-          const resourcesByCategory = this.setCategories(resources);
-          this.setState({
-            filteredResources: resources,
-            listResources: _.toArray(resources),
-            resourcesByCategory,
-          });
-        }
-      });
+        const resources = this.props.allResources;
+        const resourcesByCategory = this.setCategories(resources);
+        this.setState({
+          filteredResources: resources,
+          listResources: _.toArray(resources),
+          resourcesByCategory,
+        });
+      })
+      .catch(err => logErrors('Error fetching resources:', err));
   };
 
   setCategories = resources => {

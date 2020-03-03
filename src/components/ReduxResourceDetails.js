@@ -34,12 +34,22 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    getCount: url => getResourceCount(url),
-    getSearchParams: url => getSearchParams(url),
-    getCapabilityStatement: (url, resourceType) =>
-      getCapabilityStatementSearchParams(url, resourceType),
-    fetchResource: url => fetchResource(url),
-    setLoadingMessage: message => dispatch(setLoadingMessage(message)),
+    getCount: (url, abortController) =>
+      getResourceCount(url, abortController).catch(err => {
+        throw err;
+      }),
+    getSearchParams: (url, abortController) =>
+      getSearchParams(url, abortController).catch(err => {
+        throw err;
+      }),
+    getCapabilityStatement: (url, resourceType, abortController) =>
+      getCapabilityStatement(url, resourceType, abortController).catch(err => {
+        throw err;
+      }),
+    fetchResource: (url, abortController) =>
+      fetchResource(url, abortController).catch(err => {
+        throw err;
+      }),
   };
 };
 
