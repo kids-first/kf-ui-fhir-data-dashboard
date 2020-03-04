@@ -1,5 +1,6 @@
 .sortable-table {
   margin: 20px 0;
+  overflow-x: scroll;
 }
 
 .sortable-table tr {

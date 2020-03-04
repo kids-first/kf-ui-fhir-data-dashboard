@@ -24,6 +24,12 @@ npm start
 This will open up the application at `localhost:3000`.
 More on `create-react-app` [here](https://reactjs.org/docs/create-a-new-react-app.html).
 
+### Auth
+
+To use FHIR servers that require auth, set the `REACT_APP_KF_USER` and `REACT_APP_KF_PW`
+environment variables to the appropriate username and password, respectively. The
+app will use this and Basic Auth to make requests.
+
 ### FHIR APIs
 
 Creating a data dashboard over the FHIR API standard means that a user potentially

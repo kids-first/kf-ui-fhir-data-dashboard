@@ -5,7 +5,7 @@ import {getHumanReadableNumber} from '../utils/common';
 import {fhirUrl, defaultTableFields} from '../config';
 import AppBreadcrumb from './AppBreadcrumb';
 import DataPieChart from './DataPieChart';
-import ResultsTable from './ResultsTable';
+import ResultsTable from './tables/ResultsTable';
 import './ResourceDetails.css';
 
 class ResourceDetails extends React.Component {
@@ -27,8 +27,17 @@ class ResourceDetails extends React.Component {
     this.getResource();
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
     window.scrollTo(0, 0);
+    if (
+      this.props.resourceBaseType !== prevProps.resourceBaseType ||
+      this.props.resourceType !== prevProps.resourceType ||
+      this.props.resourceUrl !== prevProps.resourceUrl
+    ) {
+      this.setState({total: this.props.total}, () => {
+        this.getResource();
+      });
+    }
   }
 
   getResource = () => {
@@ -502,6 +511,9 @@ class ResourceDetails extends React.Component {
               </Header>
               {this.state.tableLoaded ? (
                 <ResultsTable
+                  closeModal={this.closeModal}
+                  history={this.props.history}
+                  baseUrl={this.props.baseUrl}
                   fetchResource={this.props.fetchResource}
                   results={this.state.tableResults}
                   nextPageUrl={this.state.nextPageUrl}

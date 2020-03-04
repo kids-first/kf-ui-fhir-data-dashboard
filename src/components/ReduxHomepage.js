@@ -33,15 +33,18 @@ const getAllResources = async (baseUrl, resourceType) => {
 const setResourceCounts = async (baseUrl, items) =>
   await Promise.all(
     items.map(async item => {
+      let countUrl = `${baseUrl}${item.resource.type}`;
+      countUrl =
+        item.resource.type !== item.resource.name
+          ? countUrl.concat(`?_profile:below=${item.resource.url}`)
+          : countUrl;
       if (showResourceType(item.resource.type)) {
         return {
           id: item.resource.id,
           baseType: item.resource.type,
           name: item.resource.name,
           url: item.resource.url,
-          count: await getResourceCount(
-            `${baseUrl}${item.resource.type}?_profile:below=${item.resource.url}`,
-          ),
+          count: await getResourceCount(countUrl),
         };
       }
     }),

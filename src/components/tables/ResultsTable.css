@@ -13,16 +13,26 @@
 
 .results-table__cell {
   padding: 10px 0;
-  cursor: pointer;
   margin: 0px 10px;
 }
-.results-table__row-even {
-  background-color: var(--d3b-lightgray);
+
+.results-table__cell-icons {
+  display: flex;
+  flex-flow: column;
+  align-items: flex-end;
 }
 
-.results-table__row-even:hover,
-.results-table__row-odd:hover {
-  background-color: var(--d3b-hoverblue);
+.results-table__cell-icons i.icon {
+  color: var(--d3b-blue);
+  margin: 10px 0;
+}
+
+.results-table__cell-icons i.icon:hover {
+  color: var(--d3b-brightblue);
+}
+
+.results-table__row-even {
+  background-color: var(--d3b-lightgray);
 }
 
 /* React virtualized Table overrides */
@@ -36,7 +46,6 @@
 }
 
 .ReactVirtualized__Table__row {
-  cursor: pointer;
   outline: none;
   padding: 10px 0;
 }

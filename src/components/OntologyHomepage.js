@@ -4,7 +4,7 @@ import {Dropdown} from 'semantic-ui-react';
 import {getHumanReadableNumber} from '../utils/common';
 import {defaultFhirAPIs} from '../config';
 import SearchBar from './SearchBar';
-import SortableTable from './SortableTable';
+import SortableTable from './tables/SortableTable';
 import './OntologyHomepage.css';
 
 class OntologyHomepage extends React.Component {
