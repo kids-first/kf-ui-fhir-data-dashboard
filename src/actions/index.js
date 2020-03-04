@@ -31,15 +31,6 @@ export const setLoadingMessage = loadingMessage => ({
   loadingMessage,
 });
 
-export const setUser = (username, password) => {
-  console.log('username', username);
-  console.log('password', password);
-  return {
-    type: SET_USER,
-    username,
-    password,
-  };
-};
 export const setUser = (username, password) => ({
   type: SET_USER,
   username,

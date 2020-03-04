@@ -9,6 +9,9 @@ class Login extends React.Component {
     this.state = {
       username: null,
       password: null,
+      showAuthError: true,
+      authError: null,
+      checkingUser: false,
     };
   }
 
@@ -20,9 +23,20 @@ class Login extends React.Component {
     this.setState({password: e.target.value});
   };
 
-  login = e => {
+  login = async e => {
     e.preventDefault();
-    this.props.setUser(this.state.username, this.state.password);
+    this.setState({authError: null, checkingUser: true}, async () => {
+      await this.props
+        .checkUser(this.state.username, this.state.password, this.props.baseUrl)
+        .then(({isAuthorized, error}) => {
+          this.setState({checkingUser: false});
+          if (isAuthorized) {
+            this.props.setUser(this.state.username, this.state.password);
+          } else {
+            this.setState({authError: error});
+          }
+        });
+    });
   };
 
   render() {
@@ -44,6 +58,19 @@ class Login extends React.Component {
             />
             <Button type="submit">Login</Button>
           </form>
+          {this.state.authError ? (
+            <div className="login__auth-error">
+              <p>There was an error logging in:</p>
+              <pre>
+                {this.state.authError.statusText}: {this.state.authError.status}
+              </pre>
+            </div>
+          ) : null}
+          <div
+            className={`ui ${
+              this.state.checkingUser ? 'active' : 'disabled'
+            } loader`}
+          />
         </div>
       </div>
     );
@@ -52,6 +79,8 @@ class Login extends React.Component {
 
 Login.propTypes = {
   setUser: PropTypes.func.isRequired,
+  baseUrl: PropTypes.string.isRequired,
+  checkUser: PropTypes.func.isRequired,
 };
 
 export default Login;

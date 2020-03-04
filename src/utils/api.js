@@ -128,3 +128,22 @@ export const getReferencedBy = async (url, baseType, id) => {
   );
   return resourceReferences.filter(ref => ref.name);
 };
+
+export const userIsAuthorized = (username, password, baseUrl) => {
+  const token = btoa(`${username}:${password}`);
+  return fetch(`${baseUrl}StructureDefinition`, {
+    headers: {
+      Authorization: `Basic ${token}`,
+    },
+  })
+    .then(res => {
+      if (res.status !== 200) {
+        throw res;
+      }
+      return {isAuthorized: true, error: null};
+    })
+    .catch(error => ({
+      isAuthorized: false,
+      error,
+    }));
+};
