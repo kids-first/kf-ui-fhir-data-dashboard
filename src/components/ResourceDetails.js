@@ -300,7 +300,7 @@ class ResourceDetails extends React.Component {
           concepts.push(...systemConcepts);
           return {
             ...attribute,
-            queryParams: concepts.length < 100 ? concepts : [], // how to handle large sets of parameters? very slow
+            queryParams: concepts, // how to handle large sets of parameters? very slow
           };
         } else {
           return attribute;

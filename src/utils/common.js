@@ -6,39 +6,31 @@ export const getHumanReadableNumber = value =>
 export const getBaseResourceCount = async (baseUrl, baseType, resources) => {
   let sum = 0;
   let total = await getResourceCount(`${baseUrl}${baseType}`);
-  console.log('total', total);
-  console.log('baseUrl');
   const countedResources = new Set();
   if (!resources) {
     await fetchAllResources(`${baseUrl}StructureDefinition`, []).then(
       async data => {
-        console.log('data', data);
         resources = await Promise.all(
           data
             .map(item => item.resource)
             .filter(resource => resource && resource.type === baseType)
             .map(async resource => {
-              console.log('getting count for resource', resource.name);
               const count = await getResourceCount(
                 `${baseUrl}${baseType}?_profile:below=${resource.url}`,
               );
-              console.log('count', count);
               return {
                 ...resource,
                 count,
               };
             }),
         );
-        console.log('resources', resources);
         resources.forEach(resource => {
-          console.log('resource', resource);
           if (
             resource &&
             resource.type === baseType &&
             resource.name !== baseType &&
             !countedResources.has(resource.url)
           ) {
-            console.log('adding resource', resource);
             countedResources.add(resource.url);
             sum += resource.count;
           }
@@ -59,6 +51,5 @@ export const getBaseResourceCount = async (baseUrl, baseType, resources) => {
       }
     });
   }
-  console.log('sum', sum);
   return total - sum;
 };
