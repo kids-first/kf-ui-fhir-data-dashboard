@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Modal, Header} from 'semantic-ui-react';
-import {getHumanReadableNumber} from '../utils/common';
+import {getHumanReadableNumber, getBaseResourceCount} from '../utils/common';
 import {fhirUrl, defaultTableFields} from '../config';
 import AppBreadcrumb from './AppBreadcrumb';
 import DataPieChart from './DataPieChart';
@@ -54,8 +54,10 @@ class ResourceDetails extends React.Component {
         let url = `${baseUrl}${resourceBaseType}`;
         if (resourceBaseType !== resourceType) {
           url = url.concat(`?_profile:below=${resourceUrl}`);
+          total = await this.props.getCount(url);
+        } else {
+          total = await getBaseResourceCount(baseUrl, resourceBaseType);
         }
-        total = await this.props.getCount(url);
       }
       const schema = await this.getSchema();
       const attributes = schema ? await this.getQueryParams(schema) : [];
