@@ -370,7 +370,6 @@ Homepage.propTypes = {
   cardView: PropTypes.bool,
   setHomepageView: PropTypes.func.isRequired,
   loadingMessage: PropTypes.string,
-  setLoadingMessage: PropTypes.func.isRequired,
 };
 
 Homepage.defaultProps = {
