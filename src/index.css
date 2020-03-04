@@ -26,6 +26,7 @@ h2,
 h3,
 h4,
 h5 {
+  font-family: Rubrik, Helvetica, Arial, sans-serif;
   font-weight: 500;
 }
 
@@ -69,7 +70,6 @@ pre {
   display: flex;
   flex-flow: column;
   width: 200px;
-  font-size: 12px;
 }
 
 .ui.inverted.dimmer .ui.loader.active p,
