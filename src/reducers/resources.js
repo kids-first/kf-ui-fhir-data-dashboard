@@ -1,4 +1,9 @@
-import {SET_RESOURCES, SET_API, SET_HOMEPAGE_VIEW} from '../actions';
+import {
+  SET_RESOURCES,
+  SET_API,
+  SET_HOMEPAGE_VIEW,
+  SET_LOADING_MESSAGE,
+} from '../actions';
 
 const initialState = {
   baseUrl: process.env.REACT_APP_FHIR_API
@@ -28,6 +33,11 @@ const resources = (state = initialState, action) => {
       return {
         ...state,
         cardView: action.cardView,
+      };
+    case SET_LOADING_MESSAGE:
+      return {
+        ...state,
+        loadingMessage: action.loadingMessage,
       };
     default:
       return state;

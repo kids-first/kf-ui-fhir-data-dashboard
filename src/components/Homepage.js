@@ -198,7 +198,9 @@ class Homepage extends React.Component {
       <div className="homepage">
         <div
           className={`ui ${allResourcesFetched ? 'disabled' : 'active'} loader`}
-        />
+        >
+          <p>{this.props.loadingMessage}</p>
+        </div>
         <div className="homepage__header">
           <div className="homepage__header-title">
             <h2>{searchResourceTitle}:</h2>
@@ -367,12 +369,15 @@ Homepage.propTypes = {
   setBaseUrl: PropTypes.func.isRequired,
   cardView: PropTypes.bool,
   setHomepageView: PropTypes.func.isRequired,
+  loadingMessage: PropTypes.string,
+  setLoadingMessage: PropTypes.func.isRequired,
 };
 
 Homepage.defaultProps = {
   allResources: {},
   allResourcesFetched: false,
   cardView: true,
+  loadingMessage: '',
 };
 
 export default Homepage;

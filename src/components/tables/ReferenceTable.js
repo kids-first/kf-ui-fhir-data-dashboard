@@ -27,6 +27,9 @@ class ReferenceTable extends React.Component {
 
   fetchReferences = async () => {
     this.setState({loadingReferences: true}, async () => {
+      this.props.setLoadingMessage(
+        `Fetching references for ${this.props.resourceId}...`,
+      );
       const references = await getReferencedBy(
         this.props.baseUrl,
         this.props.resourceType,
@@ -75,8 +78,10 @@ class ReferenceTable extends React.Component {
           className={`ui ${
             this.state.loadingReferences ? 'active' : 'disabled'
           } loader`}
-        />
-        {this.state.referenceData ? (
+        >
+          <p>{this.props.loadingMessage}</p>
+        </div>
+        {this.state.referenceData && !this.state.loadingReferences ? (
           <div>
             <h3>Resources that reference {this.props.resourceId}:</h3>
             <SortableTable
@@ -122,10 +127,13 @@ ReferenceTable.propTypes = {
   ),
   onClick: PropTypes.func,
   baseUrl: PropTypes.string.isRequired,
+  loadingMessage: PropTypes.string,
+  setLoadingMessage: PropTypes.func.isRequired,
 };
 
 ReferenceTable.defaultProps = {
   onClick: () => {},
+  loadingMessage: '',
 };
 
 export default ReferenceTable;
