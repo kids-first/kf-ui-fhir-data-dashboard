@@ -5,6 +5,7 @@ import {
   fetchResource,
   getCapabilityStatementSearchParams,
 } from '../utils/api';
+import {setLoadingMessage} from '../actions';
 import queryString from 'query-string';
 import ResourceDetails from './ResourceDetails';
 
@@ -27,6 +28,7 @@ const mapStateToProps = (state, ownProps) => {
     baseUrl: state.resources.baseUrl,
     schemaUrl: `${state.resources.baseUrl}StructureDefinition`,
     capabilityStatementUrl: `${state.resources.baseUrl}metadata`,
+    loadingMessage: state.resources.loadingMessage,
   };
 };
 
@@ -37,6 +39,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     getCapabilityStatement: (url, resourceType) =>
       getCapabilityStatementSearchParams(url, resourceType),
     fetchResource: url => fetchResource(url),
+    setLoadingMessage: message => dispatch(setLoadingMessage(message)),
   };
 };
 

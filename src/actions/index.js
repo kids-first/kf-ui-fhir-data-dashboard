@@ -2,6 +2,7 @@ export const SET_RESOURCES = 'SET_RESOURCES';
 export const SET_API = 'SET_API';
 export const SET_ONTOLOGIES = 'SET_ONTOLOGIES';
 export const SET_HOMEPAGE_VIEW = 'SET_HOMEPAGE_VIEW';
+export const SET_LOADING_MESSAGE = 'SET_LOADING_MESSAGE';
 
 export const setResources = allResources => ({
   type: SET_RESOURCES,
@@ -21,4 +22,9 @@ export const setOntologies = ontologies => ({
 export const setHomepageView = cardView => ({
   type: SET_HOMEPAGE_VIEW,
   cardView,
+});
+
+export const setLoadingMessage = loadingMessage => ({
+  type: SET_LOADING_MESSAGE,
+  loadingMessage,
 });

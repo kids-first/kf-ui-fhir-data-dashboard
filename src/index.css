@@ -26,6 +26,7 @@ h2,
 h3,
 h4,
 h5 {
+  font-family: Rubrik, Helvetica, Arial, sans-serif;
   font-weight: 500;
 }
 
@@ -61,4 +62,17 @@ a {
 pre {
   white-space: pre-wrap;
   word-break: break-all;
+}
+
+/* Semantic UI overrides */
+.ui.inverted.dimmer .ui.loader.active,
+.ui.loader.active {
+  display: flex;
+  flex-flow: column;
+  width: 200px;
+}
+
+.ui.inverted.dimmer .ui.loader.active p,
+.ui.loader.active p {
+  margin-top: 40px;
 }

@@ -102,7 +102,9 @@ class OntologyHomepage extends React.Component {
         {ontologiesFetched ? (
           <SortableTable headerCells={tableHeaders} data={listOntologies} />
         ) : (
-          <div className="ui active loader" />
+          <div className="ui active loader">
+            <p>{this.props.loadingMessage}</p>
+          </div>
         )}
       </div>
     );
@@ -115,11 +117,13 @@ OntologyHomepage.propTypes = {
   setBaseUrl: PropTypes.func.isRequired,
   ontologiesFetched: PropTypes.bool,
   getOntologies: PropTypes.func.isRequired,
+  loadingMessage: PropTypes.string,
 };
 
 OntologyHomepage.defaultProps = {
   ontologies: {},
   ontologiesFetched: false,
+  loadingMessage: '',
 };
 
 export default OntologyHomepage;

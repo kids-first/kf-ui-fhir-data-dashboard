@@ -257,6 +257,8 @@ class ResultsTable extends React.Component {
                   this.state.rowData ? this.state.rowData.resourceType : ''
                 }
                 baseUrl={this.props.baseUrl}
+                loadingMessage={this.props.loadingMessage}
+                setLoadingMessage={this.props.setLoadingMessage}
               />
             </Modal.Description>
           </Modal.Content>
@@ -277,6 +279,8 @@ ResultsTable.propTypes = {
   nextPageUrl: PropTypes.string,
   totalResults: PropTypes.number,
   tableColumns: PropTypes.array,
+  loadingMessage: PropTypes.string,
+  setLoadingMessage: PropTypes.func.isRequired,
 };
 
 ResultsTable.defaultProps = {
@@ -285,4 +289,5 @@ ResultsTable.defaultProps = {
   nextPageUrl: null,
   totalResults: 0,
   tableColumns: defaultTableFields,
+  loadingMessage: '',
 };

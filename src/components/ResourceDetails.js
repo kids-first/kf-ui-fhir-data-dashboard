@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Modal, Header} from 'semantic-ui-react';
-import {getHumanReadableNumber} from '../utils/common';
+import {getHumanReadableNumber, getBaseResourceCount} from '../utils/common';
 import {fhirUrl, defaultTableFields} from '../config';
 import AppBreadcrumb from './AppBreadcrumb';
 import DataPieChart from './DataPieChart';
@@ -51,13 +51,18 @@ class ResourceDetails extends React.Component {
     this.setState({queriesComplete: false}, async () => {
       let total = this.state.total;
       if (!resourceFetched) {
+        this.props.setLoadingMessage(`Fetching ${resourceType} totals...`);
         let url = `${baseUrl}${resourceBaseType}`;
         if (resourceBaseType !== resourceType) {
           url = url.concat(`?_profile:below=${resourceUrl}`);
+          total = await this.props.getCount(url);
+        } else {
+          total = await getBaseResourceCount(baseUrl, resourceBaseType);
         }
-        total = await this.props.getCount(url);
       }
+      this.props.setLoadingMessage(`Getting ${resourceType} schema...`);
       const schema = await this.getSchema();
+      this.props.setLoadingMessage(`Getting ${resourceType} attributes...`);
       const attributes = schema ? await this.getQueryParams(schema) : [];
       this.setState(
         {
@@ -68,6 +73,7 @@ class ResourceDetails extends React.Component {
           ),
         },
         () => {
+          this.props.setLoadingMessage(`Populating charts...`);
           this.setQueryResults();
         },
       );
@@ -298,7 +304,7 @@ class ResourceDetails extends React.Component {
           concepts.push(...systemConcepts);
           return {
             ...attribute,
-            queryParams: concepts.length < 100 ? concepts : [], // how to handle large sets of parameters? very slow
+            queryParams: concepts, // how to handle large sets of parameters? very slow
           };
         } else {
           return attribute;
@@ -386,6 +392,7 @@ class ResourceDetails extends React.Component {
 
   getAttributeTableResults = async (attribute, chartType) => {
     this.setState({showModal: true, tableLoaded: false}, async () => {
+      this.props.setLoadingMessage(`Fetching ${attribute.name} details...`);
       const {baseUrl, resourceBaseType, resourceType, resourceUrl} = this.props;
       let data = null;
       const allFields = defaultTableFields.concat(attribute.name);
@@ -440,9 +447,9 @@ class ResourceDetails extends React.Component {
     return (
       <div className="resource-details">
         <AppBreadcrumb history={this.props.history} />
-        <div
-          className={`ui ${queriesComplete ? 'disabled' : 'active'} loader`}
-        />
+        <div className={`ui ${queriesComplete ? 'disabled' : 'active'} loader`}>
+          <p>{this.props.loadingMessage}</p>
+        </div>
         <div className="resource-details__header">
           <div className="resource-details__header-title">
             <h2>{resourceType}:</h2>
@@ -519,9 +526,13 @@ class ResourceDetails extends React.Component {
                   nextPageUrl={this.state.nextPageUrl}
                   totalResults={this.state.totalResults}
                   tableColumns={this.state.tableColumns}
+                  loadingMessage={this.props.loadingMessage}
+                  setLoadingMessage={this.props.setLoadingMessage}
                 />
               ) : (
-                <div className="ui active loader" />
+                <div className="ui active loader">
+                  <p>{this.props.loadingMessage}</p>
+                </div>
               )}
             </Modal.Description>
           </Modal.Content>
@@ -553,6 +564,8 @@ ResourceDetails.propTypes = {
   baseUrl: PropTypes.string.isRequired,
   schemaUrl: PropTypes.string.isRequired,
   capabilityStatementUrl: PropTypes.string.isRequired,
+  loadingMessage: PropTypes.string,
+  setLoadingMessage: PropTypes.func.isRequired,
 };
 
 ResourceDetails.defaultProps = {

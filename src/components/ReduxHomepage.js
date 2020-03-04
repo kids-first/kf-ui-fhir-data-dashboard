@@ -1,13 +1,19 @@
 import {connect} from 'react-redux';
-import {setResources, setApi, setHomepageView} from '../actions';
+import {
+  setResources,
+  setApi,
+  setHomepageView,
+  setLoadingMessage,
+} from '../actions';
 import {fetchAllResources, getResourceCount} from '../utils/api';
 import {getBaseResourceCount} from '../utils/common';
 import {acceptedResourceTypes} from '../config';
 import Homepage from './Homepage';
 
-const getAllResources = async (baseUrl, resourceType) => {
+const getAllResources = async (baseUrl, resourceType, dispatch) => {
   const url = `${baseUrl}${resourceType}`;
   let allResources = await fetchAllResources(url, []);
+  dispatch(setLoadingMessage('Getting resource totals...'));
   allResources = allResources
     ? await setResourceCounts(baseUrl, allResources)
     : [];
@@ -71,12 +77,18 @@ const mapStateToProps = (state, ownProps) => ({
     state && state.resources ? state.resources.allResourcesFetched : false,
   baseUrl: state.resources.baseUrl,
   cardView: state.resources.cardView,
+  loadingMessage: state.resources.loadingMessage,
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     fetchAllResources: async (baseUrl, resourceType) => {
-      const allResources = await getAllResources(baseUrl, resourceType);
+      dispatch(setLoadingMessage('Fetching all resources...'));
+      const allResources = await getAllResources(
+        baseUrl,
+        resourceType,
+        dispatch,
+      );
       dispatch(setResources(allResources));
     },
     setBaseUrl: url => dispatch(setApi(url)),
