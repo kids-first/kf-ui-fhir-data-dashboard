@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Table, Icon} from 'semantic-ui-react';
 import _ from 'lodash';
+import SearchBar from '../SearchBar';
 import './SortableTable.css';
 
 class SortableTable extends React.Component {
@@ -11,7 +12,7 @@ class SortableTable extends React.Component {
       sortColumn: props.headerCells[0].sortId,
       sortDirection: 'ascending',
       sortedData: _.sortBy(props.data, props.headerCells[0].sortId),
-      activeIndex: -1,
+      activeIndex: props.activeIndex,
     };
   }
 
@@ -20,6 +21,9 @@ class SortableTable extends React.Component {
       this.setState({
         sortedData: _.sortBy(this.props.data, this.props.headerCells[0].sortId),
       });
+    }
+    if (this.props.activeIndex !== prevProps.activeIndex) {
+      this.setState({activeIndex: this.props.activeIndex});
     }
   }
 
@@ -57,11 +61,19 @@ class SortableTable extends React.Component {
   };
 
   render() {
-    const {headerCells, rowChildren} = this.props;
+    const {headerCells, rowChildren, searchable} = this.props;
     const {sortDirection, sortColumn, sortedData} = this.state;
-
     return (
       <div className="sortable-table">
+        {searchable ? (
+          <SearchBar
+            data={this.props.searchData.map(item => ({
+              title: item[this.props.searchTitleField],
+            }))}
+            handleResultSelect={this.props.handleResultSelect}
+            placeholder={this.props.searchPlaceholder}
+          />
+        ) : null}
         <Table celled sortable>
           <Table.Header>
             <Table.Row>
@@ -144,6 +156,12 @@ SortableTable.propTypes = {
   rowChildren: PropTypes.bool,
   onRowClick: PropTypes.func,
   onChildRowClick: PropTypes.func,
+  searchable: PropTypes.bool,
+  searchTitleField: PropTypes.string,
+  handleResultSelect: PropTypes.func,
+  searchPlaceholder: PropTypes.string,
+  searchData: PropTypes.array,
+  activeIndex: PropTypes.number,
 };
 
 SortableTable.defaultProps = {
@@ -152,6 +170,12 @@ SortableTable.defaultProps = {
   rowChildren: false,
   onRowClick: () => {},
   onChildRowClick: () => {},
+  searchable: false,
+  searchTitleField: null,
+  handleResultSelect: () => {},
+  searchPlaceholder: 'Search...',
+  searchData: [],
+  activeIndex: -1,
 };
 
 export default SortableTable;

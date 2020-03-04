@@ -94,7 +94,22 @@ class ReferenceTable extends React.Component {
     this.setState({showChildModal: null});
   };
 
+  handleResultSelect = searchResults => {
+    let parentIndex = -1;
+    if (searchResults.length === 1) {
+      this.state.referenceData.forEach((resource, i) => {
+        resource.children.forEach(child => {
+          if (child.id === searchResults[0].title) {
+            parentIndex = i;
+          }
+        });
+      });
+    }
+    this.setState({childRowOpen: parentIndex});
+  };
+
   render() {
+    console.log('this.state', this.state);
     return (
       <div className="reference-table">
         <div
@@ -116,10 +131,18 @@ class ReferenceTable extends React.Component {
             />
             <h3>Resources referenced by {this.props.resource.id}:</h3>
             <SortableTable
+              searchable={true}
+              searchPlaceholder="Search references..."
+              searchTitleField="id"
+              searchData={this.state.referenceData
+                .map(resource => resource.children)
+                .flat()}
               headerCells={this.props.tableHeaders}
               data={this.state.referencingData}
               rowChildren={true}
               onChildRowClick={this.onChildRowClick}
+              handleResultSelect={this.handleResultSelect}
+              activeIndex={this.state.childRowOpen}
             />
             <Modal
               open={!!this.state.showChildModal}
