@@ -1,4 +1,4 @@
-import {shouldUseProxyUrl, proxyUrl} from '../config';
+import {shouldUseProxyUrl, proxyUrl, fhirUrl} from '../config';
 
 const fetchWithHeaders = async (url, headers, summary = false) => {
   let fullUrl = shouldUseProxyUrl(url) ? `${proxyUrl}${url}` : `${url}`;
