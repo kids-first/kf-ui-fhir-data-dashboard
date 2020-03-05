@@ -46,6 +46,7 @@
   text-align: center;
   margin: 20px 30px;
   cursor: pointer;
+  flex: 1;
 }
 
 .resource-details__query-count {
@@ -54,6 +55,12 @@
 
 .resource-details__query-pie {
   width: 500px;
+}
+
+.resource-details__query-bar {
+  width: 100%;
+  max-height: 500px;
+  overflow: scroll;
 }
 
 @media screen and (max-width: 768px) {
@@ -70,4 +77,10 @@
 
 .ui.active.modal {
   width: 80%;
+}
+
+/* Recharts overrides */
+.recharts-layer.recharts-cartesian-axis-tick {
+  font-size: 10px;
+  text-overflow: clip;
 }
