@@ -489,7 +489,6 @@ class ResourceDetails extends React.Component {
   };
 
   transformResults = (data, attribute) => {
-    console.log('attribute is', attribute);
     let results =
       data && data.entry ? data.entry.map(item => item.resource) : [];
     if (attribute.extensionInfo && attribute.extensionInfo.url) {
@@ -505,7 +504,6 @@ class ResourceDetails extends React.Component {
         return result;
       });
     }
-    console.log('results', results);
     return {results, link: data.link};
   };
 

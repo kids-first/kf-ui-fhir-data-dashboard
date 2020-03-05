@@ -32,7 +32,7 @@ class DataBarChart extends React.Component {
           <XAxis type="number" orientation="top" />
           <YAxis width={250} type="category" dataKey="name" />
           <Tooltip />
-          <Bar dataKey="value" fill="#8884d8" barSize={barSize} />
+          <Bar dataKey="value" fill="#41b6e6" barSize={barSize} />
         </BarChart>
       </ResponsiveContainer>
     );

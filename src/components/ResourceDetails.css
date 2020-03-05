@@ -82,5 +82,4 @@
 /* Recharts overrides */
 .recharts-layer.recharts-cartesian-axis-tick {
   font-size: 10px;
-  text-overflow: clip;
 }
