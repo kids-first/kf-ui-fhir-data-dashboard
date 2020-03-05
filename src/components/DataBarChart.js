@@ -7,8 +7,6 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Brush,
-  ReferenceLine,
   ResponsiveContainer,
 } from 'recharts';
 
