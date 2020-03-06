@@ -12,7 +12,7 @@ import {
 
 class DataBarChart extends React.Component {
   render() {
-    const data = this.props.data.filter(x => x.value > 0);
+    const data = this.props.data;
     const barSize = 10;
     return (
       <ResponsiveContainer height={barSize * data.length + 4}>
