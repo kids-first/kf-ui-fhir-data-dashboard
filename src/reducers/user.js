@@ -20,7 +20,7 @@ const user = (state = initialState, action) => {
       return {
         ...state,
         serverOptions: currentOptions.concat({
-          name: 'Custom',
+          name: action.url,
           url: action.url,
           authRequired: false,
         }),
