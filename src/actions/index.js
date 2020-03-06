@@ -5,6 +5,7 @@ export const SET_HOMEPAGE_VIEW = 'SET_HOMEPAGE_VIEW';
 export const SET_LOADING_MESSAGE = 'SET_LOADING_MESSAGE';
 export const SET_USER = 'SET_USER';
 export const CLEAR_USER = 'CLEAR_USER';
+export const ADD_SERVER = 'ADD_SERVER';
 
 export const setResources = allResources => ({
   type: SET_RESOURCES,
@@ -39,4 +40,9 @@ export const setUser = (username, password) => ({
 
 export const clearUser = () => ({
   type: CLEAR_USER,
+});
+
+export const addServer = url => ({
+  type: ADD_SERVER,
+  url,
 });

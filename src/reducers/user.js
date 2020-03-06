@@ -1,6 +1,11 @@
-import {SET_USER} from '../actions';
+import {SET_USER, ADD_SERVER} from '../actions';
+import {defaultFhirServers} from '../config';
 
-const user = (state = {}, action) => {
+const initialState = {
+  serverOptions: defaultFhirServers,
+};
+
+const user = (state = initialState, action) => {
   switch (action.type) {
     case SET_USER:
       const token = btoa(`${action.username}:${action.password}`);
@@ -9,6 +14,16 @@ const user = (state = {}, action) => {
         ...state,
         token,
         username: action.username,
+      };
+    case ADD_SERVER:
+      const currentOptions = state.serverOptions;
+      return {
+        ...state,
+        serverOptions: currentOptions.concat({
+          name: 'Custom',
+          url: action.url,
+          authRequired: false,
+        }),
       };
     default:
       return {

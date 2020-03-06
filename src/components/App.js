@@ -8,15 +8,18 @@ import ReduxResourceDetails from './ReduxResourceDetails';
 import ReduxOntologyHomepage from './ReduxOntologyHomepage';
 import ReduxLogin from './ReduxLogin';
 import logo from '../img/d3b-cube.svg';
-import {defaultFhirServers} from '../config';
 import './App.css';
 
 class App extends React.Component {
   render() {
-    const serverConfig = defaultFhirServers.find(
+    const serverConfig = this.props.serverOptions.find(
       x => x.url === this.props.baseUrl,
     );
-    const authorized = serverConfig.authRequired ? !!this.props.token : true;
+    if (!serverConfig) {
+      this.props.addServer(this.props.baseUrl);
+    }
+    const authorized =
+      serverConfig && serverConfig.authRequired ? !!this.props.token : true;
 
     return (
       <Router>
@@ -28,7 +31,7 @@ class App extends React.Component {
             </Link>
             {authorized ? (
               <div className="app__header-info">
-                {serverConfig.authRequired ? (
+                {serverConfig && serverConfig.authRequired ? (
                   <div className="app__header-user">
                     <p>Welcome, {this.props.username}</p>
                     <Button onClick={() => this.props.logout()}>Logout</Button>
@@ -82,11 +85,14 @@ App.propTypes = {
   token: PropTypes.string,
   username: PropTypes.string,
   logout: PropTypes.func.isRequired,
+  serverOptions: PropTypes.array,
+  addServer: PropTypes.func.isRequired,
 };
 
 App.defaultProps = {
   token: null,
   username: null,
+  serverOptions: [],
 };
 
 export default App;
