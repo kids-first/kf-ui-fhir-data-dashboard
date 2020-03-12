@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Modal} from 'semantic-ui-react';
-import {getReferencedBy} from '../../utils/api';
+import {getReferencedBy, getReferences} from '../../utils/api';
 import SortableTable from './SortableTable';
 import './ReferenceTable.css';
 
@@ -10,57 +10,79 @@ class ReferenceTable extends React.Component {
     super(props);
     this.state = {
       loadingReferences: false,
-      referenceData: [],
+      referencingData: [],
+      referencedByData: [],
       showChildModal: null,
     };
   }
 
   componentDidMount() {
-    this.fetchReferences();
+    this.fetchAllReferences();
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.resourceId !== prevProps.resourceId) {
-      this.fetchReferences();
+    if (this.props.resource.resourceId !== prevProps.resource.resourceId) {
+      this.fetchAllReferences();
     }
   }
 
-  fetchReferences = async () => {
+  fetchAllReferences = async () => {
     this.setState({loadingReferences: true}, async () => {
       this.props.setLoadingMessage(
-        `Fetching references for ${this.props.resourceId}...`,
+        `Fetching references for ${this.props.resource.id}...`,
       );
-      const references = await getReferencedBy(
-        this.props.baseUrl,
-        this.props.resourceType,
-        this.props.resourceId,
-      );
-      let uniqueReferences = {};
-      references.forEach(reference => {
-        const mapValue = uniqueReferences[reference.profile];
-        if (!!mapValue) {
-          uniqueReferences[reference.profile] = {
-            ...mapValue,
-            total: mapValue.total + 1,
-            children: mapValue.children.concat(reference),
-          };
-        } else {
-          uniqueReferences[reference.profile] = {
-            id: `${reference.resourceType}-${reference.name}`,
-            resourceType: reference.resourceType,
-            name: reference.name,
-            profile: reference.profile,
-            total: 1,
-            children: [reference],
-          };
-        }
-      });
-      const referenceData = Object.values(uniqueReferences);
+      const referencedByData = await this.fetchReferencedBy();
+      const referencingData = await this.fetchReferencing();
       this.setState({
-        referenceData,
+        referencedByData,
+        referencingData,
         loadingReferences: false,
       });
     });
+  };
+
+  fetchReferencedBy = async () => {
+    const references = await getReferencedBy(
+      this.props.baseUrl,
+      this.props.resource.resourceType,
+      this.props.resource.id,
+    );
+    return this.getReferenceMap(references);
+  };
+
+  fetchReferencing = async () => {
+    const referencingIds = Object.keys(this.props.resource)
+      .map(field => this.props.resource[field].reference)
+      .filter(field => field);
+    const allReferences = await getReferences(
+      this.props.baseUrl,
+      referencingIds,
+    );
+    return this.getReferenceMap(allReferences);
+  };
+
+  getReferenceMap = references => {
+    let uniqueReferences = {};
+    references.forEach(reference => {
+      const mapValue = uniqueReferences[reference.profile];
+      if (!!mapValue) {
+        uniqueReferences[reference.profile] = {
+          ...mapValue,
+          total: mapValue.total + 1,
+          children: mapValue.children.concat(reference),
+        };
+      } else {
+        uniqueReferences[reference.profile] = {
+          id: `${reference.resourceType}-${reference.name}`,
+          resourceType: reference.resourceType,
+          name: reference.name,
+          profile: reference.profile,
+          total: 1,
+          children: [reference],
+        };
+      }
+    });
+    return Object.values(uniqueReferences);
   };
 
   onChildRowClick = child => {
@@ -81,12 +103,20 @@ class ReferenceTable extends React.Component {
         >
           <p>{this.props.loadingMessage}</p>
         </div>
-        {this.state.referenceData && !this.state.loadingReferences ? (
+        {(this.state.referencedByData || this.state.referencingData) &&
+        !this.state.loadingReferences ? (
           <div>
-            <h3>Resources that reference {this.props.resourceId}:</h3>
+            <h3>Resources that reference {this.props.resource.id}:</h3>
             <SortableTable
               headerCells={this.props.tableHeaders}
-              data={this.state.referenceData}
+              data={this.state.referencedByData}
+              rowChildren={true}
+              onChildRowClick={this.onChildRowClick}
+            />
+            <h3>Resources referenced by {this.props.resource.id}:</h3>
+            <SortableTable
+              headerCells={this.props.tableHeaders}
+              data={this.state.referencingData}
               rowChildren={true}
               onChildRowClick={this.onChildRowClick}
             />
@@ -116,8 +146,10 @@ class ReferenceTable extends React.Component {
 }
 
 ReferenceTable.propTypes = {
-  resourceId: PropTypes.string.isRequired,
-  resourceType: PropTypes.string.isRequired,
+  resource: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    resourceType: PropTypes.string.isRequired,
+  }),
   tableHeaders: PropTypes.arrayOf(
     PropTypes.shape({
       display: PropTypes.string.isRequired,
@@ -132,6 +164,10 @@ ReferenceTable.propTypes = {
 };
 
 ReferenceTable.defaultProps = {
+  resource: {
+    id: '',
+    resourceType: '',
+  },
   onClick: () => {},
   loadingMessage: '',
 };

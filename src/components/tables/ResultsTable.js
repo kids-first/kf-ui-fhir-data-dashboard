@@ -252,10 +252,7 @@ class ResultsTable extends React.Component {
               <ReferenceTable
                 onClick={this.onReferenceRowClick}
                 tableHeaders={referencedByTableHeaders}
-                resourceId={this.state.rowData ? this.state.rowData.id : ''}
-                resourceType={
-                  this.state.rowData ? this.state.rowData.resourceType : ''
-                }
+                resource={this.state.rowData ? this.state.rowData : null}
                 baseUrl={this.props.baseUrl}
                 loadingMessage={this.props.loadingMessage}
                 setLoadingMessage={this.props.setLoadingMessage}
