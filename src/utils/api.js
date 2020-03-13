@@ -91,31 +91,49 @@ export const getCapabilityStatementReferences = async (url, resourceType) =>
   });
 
 export const getReferencedBy = async (url, baseType, id) => {
-  let allReferences = await getCapabilityStatementReferences(
-    `${url}metadata`,
-    baseType,
-  );
-  let resourceReferences = await Promise.all(
-    allReferences.map(async ref => {
-      const data = await fetchAllResources(
-        `${url}${ref.type}?${baseType.toLowerCase()}=${baseType}/${id}`,
-        [],
-      );
-      return data.flat();
+  if (baseType) {
+    let allReferences = await getCapabilityStatementReferences(
+      `${url}metadata`,
+      baseType,
+    );
+    let resourceReferences = await Promise.all(
+      allReferences.map(async ref => {
+        const data = await fetchAllResources(
+          `${url}${ref.type}?${baseType.toLowerCase()}=${baseType}/${id}`,
+          [],
+        );
+        return data.flat();
+      }),
+    );
+    resourceReferences = [].concat
+      .apply([], resourceReferences)
+      .map(item => item.resource);
+    return await formatReferences(url, resourceReferences);
+  } else {
+    return [];
+  }
+};
+
+export const getReferences = async (url, referenceIds) => {
+  const resources = await Promise.all(
+    referenceIds.map(async reference => {
+      const resource = await fetchResource(`${url}${reference}`);
+      return resource;
     }),
   );
-  resourceReferences = [].concat
-    .apply([], resourceReferences)
-    .map(item => item.resource)
-    .map(item => ({
-      ...item,
-      profile:
-        item.meta && item.meta.profile
-          ? item.meta.profile
-          : [`${fhirUrl}${item.resourceType}`],
-    }));
-  resourceReferences = await Promise.all(
-    resourceReferences.map(async ref => {
+  return await formatReferences(url, resources);
+};
+
+export const formatReferences = async (url, references) => {
+  references = references.map(item => ({
+    ...item,
+    profile:
+      item.meta && item.meta.profile
+        ? item.meta.profile
+        : [`${fhirUrl}${item.resourceType}`],
+  }));
+  references = await Promise.all(
+    references.map(async ref => {
       const data = await fetchResource(
         `${url}StructureDefinition?url=${ref.profile[0]}`,
       );
@@ -126,7 +144,7 @@ export const getReferencedBy = async (url, baseType, id) => {
       return {...ref, name};
     }),
   );
-  return resourceReferences.filter(ref => ref.name);
+  return references.filter(ref => ref.name);
 };
 
 export const userIsAuthorized = (username, password, baseUrl) => {
