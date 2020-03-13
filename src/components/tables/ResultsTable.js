@@ -131,9 +131,7 @@ class ResultsTable extends React.Component {
 
   loadMoreRows = async () => {
     if (this.state.nextPageUrl) {
-      let data = await this.props.fetchResource(this.state.nextPageUrl);
-      let results =
-        data && data.entry ? data.entry.map(item => item.resource) : [];
+      const data = await this.props.fetchResource(this.state.nextPageUrl);
       const nextPage = data.link.findIndex(x => x.relation === 'next');
       let nextPageUrl = null;
       if (nextPage > -1) {
@@ -142,7 +140,7 @@ class ResultsTable extends React.Component {
           '10.10.1.191',
         );
       }
-      let allResults = this.state.results.concat(results);
+      let allResults = this.state.results.concat(data.results);
       cellCache.clearAll();
       rowCache.clearAll();
       this.setState({results: allResults, nextPageUrl});
@@ -176,6 +174,7 @@ class ResultsTable extends React.Component {
       {display: 'Profile', sortId: 'profile'},
       {display: 'Total References', sortId: 'total'},
     ];
+
     return (
       <div className="results-table">
         <InfiniteLoader

@@ -5,6 +5,7 @@ import {getHumanReadableNumber, getBaseResourceCount} from '../utils/common';
 import {fhirUrl, defaultTableFields} from '../config';
 import AppBreadcrumb from './AppBreadcrumb';
 import DataPieChart from './DataPieChart';
+import DataBarChart from './DataBarChart';
 import ResultsTable from './tables/ResultsTable';
 import './ResourceDetails.css';
 
@@ -109,7 +110,19 @@ class ResourceDetails extends React.Component {
     ).then(data => data.map(param => param.name));
     const queryableAttributes = new Set(searchParams.concat(defaultParams));
     let resourceAttributes = [];
-    if (schema && schema.snapshot && schema.snapshot.element) {
+    if (
+      schema &&
+      schema.snapshot &&
+      schema.snapshot.element &&
+      schema.differential &&
+      schema.differential.element
+    ) {
+      resourceAttributes = await this.getDifferential(
+        schema.differential.element,
+        queryableAttributes,
+        schema.snapshot.element,
+      );
+    } else if (schema && schema.snapshot && schema.snapshot.element) {
       resourceAttributes = await this.getSnapshot(
         schema.snapshot.element,
         queryableAttributes,
@@ -135,20 +148,26 @@ class ResourceDetails extends React.Component {
     return resourceAttributes;
   };
 
-  getDifferential = async (differential, queryableAttributes) => {
+  getDifferential = async (
+    differential,
+    queryableAttributes,
+    snapshot = null,
+  ) => {
     const {resourceBaseType, schemaUrl} = this.props;
-    const data = await this.props.fetchResource(
-      `${schemaUrl}?type=${resourceBaseType}&url=${fhirUrl}${resourceBaseType}`,
-    );
-    const snapshot =
-      data &&
-      data.entry &&
-      data.entry[0] &&
-      data.entry[0].resource &&
-      data.entry[0].resource.snapshot &&
-      data.entry[0].resource.snapshot.element
-        ? data.entry[0].resource.snapshot.element
-        : null;
+    if (!snapshot) {
+      const data = await this.props.fetchResource(
+        `${schemaUrl}?type=${resourceBaseType}&url=${fhirUrl}${resourceBaseType}`,
+      );
+      snapshot =
+        data &&
+        data.entry &&
+        data.entry[0] &&
+        data.entry[0].resource &&
+        data.entry[0].resource.snapshot &&
+        data.entry[0].resource.snapshot.element
+          ? data.entry[0].resource.snapshot.element
+          : null;
+    }
     let snapshotAttributes = [];
     if (snapshot) {
       snapshotAttributes = await this.getSnapshot(
@@ -176,15 +195,26 @@ class ResourceDetails extends React.Component {
   parseSchema = (schema, queryableAttributes) =>
     schema
       .map(attribute => {
-        let newAttribute = {name: attribute.name, id: attribute.id};
+        let newAttribute = {
+          name: attribute.name,
+          id: attribute.id,
+          extensionInfo: {...attribute.extensionInfo},
+        };
         if (queryableAttributes.has(attribute.name)) {
           if (attribute.type) {
-            const codeIndex = attribute.type.findIndex(obj => obj.code); // there can be more than one - [x] types
+            const codeIndex = attribute.type.findIndex(
+              obj =>
+                (obj.code && obj.code === 'boolean') ||
+                this.isCodeableConcept(obj.code),
+            ); // there can be more than one - [x] types
             if (
               codeIndex > -1 &&
               this.isCodeableConcept(attribute.type[codeIndex].code)
             ) {
-              if (attribute.binding) {
+              if (attribute.binding || attribute.type[codeIndex].binding) {
+                if (!attribute.binding) {
+                  attribute.binding = attribute.type[codeIndex].binding;
+                }
                 newAttribute.type = 'enum';
                 newAttribute.valueSetUrl = attribute.binding.valueSet;
               }
@@ -218,12 +248,17 @@ class ResourceDetails extends React.Component {
             attribute.path === `${this.props.resourceBaseType}.extension`
           ) {
             attribute.name = attribute.sliceName;
+            attribute.extensionInfo = {};
             if (
               attribute.type &&
               attribute.type[0] &&
               attribute.type[0].profile &&
               attribute.type[0].profile[0]
             ) {
+              attribute.extensionInfo = {
+                ...attribute.extensionInfo,
+                url: attribute.type[0].profile[0],
+              };
               let data = await this.props.fetchResource(
                 `${this.props.schemaUrl}?url=${attribute.type[0].profile[0]}`,
               );
@@ -237,11 +272,19 @@ class ResourceDetails extends React.Component {
                 extension.differential &&
                 extension.differential.element
               ) {
-                const extensionType = extension.differential.element
-                  .map(x => x.type)
-                  .filter(x => !!x)
-                  .flat();
-                attribute.type = extensionType;
+                let extensionTypes = [];
+                extension.differential.element.forEach(x => {
+                  if (x.type) {
+                    if (x.binding) {
+                      x.type = x.type.map(code => ({
+                        ...code,
+                        binding: x.binding,
+                      }));
+                    }
+                    extensionTypes.push(x.type);
+                  }
+                });
+                attribute.type = extensionTypes.flat();
               }
             }
           } else {
@@ -347,10 +390,10 @@ class ResourceDetails extends React.Component {
       }),
     );
 
-  getChartType = attributeType => {
+  getChartType = (attributeType, parameterCount) => {
     switch (attributeType) {
       case 'enum':
-        return 'pie';
+        return parameterCount < 15 ? 'pie' : 'bar';
       case 'boolean':
         return 'pie';
       default:
@@ -362,13 +405,19 @@ class ResourceDetails extends React.Component {
     let charts = {
       count: [],
       pie: [],
+      bar: [],
     };
     attributes.forEach(attribute => {
-      const chartType = this.getChartType(attribute.type);
+      const chartType = this.getChartType(
+        attribute.type,
+        attribute.queryParams.length,
+      );
       if (chartType === 'pie') {
         charts.pie.push(attribute);
       } else if (chartType === 'count') {
         charts.count.push(attribute);
+      } else if (chartType === 'bar') {
+        charts.bar.push(attribute);
       }
     });
     return charts;
@@ -409,8 +458,7 @@ class ResourceDetails extends React.Component {
       } else {
         data = await this.props.fetchResource(url);
       }
-      let results =
-        data && data.entry ? data.entry.map(item => item.resource) : [];
+      data = this.transformResults(data, attribute);
       const nextPage = data.link.findIndex(x => x.relation === 'next');
       let nextPageUrl = null;
       if (nextPage > -1) {
@@ -425,8 +473,8 @@ class ResourceDetails extends React.Component {
       });
       this.setState({
         tableLoaded: true,
-        modalAttribute: attribute.name,
-        tableResults: results,
+        modalAttribute: attribute,
+        tableResults: data.results,
         nextPageUrl: nextPageUrl,
         totalResults,
         tableColumns: allFields,
@@ -439,6 +487,30 @@ class ResourceDetails extends React.Component {
       showModal: false,
     });
   };
+
+  transformResults = (data, attribute) => {
+    let results =
+      data && data.entry ? data.entry.map(item => item.resource) : [];
+    if (attribute.extensionInfo && attribute.extensionInfo.url) {
+      results.map(result => {
+        const extensionIndex = result.extension.findIndex(
+          ext => ext.url === attribute.extensionInfo.url,
+        );
+        const extension =
+          extensionIndex > -1
+            ? result.extension[extensionIndex].valueCodeableConcept
+            : null;
+        result[attribute.name] = extension;
+        return result;
+      });
+    }
+    return {results, link: data.link};
+  };
+
+  fetchNextPage = async url =>
+    await this.props
+      .fetchResource(url)
+      .then(data => this.transformResults(data, this.state.modalAttribute));
 
   render() {
     const {total, attributes, queriesComplete} = this.state;
@@ -496,6 +568,13 @@ class ResourceDetails extends React.Component {
                           />
                         </div>
                       ) : null}
+                      {chartType === 'bar' ? (
+                        <div className="resource-details__query-bar">
+                          <DataBarChart
+                            data={this.formatResults(attribute.queryParams)}
+                          />
+                        </div>
+                      ) : null}
                     </div>
                   );
                 }
@@ -514,14 +593,16 @@ class ResourceDetails extends React.Component {
             <Modal.Description>
               <Header>
                 {this.state.totalResults} results for{' '}
-                {this.state.modalAttribute}
+                {this.state.modalAttribute
+                  ? this.state.modalAttribute.name
+                  : null}
               </Header>
               {this.state.tableLoaded ? (
                 <ResultsTable
                   closeModal={this.closeModal}
                   history={this.props.history}
                   baseUrl={this.props.baseUrl}
-                  fetchResource={this.props.fetchResource}
+                  fetchResource={this.fetchNextPage}
                   results={this.state.tableResults}
                   nextPageUrl={this.state.nextPageUrl}
                   totalResults={this.state.totalResults}
