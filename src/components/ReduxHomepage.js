@@ -61,10 +61,7 @@ const setResourceCounts = async (baseUrl, items, abortController) =>
           ? countUrl.concat(`?_profile:below=${item.resource.url}`)
           : countUrl;
       if (showResourceType(item.resource.type)) {
-        return await getResourceCount(
-          `${baseUrl}${item.resource.type}?_profile:below=${item.resource.url}`,
-          abortController,
-        )
+        return await getResourceCount(countUrl, abortController)
           .then(count => {
             return {
               id: item.resource.id,

@@ -6,7 +6,6 @@ import _ from 'lodash';
 import {
   getHumanReadableNumber,
   getDropdownOptions,
-  abortFetch,
   logErrors,
 } from '../utils/common';
 import {resourceCategories} from '../config';

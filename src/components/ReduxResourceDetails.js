@@ -43,13 +43,18 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         throw err;
       }),
     getCapabilityStatement: (url, resourceType, abortController) =>
-      getCapabilityStatement(url, resourceType, abortController).catch(err => {
+      getCapabilityStatementSearchParams(
+        url,
+        resourceType,
+        abortController,
+      ).catch(err => {
         throw err;
       }),
     fetchResource: (url, abortController) =>
       fetchResource(url, abortController).catch(err => {
         throw err;
       }),
+    setLoadingMessage: message => dispatch(setLoadingMessage(message)),
   };
 };
 

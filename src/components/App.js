@@ -8,7 +8,6 @@ import ReduxResourceDetails from './ReduxResourceDetails';
 import ReduxOntologyHomepage from './ReduxOntologyHomepage';
 import ReduxLogin from './ReduxLogin';
 import logo from '../img/d3b-cube.svg';
-import {defaultFhirServers} from '../config';
 import './App.css';
 
 class App extends React.Component {

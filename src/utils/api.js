@@ -1,4 +1,4 @@
-import {shouldUseProxyUrl, proxyUrl, fhirUrl, abortController} from '../config';
+import {shouldUseProxyUrl, proxyUrl, fhirUrl} from '../config';
 import {logErrors} from './common';
 import store from '../store';
 
