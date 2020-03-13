@@ -13,11 +13,6 @@ export const defaultFhirServers = [
     authRequired: true,
   },
 ];
-export const defaultServerDropdownOptions = defaultFhirServers.map(server => ({
-  key: server.name,
-  text: server.name,
-  value: server.url,
-}));
 
 export const oAuthUrl = 'https://syntheticmass.mitre.org/oauth2/accesstoken';
 

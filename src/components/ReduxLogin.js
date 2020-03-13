@@ -9,8 +9,12 @@ const mapStateToProps = (state, ownProps) => ({
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    checkUser: async (username, password, url) =>
-      await userIsAuthorized(username, password, url).then(result => result),
+    checkUser: async (username, password, url, abortController) =>
+      await userIsAuthorized(username, password, url, abortController)
+        .then(result => result)
+        .catch(err => {
+          throw err;
+        }),
     setUser: (username, password) => dispatch(setUser(username, password)),
   };
 };
