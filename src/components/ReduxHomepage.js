@@ -78,6 +78,7 @@ const mapStateToProps = (state, ownProps) => ({
   baseUrl: state.resources.baseUrl,
   cardView: state.resources.cardView,
   loadingMessage: state.resources.loadingMessage,
+  serverOptions: state.user ? state.user.serverOptions : [],
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => {

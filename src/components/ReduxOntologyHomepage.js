@@ -25,6 +25,7 @@ const mapStateToProps = (state, ownProps) => ({
     state && state.ontologies ? state.ontologies.ontologiesFetched : false,
   baseUrl: state.resources.baseUrl,
   loadingMessage: state.resources.loadingMessage,
+  serverOptions: state.user ? state.user.serverOptions : [],
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => {

@@ -1,7 +1,6 @@
 .app {
   display: flex;
   flex-flow: column;
-  align-items: center;
 }
 
 .app img {
@@ -33,10 +32,26 @@
   margin: 0;
 }
 
+.app__header-info {
+  display: flex;
+  flex-flow: column;
+  align-items: flex-end;
+  flex: 1;
+}
+
+.app__header-user {
+  display: flex;
+  color: #fff;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+.app__header-user > * {
+  margin: 0 20px;
+}
+
 .app__header-nav {
   display: flex;
-  flex-grow: 1;
-  justify-content: flex-end;
 }
 
 @media screen and (max-width: 768px) {

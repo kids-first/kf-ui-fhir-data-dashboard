@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import {Card, Icon, Dropdown} from 'semantic-ui-react';
 import Avatar from 'react-avatar';
 import _ from 'lodash';
-import {getHumanReadableNumber} from '../utils/common';
-import {resourceCategories, defaultFhirAPIs} from '../config';
+import {getHumanReadableNumber, getDropdownOptions} from '../utils/common';
+import {resourceCategories} from '../config';
 import SearchBar from './SearchBar';
 import SortableTable from './tables/SortableTable';
 import './Homepage.css';
@@ -212,7 +212,7 @@ class Homepage extends React.Component {
           <Dropdown
             defaultValue={this.props.baseUrl}
             selection
-            options={defaultFhirAPIs}
+            options={getDropdownOptions(this.props.serverOptions)}
             onChange={this.selectApi}
             disabled={!this.props.allResourcesFetched}
           />
@@ -370,6 +370,7 @@ Homepage.propTypes = {
   cardView: PropTypes.bool,
   setHomepageView: PropTypes.func.isRequired,
   loadingMessage: PropTypes.string,
+  serverOptions: PropTypes.array,
 };
 
 Homepage.defaultProps = {
@@ -377,6 +378,7 @@ Homepage.defaultProps = {
   allResourcesFetched: false,
   cardView: true,
   loadingMessage: '',
+  serverOptions: [],
 };
 
 export default Homepage;

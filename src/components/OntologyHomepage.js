@@ -1,8 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Dropdown} from 'semantic-ui-react';
-import {getHumanReadableNumber} from '../utils/common';
-import {defaultFhirAPIs} from '../config';
+import {getHumanReadableNumber, getDropdownOptions} from '../utils/common';
 import SearchBar from './SearchBar';
 import SortableTable from './tables/SortableTable';
 import './OntologyHomepage.css';
@@ -85,7 +84,7 @@ class OntologyHomepage extends React.Component {
             className="ontology-homepage__dropdown"
             defaultValue={this.props.baseUrl}
             selection
-            options={defaultFhirAPIs}
+            options={getDropdownOptions(this.props.serverOptions)}
             onChange={this.selectApi}
             disabled={!this.props.ontologiesFetched}
           />
@@ -118,12 +117,14 @@ OntologyHomepage.propTypes = {
   ontologiesFetched: PropTypes.bool,
   getOntologies: PropTypes.func.isRequired,
   loadingMessage: PropTypes.string,
+  serverOptions: PropTypes.array,
 };
 
 OntologyHomepage.defaultProps = {
   ontologies: {},
   ontologiesFetched: false,
   loadingMessage: '',
+  serverOptions: [],
 };
 
 export default OntologyHomepage;

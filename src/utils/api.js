@@ -1,4 +1,5 @@
 import {shouldUseProxyUrl, proxyUrl, fhirUrl} from '../config';
+import store from '../store';
 
 const fetchWithHeaders = async (url, headers, summary = false) => {
   let fullUrl = shouldUseProxyUrl(url) ? `${proxyUrl}${url}` : `${url}`;
@@ -7,13 +8,11 @@ const fetchWithHeaders = async (url, headers, summary = false) => {
       .concat(`${url.includes('?') ? '&' : '?'}`)
       .concat('_summary=count');
   }
-  const encodedStr = btoa(
-    `${process.env.REACT_APP_KF_USER}:${process.env.REACT_APP_KF_PW}`,
-  );
+  const token = store.getState().user.token;
   return fetch(`${fullUrl}`, {
     headers: {
       ...headers,
-      Authorization: `Basic ${encodedStr}`,
+      Authorization: `Basic ${token}`,
       'Cache-Control': 'max-age=3600',
     },
   })
@@ -70,7 +69,7 @@ export const getCapabilityStatementSearchParams = async (url, resourceType) =>
       data && data.rest && data.rest[0] && data.rest[0].resource
         ? data.rest[0].resource.find(x => x.type === resourceType)
         : [];
-    return params.searchParam ? params.searchParam : [];
+    return params && params.searchParam ? params.searchParam : [];
   });
 
 export const getOntologies = async url =>
@@ -128,4 +127,23 @@ export const getReferencedBy = async (url, baseType, id) => {
     }),
   );
   return resourceReferences.filter(ref => ref.name);
+};
+
+export const userIsAuthorized = (username, password, baseUrl) => {
+  const token = btoa(`${username}:${password}`);
+  return fetch(`${baseUrl}StructureDefinition`, {
+    headers: {
+      Authorization: `Basic ${token}`,
+    },
+  })
+    .then(res => {
+      if (res.status !== 200) {
+        throw res;
+      }
+      return {isAuthorized: true, error: null};
+    })
+    .catch(error => ({
+      isAuthorized: false,
+      error,
+    }));
 };
