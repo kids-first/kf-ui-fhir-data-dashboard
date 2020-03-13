@@ -26,15 +26,14 @@ const mapStateToProps = (state, ownProps) => ({
   baseUrl: state.resources.baseUrl,
   loadingMessage: state.resources.loadingMessage,
   serverOptions: state.user ? state.user.serverOptions : [],
-  abortController: ontologyAbortController,
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     setBaseUrl: url => dispatch(setApi(url)),
-    getOntologies: async url => {
+    getOntologies: async (url, abortController) => {
       dispatch(setLoadingMessage('Fetching all ontologies...'));
-      const ontologies = await getOntologies(url, ontologyAbortController)
+      await getOntologies(url, abortController)
         .then(ontologies => {
           const groupedOntologies = groupOntologies(ontologies);
           dispatch(setOntologies(groupedOntologies));

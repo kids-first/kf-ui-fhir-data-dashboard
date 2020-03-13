@@ -4,7 +4,6 @@ import {Dropdown} from 'semantic-ui-react';
 import {
   getHumanReadableNumber,
   getDropdownOptions,
-  abortFetch,
   logErrors,
 } from '../utils/common';
 import SearchBar from './SearchBar';
@@ -136,7 +135,6 @@ OntologyHomepage.propTypes = {
   getOntologies: PropTypes.func.isRequired,
   loadingMessage: PropTypes.string,
   serverOptions: PropTypes.array,
-  abortController: PropTypes.object.isRequired,
 };
 
 OntologyHomepage.defaultProps = {
