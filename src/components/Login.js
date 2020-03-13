@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Input, Button} from 'semantic-ui-react';
+import {logErrors} from '../utils/common';
 import './Login.css';
 
 class Login extends React.Component {
@@ -12,7 +13,12 @@ class Login extends React.Component {
       showAuthError: true,
       authError: null,
       checkingUser: false,
+      abortController: new AbortController(),
     };
+  }
+
+  componentWillUnmount() {
+    this.state.abortController.abort();
   }
 
   handleUsernameChange = e => {
@@ -27,7 +33,12 @@ class Login extends React.Component {
     e.preventDefault();
     this.setState({authError: null, checkingUser: true}, async () => {
       await this.props
-        .checkUser(this.state.username, this.state.password, this.props.baseUrl)
+        .checkUser(
+          this.state.username,
+          this.state.password,
+          this.props.baseUrl,
+          this.state.abortController,
+        )
         .then(({isAuthorized, error}) => {
           this.setState({checkingUser: false});
           if (isAuthorized) {
@@ -35,7 +46,8 @@ class Login extends React.Component {
           } else {
             this.setState({authError: error});
           }
-        });
+        })
+        .catch(err => logErrors('Error logging in:', err));
     });
   };
 

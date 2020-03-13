@@ -10,40 +10,48 @@ export const getDropdownOptions = servers =>
     value: server.url,
   }));
 
-export const getBaseResourceCount = async (baseUrl, baseType, resources) => {
+export const getBaseResourceCount = async (
+  baseUrl,
+  baseType,
+  resources,
+  abortController,
+) => {
   let sum = 0;
-  let total = await getResourceCount(`${baseUrl}${baseType}`);
+  let total = await getResourceCount(`${baseUrl}${baseType}`, abortController);
   const countedResources = new Set();
   if (!resources) {
-    await fetchAllResources(`${baseUrl}StructureDefinition`, []).then(
-      async data => {
-        resources = await Promise.all(
-          data
-            .map(item => item.resource)
-            .filter(resource => resource && resource.type === baseType)
-            .map(async resource => {
-              const count = await getResourceCount(
-                `${baseUrl}${baseType}?_profile:below=${resource.url}`,
-              );
-              return {
-                ...resource,
-                count,
-              };
-            }),
-        );
-        resources.forEach(resource => {
-          if (
-            resource &&
-            resource.type === baseType &&
-            resource.name !== baseType &&
-            !countedResources.has(resource.url)
-          ) {
-            countedResources.add(resource.url);
-            sum += resource.count;
-          }
-        });
-      },
-    );
+    await fetchAllResources(
+      `${baseUrl}StructureDefinition`,
+      [],
+      abortController,
+    ).then(async data => {
+      resources = await Promise.all(
+        data
+          .map(item => item.resource)
+          .filter(resource => resource && resource.type === baseType)
+          .map(async resource => {
+            const count = await getResourceCount(
+              `${baseUrl}${baseType}?_profile:below=${resource.url}`,
+              abortController,
+            );
+            return {
+              ...resource,
+              count,
+            };
+          }),
+      );
+      resources.forEach(resource => {
+        if (
+          resource &&
+          resource.type === baseType &&
+          resource.name !== baseType &&
+          !countedResources.has(resource.url)
+        ) {
+          countedResources.add(resource.url);
+          sum += resource.count;
+        }
+      });
+    });
   } else {
     Object.keys(resources).forEach(key => {
       if (
