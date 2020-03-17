@@ -439,47 +439,73 @@ class ResourceDetails extends React.Component {
     return chartResults;
   };
 
-  getAttributeTableResults = async (attribute, chartType) => {
-    this.setState({showModal: true, tableLoaded: false}, async () => {
-      this.props.setLoadingMessage(`Fetching ${attribute.name} details...`);
-      const {baseUrl, resourceBaseType, resourceType, resourceUrl} = this.props;
-      let data = null;
-      const allFields = defaultTableFields.concat(attribute.name);
-      let url = `${baseUrl}${resourceBaseType}`;
-      if (resourceBaseType !== resourceType) {
-        url = url.concat(`?_profile:below=${resourceUrl}&`);
-      } else {
-        url = url.concat('?');
-      }
-      if (chartType === 'count') {
-        data = await this.props.fetchResource(
-          `${url}${attribute.name}:missing=false`,
-        );
-      } else {
-        data = await this.props.fetchResource(url);
-      }
-      data = this.transformResults(data, attribute);
-      const nextPage = data.link.findIndex(x => x.relation === 'next');
-      let nextPageUrl = null;
-      if (nextPage > -1) {
-        nextPageUrl = data.link[nextPage].url.replace(
-          'localhost',
-          '10.10.1.191',
-        );
-      }
-      let totalResults = 0;
-      attribute.queryParams.forEach(param => {
-        totalResults += param.count;
-      });
-      this.setState({
-        tableLoaded: true,
+  getAttributeTableResults = async (attribute, chartType, payload = null) => {
+    this.setState(
+      {
+        showModal: true,
+        tableLoaded: false,
         modalAttribute: attribute,
-        tableResults: data.results,
-        nextPageUrl: nextPageUrl,
-        totalResults,
-        tableColumns: allFields,
-      });
-    });
+        totalResults: 0,
+        tableResults: [],
+      },
+      async () => {
+        this.props.setLoadingMessage(`Fetching ${attribute.name} details...`);
+        const {
+          baseUrl,
+          resourceBaseType,
+          resourceType,
+          resourceUrl,
+        } = this.props;
+        let data = null;
+        let totalResults = 0;
+        let param = null;
+        const allFields = defaultTableFields.concat(attribute.name);
+        let url = `${baseUrl}${resourceBaseType}`;
+        if (resourceBaseType !== resourceType) {
+          url = url.concat(`?_profile:below=${resourceUrl}&`);
+        } else {
+          url = url.concat('?');
+        }
+        if (chartType === 'count') {
+          data = await this.props.fetchResource(
+            `${url}${attribute.name}:missing=false`,
+          );
+          attribute.queryParams.forEach(param => {
+            totalResults += param.count;
+          });
+        } else {
+          param = attribute.queryParams.find(x => x.display === payload.name);
+          if (!!param) {
+            data = await this.props.fetchResource(
+              `${url}${attribute.name}=${param.code}`,
+            );
+          } else {
+            param = {code: 'null'};
+            data = await this.props.fetchResource(
+              `${url}${attribute.name}:missing=true`,
+            );
+          }
+          totalResults = payload.value;
+        }
+        data = this.transformResults(data, attribute);
+        const nextPage = data.link.findIndex(x => x.relation === 'next');
+        let nextPageUrl = null;
+        if (nextPage > -1) {
+          nextPageUrl = data.link[nextPage].url.replace(
+            'localhost',
+            '10.10.1.191',
+          );
+        }
+        this.setState({
+          tableLoaded: true,
+          modalAttribute: {...attribute, param: param ? param.code : null},
+          tableResults: data.results,
+          nextPageUrl: nextPageUrl,
+          totalResults,
+          tableColumns: allFields,
+        });
+      },
+    );
   };
 
   closeModal = () => {
@@ -516,6 +542,14 @@ class ResourceDetails extends React.Component {
     const {total, attributes, queriesComplete} = this.state;
     const {resourceBaseType, resourceType} = this.props;
     const charts = this.getCharts(attributes);
+    const selectedAttribute =
+      this.state.modalAttribute && this.state.modalAttribute.name
+        ? this.state.modalAttribute.name
+        : null;
+    const selectedParam =
+      this.state.modalAttribute && this.state.modalAttribute.param
+        ? this.state.modalAttribute.param
+        : null;
     return (
       <div className="resource-details">
         <AppBreadcrumb history={this.props.history} />
@@ -542,15 +576,28 @@ class ResourceDetails extends React.Component {
                 if (queriesComplete) {
                   return (
                     <div
-                      className="resource-details__query"
+                      className={'resource-details__query'
+                        .concat(chartType === 'count' ? ' clickable' : '')
+                        .concat(chartType === 'bar' ? ' expand' : '')}
                       key={`${attribute}-${i}`}
-                      onClick={() =>
-                        this.getAttributeTableResults(attribute, chartType)
+                      onClick={
+                        chartType === 'count'
+                          ? () =>
+                              this.getAttributeTableResults(
+                                attribute,
+                                chartType,
+                              )
+                          : () => {}
                       }
                     >
                       <h3>{attribute.name}</h3>
                       {chartType === 'count' ? (
-                        <div className="resource-details__query-count">
+                        <div
+                          className="resource-details__query-count"
+                          onClick={() =>
+                            this.getAttributeTableResults(attribute, chartType)
+                          }
+                        >
                           {attribute.queryParams.map((param, i) => (
                             <p
                               key={`${param}-${i}`}
@@ -565,6 +612,13 @@ class ResourceDetails extends React.Component {
                         <div className="resource-details__query-pie">
                           <DataPieChart
                             data={this.formatResults(attribute.queryParams)}
+                            handleClick={payload =>
+                              this.getAttributeTableResults(
+                                attribute,
+                                chartType,
+                                payload,
+                              )
+                            }
                           />
                         </div>
                       ) : null}
@@ -572,6 +626,13 @@ class ResourceDetails extends React.Component {
                         <div className="resource-details__query-bar">
                           <DataBarChart
                             data={this.formatResults(attribute.queryParams)}
+                            handleClick={payload =>
+                              this.getAttributeTableResults(
+                                attribute,
+                                chartType,
+                                payload,
+                              )
+                            }
                           />
                         </div>
                       ) : null}
@@ -592,9 +653,14 @@ class ResourceDetails extends React.Component {
           <Modal.Content>
             <Modal.Description>
               <Header>
-                {this.state.totalResults} results for{' '}
-                {this.state.modalAttribute
-                  ? this.state.modalAttribute.name
+                {getHumanReadableNumber(
+                  this.state.totalResults ? this.state.totalResults : 0,
+                )}{' '}
+                results for{' '}
+                {selectedAttribute
+                  ? selectedAttribute.concat(
+                      selectedParam ? ` = ${selectedParam}` : '',
+                    )
                   : null}
               </Header>
               {this.state.tableLoaded ? (

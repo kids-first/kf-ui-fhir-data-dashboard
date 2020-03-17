@@ -11,6 +11,12 @@ import {
 } from 'recharts';
 
 class DataBarChart extends React.Component {
+  handleClick = e => {
+    const payload =
+      e && e.activePayload && e.activePayload[0] && e.activePayload[0].payload;
+    this.props.handleClick(payload);
+  };
+
   render() {
     const data = this.props.data;
     const barSize = 10;
@@ -25,6 +31,7 @@ class DataBarChart extends React.Component {
             bottom: 5,
           }}
           layout="vertical"
+          onClick={this.handleClick}
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis type="number" orientation="top" />
@@ -44,10 +51,12 @@ DataBarChart.propTypes = {
       value: PropTypes.number.isRequired,
     }),
   ),
+  handleClick: PropTypes.func,
 };
 
 DataBarChart.defaultProps = {
   data: [],
+  handleClick: () => {},
 };
 
 export default DataBarChart;

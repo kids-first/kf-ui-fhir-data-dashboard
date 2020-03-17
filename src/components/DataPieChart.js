@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {PieChart, Pie, Sector, ResponsiveContainer, Text} from 'recharts';
+import {PieChart, Pie, Cell, Sector, ResponsiveContainer, Text} from 'recharts';
 import {getHumanReadableNumber} from '../utils/common';
 
 export class DataPieChart extends React.Component {
@@ -90,6 +90,12 @@ export class DataPieChart extends React.Component {
     );
   };
 
+  handleClick = () => {
+    const payload = this.props.data.filter(x => x.value > 0)[
+      this.state.activeIndex
+    ];
+    this.props.handleClick(payload);
+  };
   render() {
     return (
       <ResponsiveContainer width="100%" height={300}>
@@ -103,6 +109,7 @@ export class DataPieChart extends React.Component {
             fill="#41b6e6"
             dataKey="value"
             onMouseEnter={this.onPieEnter}
+            onClick={() => this.handleClick()}
           />
         </PieChart>
       </ResponsiveContainer>
@@ -112,10 +119,12 @@ export class DataPieChart extends React.Component {
 
 DataPieChart.propTypes = {
   data: PropTypes.array,
+  handleClick: PropTypes.func,
 };
 
 DataPieChart.defaultProps = {
   data: [],
+  handleClick: () => {},
 };
 
 export default DataPieChart;
