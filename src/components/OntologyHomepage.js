@@ -12,11 +12,12 @@ class OntologyHomepage extends React.Component {
     this.state = {
       filteredOntologies: props.ontologies,
       listOntologies: this.mapToArray(props.ontologies),
+      ontologiesFetched: props.ontologiesFetched,
     };
   }
 
   selectApi = (e, {value}) => {
-    this.setState({filteredOntologies: []}, () => {
+    this.setState({ontologiesFetched: false, filteredOntologies: []}, () => {
       this.props.setBaseUrl(value);
     });
   };
@@ -45,6 +46,7 @@ class OntologyHomepage extends React.Component {
       this.setState({
         filteredOntologies: this.props.ontologies,
         listOntologies: this.mapToArray(this.props.ontologies),
+        ontologiesFetched: true,
       });
     });
   };
@@ -62,8 +64,8 @@ class OntologyHomepage extends React.Component {
   };
 
   render() {
-    const {filteredOntologies, listOntologies} = this.state;
-    const {ontologies, ontologiesFetched} = this.props;
+    const {filteredOntologies, listOntologies, ontologiesFetched} = this.state;
+    const {ontologies} = this.props;
 
     const tableHeaders = [
       {display: 'Name', sortId: 'name'},
@@ -86,7 +88,7 @@ class OntologyHomepage extends React.Component {
             selection
             options={getDropdownOptions(this.props.serverOptions)}
             onChange={this.selectApi}
-            disabled={!this.props.ontologiesFetched}
+            disabled={!ontologiesFetched}
           />
         </div>
         <div className="ontology-homepage__search">
