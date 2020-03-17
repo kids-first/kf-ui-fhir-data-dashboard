@@ -221,48 +221,47 @@ class ResourceDetails extends React.Component {
     snapshot = null,
   ) => {
     const {resourceBaseType, schemaUrl} = this.props;
-    return await this.props
-      .fetchResource(
-        `${schemaUrl}?type=${resourceBaseType}&url=${fhirUrl}${resourceBaseType}`,
-        this.state.abortController,
-      )
-      .then(async data => {
-        const snapshot =
-          data &&
-          data.entry &&
-          data.entry[0] &&
-          data.entry[0].resource &&
-          data.entry[0].resource.snapshot &&
-          data.entry[0].resource.snapshot.element
-            ? data.entry[0].resource.snapshot.element
-            : null;
-        let snapshotAttributes = [];
-        if (snapshot) {
-          snapshotAttributes = await this.getSnapshot(
-            snapshot,
-            queryableAttributes,
-          );
-          const omittedAttributes = differential
-            .filter(attribute => attribute.max === '0')
-            .map(attribute => attribute.id);
-          snapshotAttributes = snapshotAttributes.filter(
-            attribute => !omittedAttributes.includes(attribute.id),
-          );
-        }
-        const differentialAttributes = await this.getSnapshot(
-          differential,
-          queryableAttributes,
-        );
-        const allAttributes = differentialAttributes.concat(snapshotAttributes);
-        let resourceAttributes = [
-          ...new Set(allAttributes.map(x => x.name)),
-        ].map(name => allAttributes.find(attribute => attribute.name === name));
-        return resourceAttributes;
-      })
-      .catch(err => {
-        logErrors('Error getting differential:', err);
-        throw err;
-      });
+    if (!snapshot) {
+      return await this.props
+        .fetchResource(
+          `${schemaUrl}?type=${resourceBaseType}&url=${fhirUrl}${resourceBaseType}`,
+          this.state.abortController,
+        )
+        .then(async data => {
+          snapshot =
+            data &&
+            data.entry &&
+            data.entry[0] &&
+            data.entry[0].resource &&
+            data.entry[0].resource.snapshot &&
+            data.entry[0].resource.snapshot.element
+              ? data.entry[0].resource.snapshot.element
+              : null;
+        })
+        .catch(err => logErrors('Error getting snapshot:', err));
+    }
+    let snapshotAttributes = [];
+    if (snapshot) {
+      snapshotAttributes = await this.getSnapshot(
+        snapshot,
+        queryableAttributes,
+      );
+      const omittedAttributes = differential
+        .filter(attribute => attribute.max === '0')
+        .map(attribute => attribute.id);
+      snapshotAttributes = snapshotAttributes.filter(
+        attribute => !omittedAttributes.includes(attribute.id),
+      );
+    }
+    const differentialAttributes = await this.getSnapshot(
+      differential,
+      queryableAttributes,
+    );
+    const allAttributes = differentialAttributes.concat(snapshotAttributes);
+    let resourceAttributes = [
+      ...new Set(allAttributes.map(x => x.name)),
+    ].map(name => allAttributes.find(attribute => attribute.name === name));
+    return resourceAttributes;
   };
 
   parseSchema = (schema, queryableAttributes) =>
@@ -351,11 +350,19 @@ class ResourceDetails extends React.Component {
                     extension.differential &&
                     extension.differential.element
                   ) {
-                    const extensionType = extension.differential.element
-                      .map(x => x.type)
-                      .filter(x => !!x)
-                      .flat();
-                    attribute.type = extensionType;
+                    let extensionTypes = [];
+                    extension.differential.element.forEach(x => {
+                      if (x.type) {
+                        if (x.binding) {
+                          x.type = x.type.map(code => ({
+                            ...code,
+                            binding: x.binding,
+                          }));
+                        }
+                        extensionTypes.push(x.type);
+                      }
+                    });
+                    attribute.type = extensionTypes.flat();
                   }
                 })
                 .catch(err => {
@@ -410,7 +417,7 @@ class ResourceDetails extends React.Component {
                   : [];
               let systemConcepts = await Promise.all(
                 systems.map(async system => {
-                  await this.props
+                  return await this.props
                     .fetchResource(
                       `${this.props.baseUrl}CodeSystem?url=${system}`,
                       this.state.abortController,
@@ -434,7 +441,7 @@ class ResourceDetails extends React.Component {
               concepts.push(...systemConcepts);
               return {
                 ...attribute,
-                queryParams: concepts.length < 100 ? concepts : [], // how to handle large sets of parameters? very slow
+                queryParams: concepts, // how to handle large sets of parameters? very slow
               };
             })
             .catch(err => {
@@ -482,8 +489,13 @@ class ResourceDetails extends React.Component {
                   count: count ? count : 0,
                 }))
                 .catch(err => {
-                  logErrors('Error getting parameter counts:', err);
-                  throw err;
+                  logErrors(
+                    'Error getting parameter counts for',
+                    attribute.name,
+                    ': ',
+                    err,
+                  );
+                  return {...param, count: 0};
                 });
             }),
           );
