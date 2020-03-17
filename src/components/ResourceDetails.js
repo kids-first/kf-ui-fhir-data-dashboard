@@ -592,12 +592,7 @@ class ResourceDetails extends React.Component {
                     >
                       <h3>{attribute.name}</h3>
                       {chartType === 'count' ? (
-                        <div
-                          className="resource-details__query-count"
-                          onClick={() =>
-                            this.getAttributeTableResults(attribute, chartType)
-                          }
-                        >
+                        <div className="resource-details__query-count">
                           {attribute.queryParams.map((param, i) => (
                             <p
                               key={`${param}-${i}`}

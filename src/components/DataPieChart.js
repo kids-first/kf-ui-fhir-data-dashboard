@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {PieChart, Pie, Cell, Sector, ResponsiveContainer, Text} from 'recharts';
+import {PieChart, Pie, Sector, ResponsiveContainer, Text} from 'recharts';
 import {getHumanReadableNumber} from '../utils/common';
 
 export class DataPieChart extends React.Component {
