@@ -75,6 +75,7 @@ class ResourceDetails extends React.Component {
           total = await getBaseResourceCount(
             baseUrl,
             resourceBaseType,
+            null,
             this.state.abortController,
           ).catch(err => {
             logErrors('Error getting resource total:', err);
