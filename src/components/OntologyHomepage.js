@@ -100,7 +100,15 @@ class OntologyHomepage extends React.Component {
                 fetchingOntologyDetails: false,
                 selectedOntology: {name: item.name, payload: details},
               });
-            });
+            })
+            .catch(err =>
+              logErrors(
+                'Error  getting details for CodeSystem',
+                item.name,
+                ': ',
+                err,
+              ),
+            );
         },
       );
     }
