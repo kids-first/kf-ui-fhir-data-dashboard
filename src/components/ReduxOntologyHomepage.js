@@ -1,6 +1,6 @@
 import {connect} from 'react-redux';
 import {setOntologies, setApi, setLoadingMessage} from '../actions';
-import {getOntologies} from '../utils/api';
+import {getOntologies, fetchResource} from '../utils/api';
 import OntologyHomepage from './OntologyHomepage';
 
 const groupOntologies = ontologies => {
@@ -38,6 +38,14 @@ const mapDispatchToProps = (dispatch, ownProps) => {
           const groupedOntologies = groupOntologies(ontologies);
           dispatch(setOntologies(groupedOntologies));
         })
+        .catch(err => {
+          throw err;
+        });
+    },
+    getOntologyDetails: async (url, abortController) => {
+      dispatch(setLoadingMessage('Fetching ontology details...'));
+      return await fetchResource(url, abortController)
+        .then(data => (data ? data.entry : null))
         .catch(err => {
           throw err;
         });
