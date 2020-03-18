@@ -17,12 +17,11 @@ class OntologyHomepage extends React.Component {
       filteredOntologies: props.ontologies,
       listOntologies: this.mapToArray(props.ontologies),
       abortController: new AbortController(),
-      ontologiesFetched: props.ontologiesFetched,
     };
   }
 
   selectApi = (e, {value}) => {
-    this.setState({ontologiesFetched: false, filteredOntologies: []}, () => {
+    this.setState({filteredOntologies: []}, () => {
       this.props.setBaseUrl(value);
     });
   };
@@ -60,7 +59,6 @@ class OntologyHomepage extends React.Component {
         this.setState({
           filteredOntologies: this.props.ontologies,
           listOntologies: this.mapToArray(this.props.ontologies),
-          ontologiesFetched: true,
         });
       })
       .catch(err => logErrors('Error fetching ontologies:', err));
@@ -79,7 +77,7 @@ class OntologyHomepage extends React.Component {
   };
 
   render() {
-    const {filteredOntologies, listOntologies, ontologiesFetched} = this.state;
+    const {filteredOntologies, listOntologies} = this.state;
     const {ontologies} = this.props;
 
     const tableHeaders = [
@@ -103,7 +101,7 @@ class OntologyHomepage extends React.Component {
             selection
             options={getDropdownOptions(this.props.serverOptions)}
             onChange={this.selectApi}
-            disabled={!ontologiesFetched}
+            disabled={!this.props.ontologiesFetched}
           />
         </div>
         <div className="ontology-homepage__search">
@@ -115,7 +113,7 @@ class OntologyHomepage extends React.Component {
             placeholder="Search for an ontology"
           />
         </div>
-        {ontologiesFetched ? (
+        {this.props.ontologiesFetched ? (
           <SortableTable headerCells={tableHeaders} data={listOntologies} />
         ) : (
           <div className="ui active loader">
