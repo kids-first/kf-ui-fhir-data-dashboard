@@ -45,12 +45,15 @@
   flex-flow: column;
   text-align: center;
   margin: 20px 30px;
-  cursor: pointer;
+}
+
+.expand {
   flex: 1;
 }
 
 .resource-details__query-count {
   flex: 1 0 auto;
+  cursor: pointer;
 }
 
 .resource-details__query-pie {
@@ -69,6 +72,10 @@
   }
 }
 
+.clickable {
+  cursor: pointer;
+}
+
 /* Semantic UI overrides */
 
 .ui.breadcrumb {
@@ -82,4 +89,9 @@
 /* Recharts overrides */
 .recharts-layer.recharts-cartesian-axis-tick {
   font-size: 10px;
+}
+
+.recharts-sector,
+.recharts-bar {
+  cursor: pointer !important;
 }
