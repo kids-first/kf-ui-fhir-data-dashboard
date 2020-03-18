@@ -17,7 +17,12 @@ class SortableTable extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.data !== prevProps.data) {
+    console.log('checking update');
+    if (
+      this.props.data.map(x => x.children).flat().length !==
+      this.state.sortedData.map(x => x.children).flat().length
+    ) {
+      console.log('updating');
       this.setState({
         sortedData: _.sortBy(this.props.data, this.props.headerCells[0].sortId),
       });
@@ -63,6 +68,8 @@ class SortableTable extends React.Component {
   render() {
     const {headerCells, rowChildren, searchable} = this.props;
     const {sortDirection, sortColumn, sortedData} = this.state;
+    console.log('sortabletable props', this.props);
+    console.log('sortabletable state', this.state);
     return (
       <div className="sortable-table">
         {searchable ? (

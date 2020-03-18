@@ -13,7 +13,11 @@ class ReferenceTable extends React.Component {
       loadingReferences: false,
       referencingData: [],
       referencedByData: [],
+      filteredReferencingData: [],
+      filteredReferencedByData: [],
       showChildModal: null,
+      referencingChildRowOpen: -1,
+      referencedByChildRowOpen: -1,
     };
   }
 
@@ -32,13 +36,23 @@ class ReferenceTable extends React.Component {
       this.props.setLoadingMessage(
         `Fetching references for ${this.props.resource.id}...`,
       );
-      const referencedByData = await this.fetchReferencedBy();
-      const referencingData = await this.fetchReferencing();
-      this.setState({
-        referencedByData,
-        referencingData,
-        loadingReferences: false,
-      });
+      await this.fetchReferencedBy()
+        .then(async referencedByData => {
+          await this.fetchReferencing()
+            .then(referencingData => {
+              this.setState({
+                referencedByData,
+                referencingData,
+                loadingReferences: false,
+                filteredReferencingData: referencingData,
+                filteredReferencedByData: referencedByData,
+              });
+            })
+            .catch(err => logErrors('Error getting references:', err));
+        })
+        .catch(err =>
+          logErrors('Error getting resources that reference ID:', err),
+        );
     });
   };
 
@@ -94,18 +108,44 @@ class ReferenceTable extends React.Component {
     this.setState({showChildModal: null});
   };
 
-  handleResultSelect = searchResults => {
+  handleResultSelect = (searchResults, referenceType) => {
+    const referenceData =
+      referenceType === 'referencing'
+        ? this.state.referencingData
+        : this.state.referencedByData;
+    console.log('referenceData', referenceData);
     let parentIndex = -1;
+    let childIndex = -1;
     if (searchResults.length === 1) {
-      this.state.referenceData.forEach((resource, i) => {
-        resource.children.forEach(child => {
+      referenceData.forEach((resource, i) => {
+        resource.children.forEach((child, j) => {
           if (child.id === searchResults[0].title) {
+            childIndex = j;
             parentIndex = i;
           }
         });
       });
     }
-    this.setState({childRowOpen: parentIndex});
+    let filteredData = referenceData;
+    console.log('initial filteredData', filteredData);
+    if (parentIndex > -1 && childIndex > -1) {
+      filteredData[parentIndex] = {
+        ...referenceData[parentIndex],
+        children: [referenceData[parentIndex].children[childIndex]],
+      };
+    }
+    console.log('filteredData', filteredData);
+    // if (referenceType === 'referencing') {
+    //   this.setState({
+    //     filteredReferencingData: filteredData,
+    //     referencingChildRowOpen: parentIndex,
+    //   });
+    // } else {
+    //   this.setState({
+    //     filteredReferencedByData: filteredData,
+    //     referencedByChildRowOpen: parentIndex,
+    //   });
+    // }
   };
 
   render() {
@@ -119,30 +159,43 @@ class ReferenceTable extends React.Component {
         >
           <p>{this.props.loadingMessage}</p>
         </div>
-        {(this.state.referencedByData || this.state.referencingData) &&
+        {(this.state.filteredReferencedByData ||
+          this.state.filteredReferencingData) &&
         !this.state.loadingReferences ? (
           <div>
             <h3>Resources that reference {this.props.resource.id}:</h3>
             <SortableTable
+              searchable={true}
+              searchData={this.state.referencedByData
+                .map(resource => resource.children)
+                .flat()}
+              searchPlaceholder="Search references..."
+              searchTitleField="id"
               headerCells={this.props.tableHeaders}
-              data={this.state.referencedByData}
+              data={this.state.filteredReferencedByData}
               rowChildren={true}
               onChildRowClick={this.onChildRowClick}
+              handleResultSelect={result =>
+                this.handleResultSelect(result, 'referencedBy')
+              }
+              activeIndex={this.state.referencedByChildRowOpen}
             />
             <h3>Resources referenced by {this.props.resource.id}:</h3>
             <SortableTable
               searchable={true}
               searchPlaceholder="Search references..."
               searchTitleField="id"
-              searchData={this.state.referenceData
+              searchData={this.state.referencingData
                 .map(resource => resource.children)
                 .flat()}
               headerCells={this.props.tableHeaders}
-              data={this.state.referencingData}
+              data={this.state.filteredReferencingData}
               rowChildren={true}
               onChildRowClick={this.onChildRowClick}
-              handleResultSelect={this.handleResultSelect}
-              activeIndex={this.state.childRowOpen}
+              handleResultSelect={result =>
+                this.handleResultSelect(result, 'referencing')
+              }
+              activeIndex={this.state.referencingChildRowOpen}
             />
             <Modal
               open={!!this.state.showChildModal}
