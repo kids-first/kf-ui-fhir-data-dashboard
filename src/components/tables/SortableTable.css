@@ -16,9 +16,3 @@
 .sortable-table td:hover {
   background-color: var(--d3b-hoverblue);
 }
-
-/* Semantic UI overrides */
-
-.ui.search > .results {
-  width: 100%;
-}
