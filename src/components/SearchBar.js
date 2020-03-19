@@ -2,7 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import {tabletWidth} from '../config';
-import {Search} from 'semantic-ui-react';
+import {Search, Button} from 'semantic-ui-react';
+import './SearchBar.css';
 
 export class SearchBar extends React.Component {
   constructor(props) {
@@ -54,6 +55,7 @@ export class SearchBar extends React.Component {
   };
 
   handleSearchChange = e => {
+    console.log('handle search change');
     this.setState({isLoading: true, value: e.target.value}, () => {
       if (this.state.value === '') {
         this.handleSearchClear();
@@ -62,30 +64,69 @@ export class SearchBar extends React.Component {
       const re = new RegExp(_.escapeRegExp(this.state.value), 'i');
       const isMatch = result => re.test(result.title);
 
-      this.setState({
-        isLoading: false,
-        results: _.filter(this.props.data, isMatch),
-      });
+      this.setState(
+        {
+          isLoading: false,
+          results: _.filter(this.props.data, isMatch),
+        },
+        () => {
+          console.log('props handle search change');
+          this.props.handleSearchChange(this.state.value);
+        },
+      );
     });
+  };
+
+  handleSubmit = () => {
+    console.log('sending value', this.state.value);
+    this.props.handleSubmit(this.state.value);
+  };
+
+  clearResults = () => {
+    this.setState(
+      {
+        value: '',
+      },
+      () => this.props.clearResults(),
+    );
   };
 
   render() {
     const {isLoading, value, results} = this.state;
 
     return (
-      <Search
-        className={this.props.className}
-        input={{fluid: this.state.fluid}}
-        placeholder={this.props.placeholder}
-        loading={isLoading}
-        onResultSelect={this.handleResultSelect}
-        onSearchChange={_.debounce(this.handleSearchChange, 500, {
-          leading: true,
-        })}
-        results={results}
-        value={value}
-        data={this.props.data}
-      />
+      <div className="search-bar">
+        <Search
+          className={this.props.className}
+          input={{fluid: this.state.fluid}}
+          placeholder={this.props.placeholder}
+          loading={isLoading}
+          onResultSelect={this.handleResultSelect}
+          onSearchChange={_.debounce(this.handleSearchChange, 500, {
+            leading: true,
+          })}
+          results={results}
+          value={value}
+          data={this.props.data}
+          open={this.props.open}
+        />
+        {this.props.searchOnClick ? (
+          <React.Fragment>
+            <Button
+              className="search-bar__button"
+              onClick={() => this.handleSubmit()}
+            >
+              Search
+            </Button>
+            <Button
+              className="search-bar__button"
+              onClick={() => this.clearResults()}
+            >
+              Clear
+            </Button>
+          </React.Fragment>
+        ) : null}
+      </div>
     );
   }
 }
@@ -94,12 +135,22 @@ SearchBar.propTypes = {
   data: PropTypes.array,
   handleResultSelect: PropTypes.func,
   placeholder: PropTypes.string,
+  handleSearchChange: PropTypes.func,
+  open: PropTypes.bool,
+  searchOnClick: PropTypes.bool,
+  clearResults: PropTypes.func,
+  handleSubmit: PropTypes.func,
 };
 
 SearchBar.defaultProps = {
   data: [],
   handleResultSelect: () => {},
   placeholder: 'Search for a resource',
+  handleSearchChange: () => {},
+  open: undefined,
+  searchOnClick: false,
+  clearResults: () => {},
+  handleSubmit: () => {},
 };
 
 export default SearchBar;

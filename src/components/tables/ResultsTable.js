@@ -11,6 +11,7 @@ import {
 import {Modal, Icon} from 'semantic-ui-react';
 import ReactJson from 'react-json-view';
 import {defaultTableFields} from '../../config';
+import SearchBar from '../SearchBar';
 import ReferenceTable from './ReferenceTable';
 import './ResultsTable.css';
 const cellCache = new CellMeasurerCache({
@@ -50,6 +51,8 @@ class ResultsTable extends React.Component {
       nextPageUrl: props.nextPageUrl,
       rowData: null,
       showReferences: false,
+      searchResults: [],
+      searchMode: false,
     };
   }
   componentDidMount() {
@@ -133,19 +136,24 @@ class ResultsTable extends React.Component {
   loadMoreRows = async () => {
     if (this.state.nextPageUrl) {
       const data = await this.props.fetchResource(this.state.nextPageUrl);
-      const nextPage = data.link.findIndex(x => x.relation === 'next');
-      let nextPageUrl = null;
-      if (nextPage > -1) {
-        nextPageUrl = data.link[nextPage].url.replace(
-          'localhost',
-          '10.10.1.191',
-        );
-      }
+      const nextPageUrl = this.getNextPage(data);
       let allResults = this.state.results.concat(data.results);
       cellCache.clearAll();
       rowCache.clearAll();
       this.setState({results: allResults, nextPageUrl});
     }
+  };
+
+  getNextPage = results => {
+    const nextPage = results.link.findIndex(x => x.relation === 'next');
+    let nextPageUrl = null;
+    if (nextPage > -1) {
+      nextPageUrl = results.link[nextPage].url.replace(
+        'localhost',
+        '10.10.1.191',
+      );
+    }
+    return nextPageUrl;
   };
 
   onViewInfo = rowData => {
@@ -168,6 +176,40 @@ class ResultsTable extends React.Component {
     this.props.closeModal();
   };
 
+  handleSubmit = async input => {
+    console.log('input', input);
+    const resourceType =
+      this.state.results && this.state.results[0]
+        ? this.state.results[0].resourceType
+        : null;
+    if (resourceType) {
+      await this.props
+        .fetchResource(
+          `${this.props.baseUrl}${resourceType}?_id=${input}&_total=accurate`.concat(
+            this.props.searchCriteria ? `&${this.props.searchCriteria}` : '',
+          ),
+        )
+        .then(data => {
+          cellCache.clearAll();
+          rowCache.clearAll();
+          this.setState({
+            searchResults: data.results,
+            searchMode: true,
+          });
+        })
+        .catch(err => console.log('Error searching for ID', input, ': ', err));
+    }
+  };
+
+  clearResults = () => {
+    cellCache.clearAll();
+    rowCache.clearAll();
+    this.setState({
+      searchResults: [],
+      searchMode: false,
+    });
+  };
+
   render() {
     const referencedByTableHeaders = [
       {display: 'Resource Type', sortId: 'resourceType'},
@@ -176,12 +218,28 @@ class ResultsTable extends React.Component {
       {display: 'Total References', sortId: 'total'},
     ];
 
+    const results = this.state.searchMode
+      ? this.state.searchResults
+      : this.state.results;
+    const totalRows = this.state.searchMode
+      ? this.state.searchResults.length
+      : this.props.totalResults;
+
     return (
       <div className="results-table">
+        <div className="results-table__search">
+          <SearchBar
+            open={false}
+            handleSubmit={this.handleSubmit}
+            clearResults={this.clearResults}
+            placeholder="Enter an ID here..."
+            searchOnClick={true}
+          />
+        </div>
         <InfiniteLoader
           isRowLoaded={this.isRowLoaded}
           loadMoreRows={this.loadMoreRows}
-          rowCount={this.props.totalResults}
+          rowCount={totalRows}
         >
           {({onRowsRendered, registerChild}) => (
             <AutoSizer>
@@ -194,11 +252,9 @@ class ResultsTable extends React.Component {
                   width={width}
                   height={height}
                   headerHeight={20}
-                  rowCount={this.props.totalResults}
+                  rowCount={totalRows}
                   rowGetter={({index}) =>
-                    this.state.results && this.state.results[index]
-                      ? this.state.results[index]
-                      : {}
+                    results && results[index] ? results[index] : {}
                   }
                   rowRenderer={this.rowRenderer}
                   rowHeight={this.rowHeight}
@@ -278,6 +334,7 @@ ResultsTable.propTypes = {
   tableColumns: PropTypes.array,
   loadingMessage: PropTypes.string,
   setLoadingMessage: PropTypes.func.isRequired,
+  searchCriteria: PropTypes.string,
 };
 
 ResultsTable.defaultProps = {
@@ -287,4 +344,5 @@ ResultsTable.defaultProps = {
   totalResults: 0,
   tableColumns: defaultTableFields,
   loadingMessage: '',
+  searchCriteria: null,
 };
