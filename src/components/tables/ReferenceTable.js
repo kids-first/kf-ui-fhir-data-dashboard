@@ -111,9 +111,8 @@ class ReferenceTable extends React.Component {
   handleResultSelect = (searchResults, referenceType) => {
     const referenceData =
       referenceType === 'referencing'
-        ? this.state.referencingData
-        : this.state.referencedByData;
-    console.log('referenceData', referenceData);
+        ? [...this.state.referencingData]
+        : [...this.state.referencedByData];
     let parentIndex = -1;
     let childIndex = -1;
     if (searchResults.length === 1) {
@@ -126,30 +125,27 @@ class ReferenceTable extends React.Component {
         });
       });
     }
-    let filteredData = referenceData;
-    console.log('initial filteredData', filteredData);
+    let filteredData = [...referenceData];
     if (parentIndex > -1 && childIndex > -1) {
       filteredData[parentIndex] = {
         ...referenceData[parentIndex],
         children: [referenceData[parentIndex].children[childIndex]],
       };
     }
-    console.log('filteredData', filteredData);
-    // if (referenceType === 'referencing') {
-    //   this.setState({
-    //     filteredReferencingData: filteredData,
-    //     referencingChildRowOpen: parentIndex,
-    //   });
-    // } else {
-    //   this.setState({
-    //     filteredReferencedByData: filteredData,
-    //     referencedByChildRowOpen: parentIndex,
-    //   });
-    // }
+    if (referenceType === 'referencing') {
+      this.setState({
+        filteredReferencingData: filteredData,
+        referencingChildRowOpen: parentIndex,
+      });
+    } else {
+      this.setState({
+        filteredReferencedByData: filteredData,
+        referencedByChildRowOpen: parentIndex,
+      });
+    }
   };
 
   render() {
-    console.log('this.state', this.state);
     return (
       <div className="reference-table">
         <div

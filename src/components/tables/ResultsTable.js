@@ -177,7 +177,6 @@ class ResultsTable extends React.Component {
   };
 
   handleSubmit = async input => {
-    console.log('input', input);
     const resourceType =
       this.state.results && this.state.results[0]
         ? this.state.results[0].resourceType

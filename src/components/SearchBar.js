@@ -55,7 +55,6 @@ export class SearchBar extends React.Component {
   };
 
   handleSearchChange = e => {
-    console.log('handle search change');
     this.setState({isLoading: true, value: e.target.value}, () => {
       if (this.state.value === '') {
         this.handleSearchClear();
@@ -70,7 +69,6 @@ export class SearchBar extends React.Component {
           results: _.filter(this.props.data, isMatch),
         },
         () => {
-          console.log('props handle search change');
           this.props.handleSearchChange(this.state.value);
         },
       );
@@ -78,7 +76,6 @@ export class SearchBar extends React.Component {
   };
 
   handleSubmit = () => {
-    console.log('sending value', this.state.value);
     this.props.handleSubmit(this.state.value);
   };
 

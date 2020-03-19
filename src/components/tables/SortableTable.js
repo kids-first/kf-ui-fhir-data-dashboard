@@ -17,12 +17,10 @@ class SortableTable extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    console.log('checking update');
     if (
       this.props.data.map(x => x.children).flat().length !==
       this.state.sortedData.map(x => x.children).flat().length
     ) {
-      console.log('updating');
       this.setState({
         sortedData: _.sortBy(this.props.data, this.props.headerCells[0].sortId),
       });
@@ -68,8 +66,7 @@ class SortableTable extends React.Component {
   render() {
     const {headerCells, rowChildren, searchable} = this.props;
     const {sortDirection, sortColumn, sortedData} = this.state;
-    console.log('sortabletable props', this.props);
-    console.log('sortabletable state', this.state);
+
     return (
       <div className="sortable-table">
         {searchable ? (
@@ -77,7 +74,7 @@ class SortableTable extends React.Component {
             data={this.props.searchData.map(item => ({
               title: item[this.props.searchTitleField],
             }))}
-            handleResultSelect={this.props.handleResultSelect}
+            handleResultSelect={e => this.props.handleResultSelect(e)}
             placeholder={this.props.searchPlaceholder}
           />
         ) : null}
