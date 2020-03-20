@@ -11,6 +11,7 @@ import {
 import {Modal, Icon} from 'semantic-ui-react';
 import ReactJson from 'react-json-view';
 import {defaultTableFields} from '../../config';
+import {logErrors} from '../../utils/common';
 import SearchBar from '../SearchBar';
 import ReferenceTable from './ReferenceTable';
 import './ResultsTable.css';
@@ -177,26 +178,32 @@ class ResultsTable extends React.Component {
   };
 
   handleSubmit = async input => {
-    const resourceType =
-      this.state.results && this.state.results[0]
-        ? this.state.results[0].resourceType
-        : null;
-    if (resourceType) {
-      await this.props
-        .fetchResource(
-          `${this.props.baseUrl}${resourceType}?_id=${input}&_total=accurate`.concat(
-            this.props.searchCriteria ? `&${this.props.searchCriteria}` : '',
-          ),
-        )
-        .then(data => {
-          cellCache.clearAll();
-          rowCache.clearAll();
-          this.setState({
-            searchResults: data.results,
-            searchMode: true,
-          });
-        })
-        .catch(err => console.log('Error searching for ID', input, ': ', err));
+    if (input === '') {
+      cellCache.clearAll();
+      rowCache.clearAll();
+      this.setState({searchResults: [], searchMode: false});
+    } else {
+      const resourceType =
+        this.state.results && this.state.results[0]
+          ? this.state.results[0].resourceType
+          : null;
+      if (resourceType) {
+        await this.props
+          .fetchResource(
+            `${this.props.baseUrl}${resourceType}?_id=${input}&_total=accurate`.concat(
+              this.props.searchCriteria ? `&${this.props.searchCriteria}` : '',
+            ),
+          )
+          .then(data => {
+            cellCache.clearAll();
+            rowCache.clearAll();
+            this.setState({
+              searchResults: data.results,
+              searchMode: true,
+            });
+          })
+          .catch(err => logErrors(`Error searching for ID ${input}: `, err));
+      }
     }
   };
 

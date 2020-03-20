@@ -75,7 +75,8 @@ export class SearchBar extends React.Component {
     });
   };
 
-  handleSubmit = () => {
+  handleSubmit = e => {
+    e.preventDefault();
     this.props.handleSubmit(this.state.value);
   };
 
@@ -90,29 +91,29 @@ export class SearchBar extends React.Component {
 
   render() {
     const {isLoading, value, results} = this.state;
+    const searchBar = (
+      <Search
+        className={this.props.className}
+        input={{fluid: this.state.fluid}}
+        placeholder={this.props.placeholder}
+        loading={isLoading}
+        onResultSelect={this.handleResultSelect}
+        onSearchChange={_.debounce(this.handleSearchChange, 500, {
+          leading: true,
+        })}
+        results={results}
+        value={value}
+        data={this.props.data}
+        open={this.props.open}
+      />
+    );
 
     return (
       <div className="search-bar">
-        <Search
-          className={this.props.className}
-          input={{fluid: this.state.fluid}}
-          placeholder={this.props.placeholder}
-          loading={isLoading}
-          onResultSelect={this.handleResultSelect}
-          onSearchChange={_.debounce(this.handleSearchChange, 500, {
-            leading: true,
-          })}
-          results={results}
-          value={value}
-          data={this.props.data}
-          open={this.props.open}
-        />
         {this.props.searchOnClick ? (
-          <React.Fragment>
-            <Button
-              className="search-bar__button"
-              onClick={() => this.handleSubmit()}
-            >
+          <form className="search-bar__form" onSubmit={this.handleSubmit}>
+            {searchBar}
+            <Button type="submit" className="search-bar__button">
               Search
             </Button>
             <Button
@@ -121,8 +122,10 @@ export class SearchBar extends React.Component {
             >
               Clear
             </Button>
-          </React.Fragment>
-        ) : null}
+          </form>
+        ) : (
+          searchBar
+        )}
       </div>
     );
   }
