@@ -63,7 +63,7 @@
 .resource-details__query-bar {
   width: 100%;
   max-height: 500px;
-  overflow: scroll;
+  overflow-y: scroll;
 }
 
 @media screen and (max-width: 768px) {

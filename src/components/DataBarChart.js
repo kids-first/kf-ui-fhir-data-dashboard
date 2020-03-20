@@ -18,29 +18,34 @@ class DataBarChart extends React.Component {
   };
 
   render() {
-    const data = this.props.data;
+    const data = this.props.data.filter(x => x.value > 0);
     const barSize = 10;
-    return (
-      <ResponsiveContainer height={barSize * data.length + 4}>
-        <BarChart
-          data={data}
-          margin={{
-            top: 5,
-            right: 30,
-            left: 0,
-            bottom: 5,
-          }}
-          layout="vertical"
-          onClick={this.handleClick}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis type="number" orientation="top" />
-          <YAxis width={250} type="category" dataKey="name" />
-          <Tooltip />
-          <Bar dataKey="value" fill="#41b6e6" barSize={barSize} />
-        </BarChart>
-      </ResponsiveContainer>
-    );
+    let height = Math.max(barSize * data.length + 4, 120);
+    if (data.length > 0) {
+      return (
+        <ResponsiveContainer height={height}>
+          <BarChart
+            data={data}
+            margin={{
+              top: 5,
+              right: 30,
+              left: 0,
+              bottom: 5,
+            }}
+            layout="vertical"
+            onClick={this.handleClick}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis type="number" orientation="top" />
+            <YAxis width={250} type="category" dataKey="name" />
+            <Tooltip />
+            <Bar dataKey="value" fill="#41b6e6" barSize={barSize} />
+          </BarChart>
+        </ResponsiveContainer>
+      );
+    } else {
+      return <p>No Data</p>;
+    }
   }
 }
 
