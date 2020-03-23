@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Modal} from 'semantic-ui-react';
+import ReactJson from 'react-json-view';
 import {getReferencedBy, getReferences} from '../../utils/api';
 import SortableTable from './SortableTable';
 import './ReferenceTable.css';
@@ -132,9 +133,7 @@ class ReferenceTable extends React.Component {
               </Modal.Header>
               <Modal.Content>
                 <Modal.Description>
-                  <pre>
-                    {JSON.stringify(this.state.showChildModal, null, 2)}
-                  </pre>
+                  <ReactJson src={this.state.showChildModal} />
                 </Modal.Description>
               </Modal.Content>
             </Modal>
