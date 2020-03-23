@@ -48,10 +48,10 @@ class ReferenceTable extends React.Component {
                 filteredReferencedByData: referencedByData,
               });
             })
-            .catch(err => logErrors('Error getting references:', err));
+            .catch(err => console.log('Error getting references:', err));
         })
         .catch(err =>
-          logErrors('Error getting resources that reference ID:', err),
+          console.log('Error getting resources that reference ID:', err),
         );
     });
   };
