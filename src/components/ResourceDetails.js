@@ -83,22 +83,34 @@ class ResourceDetails extends React.Component {
         }
       }
       this.props.setLoadingMessage(`Getting ${resourceType} schema...`);
-      const schema = await this.getSchema();
-      this.props.setLoadingMessage(`Getting ${resourceType} attributes...`);
-      const attributes = schema ? await this.getQueryParams(schema) : [];
-      this.setState(
-        {
-          total: total ? total : 0,
-          attributes: attributes.filter(
-            attribute =>
-              attribute.queryParams && attribute.queryParams.length > 0,
-          ),
-        },
-        () => {
-          this.props.setLoadingMessage(`Populating charts...`);
-          this.setQueryResults();
-        },
-      );
+      await this.getSchema()
+        .then(async schema => {
+          if (schema) {
+            this.props.setLoadingMessage(
+              `Getting ${resourceType} attributes...`,
+            );
+            await this.getQueryParams(schema)
+              .then(attributes => {
+                attributes = attributes ? attributes : [];
+                this.setState(
+                  {
+                    total: total ? total : 0,
+                    attributes: attributes.filter(
+                      attribute =>
+                        attribute.queryParams &&
+                        attribute.queryParams.length > 0,
+                    ),
+                  },
+                  () => {
+                    this.props.setLoadingMessage(`Populating charts...`);
+                    this.setQueryResults();
+                  },
+                );
+              })
+              .catch(err => logErrors('Error getting query params', err));
+          }
+        })
+        .catch(err => logErrors('Error getting schema', err));
     });
   };
 
@@ -115,46 +127,79 @@ class ResourceDetails extends React.Component {
       schemaUrl,
       capabilityStatementUrl,
     } = this.props;
-    const data = await fetchResource(
+    return await fetchResource(
       `${schemaUrl}?type=${resourceBaseType}&url=${resourceUrl}`,
-    );
-    const schema =
-      data && data.entry && data.entry[0] && data.entry[0].resource
-        ? data.entry[0].resource
-        : null;
-    const searchParams = await getSearchParams(
-      `${baseUrl}SearchParameter?base=${resourceBaseType}`,
-    );
-    const defaultParams = await getCapabilityStatement(
-      capabilityStatementUrl,
-      resourceBaseType,
-    ).then(data => data.map(param => param.name));
-    const queryableAttributes = new Set(searchParams.concat(defaultParams));
-    let resourceAttributes = [];
-    if (
-      schema &&
-      schema.snapshot &&
-      schema.snapshot.element &&
-      schema.differential &&
-      schema.differential.element
-    ) {
-      resourceAttributes = await this.getDifferential(
-        schema.differential.element,
-        queryableAttributes,
-        schema.snapshot.element,
-      );
-    } else if (schema && schema.snapshot && schema.snapshot.element) {
-      resourceAttributes = await this.getSnapshot(
-        schema.snapshot.element,
-        queryableAttributes,
-      );
-    } else if (schema && schema.differential && schema.differential.element) {
-      resourceAttributes = await this.getDifferential(
-        schema.differential.element,
-        queryableAttributes,
-      );
-    }
-    return resourceAttributes;
+      this.state.abortController,
+    )
+      .then(async data => {
+        const schema =
+          data && data.entry && data.entry[0] && data.entry[0].resource
+            ? data.entry[0].resource
+            : null;
+        return await getSearchParams(
+          `${baseUrl}SearchParameter?base=${resourceBaseType}`,
+          this.state.abortController,
+        )
+          .then(
+            async searchParams =>
+              await getCapabilityStatement(
+                capabilityStatementUrl,
+                resourceBaseType,
+                this.state.abortController,
+              )
+                .then(data => data.map(param => param.name))
+                .then(async defaultParams => {
+                  const queryableAttributes = new Set(
+                    searchParams.concat(defaultParams),
+                  );
+                  let resourceAttributes = [];
+                  if (
+                    schema &&
+                    schema.snapshot &&
+                    schema.snapshot.element &&
+                    schema.differential &&
+                    schema.differential.element
+                  ) {
+                    resourceAttributes = await this.getDifferential(
+                      schema.differential.element,
+                      queryableAttributes,
+                      schema.snapshot.element,
+                    );
+                  } else if (
+                    schema &&
+                    schema.snapshot &&
+                    schema.snapshot.element
+                  ) {
+                    resourceAttributes = await this.getSnapshot(
+                      schema.snapshot.element,
+                      queryableAttributes,
+                    );
+                  } else if (
+                    schema &&
+                    schema.differential &&
+                    schema.differential.element
+                  ) {
+                    resourceAttributes = await this.getDifferential(
+                      schema.differential.element,
+                      queryableAttributes,
+                    );
+                  }
+                  return resourceAttributes;
+                })
+                .catch(err => {
+                  logErrors('Error getting default params:', err);
+                  throw err;
+                }),
+          )
+          .catch(err => {
+            logErrors('Error getting search params:', err);
+            throw err;
+          });
+      })
+      .catch(err => {
+        logErrors('Error getting schema:', err);
+        throw err;
+      });
   };
 
   getSnapshot = async (schema, queryableAttributes) => {
@@ -175,42 +220,48 @@ class ResourceDetails extends React.Component {
     snapshot = null,
   ) => {
     const {resourceBaseType, schemaUrl} = this.props;
-    if (!snapshot) {
-      const data = await this.props.fetchResource(
+    return await this.props
+      .fetchResource(
         `${schemaUrl}?type=${resourceBaseType}&url=${fhirUrl}${resourceBaseType}`,
-      );
-      snapshot =
-        data &&
-        data.entry &&
-        data.entry[0] &&
-        data.entry[0].resource &&
-        data.entry[0].resource.snapshot &&
-        data.entry[0].resource.snapshot.element
-          ? data.entry[0].resource.snapshot.element
-          : null;
-    }
-    let snapshotAttributes = [];
-    if (snapshot) {
-      snapshotAttributes = await this.getSnapshot(
-        snapshot,
-        queryableAttributes,
-      );
-      const omittedAttributes = differential
-        .filter(attribute => attribute.max === '0')
-        .map(attribute => attribute.id);
-      snapshotAttributes = snapshotAttributes.filter(
-        attribute => !omittedAttributes.includes(attribute.id),
-      );
-    }
-    const differentialAttributes = await this.getSnapshot(
-      differential,
-      queryableAttributes,
-    );
-    const allAttributes = differentialAttributes.concat(snapshotAttributes);
-    let resourceAttributes = [
-      ...new Set(allAttributes.map(x => x.name)),
-    ].map(name => allAttributes.find(attribute => attribute.name === name));
-    return resourceAttributes;
+        this.state.abortController,
+      )
+      .then(async data => {
+        const snapshot =
+          data &&
+          data.entry &&
+          data.entry[0] &&
+          data.entry[0].resource &&
+          data.entry[0].resource.snapshot &&
+          data.entry[0].resource.snapshot.element
+            ? data.entry[0].resource.snapshot.element
+            : null;
+        let snapshotAttributes = [];
+        if (snapshot) {
+          snapshotAttributes = await this.getSnapshot(
+            snapshot,
+            queryableAttributes,
+          );
+          const omittedAttributes = differential
+            .filter(attribute => attribute.max === '0')
+            .map(attribute => attribute.id);
+          snapshotAttributes = snapshotAttributes.filter(
+            attribute => !omittedAttributes.includes(attribute.id),
+          );
+        }
+        const differentialAttributes = await this.getSnapshot(
+          differential,
+          queryableAttributes,
+        );
+        const allAttributes = differentialAttributes.concat(snapshotAttributes);
+        let resourceAttributes = [
+          ...new Set(allAttributes.map(x => x.name)),
+        ].map(name => allAttributes.find(attribute => attribute.name === name));
+        return resourceAttributes;
+      })
+      .catch(err => {
+        logErrors('Error getting differential:', err);
+        throw err;
+      });
   };
 
   parseSchema = (schema, queryableAttributes) =>
@@ -280,33 +331,44 @@ class ResourceDetails extends React.Component {
                 ...attribute.extensionInfo,
                 url: attribute.type[0].profile[0],
               };
-              let data = await this.props.fetchResource(
-                `${this.props.schemaUrl}?url=${attribute.type[0].profile[0]}`,
-              );
-              const extension =
-                data && data.entry && data.entry[0] && data.entry[0].resource
-                  ? data.entry[0].resource
-                  : null;
-              if (
-                extension &&
-                extension.differential &&
-                extension.differential &&
-                extension.differential.element
-              ) {
-                let extensionTypes = [];
-                extension.differential.element.forEach(x => {
-                  if (x.type) {
-                    if (x.binding) {
-                      x.type = x.type.map(code => ({
-                        ...code,
-                        binding: x.binding,
-                      }));
-                    }
-                    extensionTypes.push(x.type);
+              await this.props
+                .fetchResource(
+                  `${this.props.schemaUrl}?url=${attribute.type[0].profile[0]}`,
+                  this.state.abortController,
+                )
+                .then(async data => {
+                  const extension =
+                    data &&
+                    data.entry &&
+                    data.entry[0] &&
+                    data.entry[0].resource
+                      ? data.entry[0].resource
+                      : null;
+                  if (
+                    extension &&
+                    extension.differential &&
+                    extension.differential &&
+                    extension.differential.element
+                  ) {
+                    let extensionTypes = [];
+                    extension.differential.element.forEach(x => {
+                      if (x.type) {
+                        if (x.binding) {
+                          x.type = x.type.map(code => ({
+                            ...code,
+                            binding: x.binding,
+                          }));
+                        }
+                        extensionTypes.push(x.type);
+                      }
+                    });
+                    attribute.type = extensionTypes.flat();
                   }
+                })
+                .catch(err => {
+                  logErrors('Error getting differential:', err);
+                  throw err;
                 });
-                attribute.type = extensionTypes.flat();
-              }
             }
           } else {
             const periodIndex = attribute.id.indexOf('.');
@@ -332,44 +394,60 @@ class ResourceDetails extends React.Component {
       attributes.map(async attribute => {
         if (attribute.valueSetUrl) {
           const url = attribute.valueSetUrl.split('|')[0]; // versions don't resolve
-          const data = await this.props.fetchResource(
-            `${this.props.baseUrl}ValueSet?url=${url}`,
-          );
-          const resource =
-            data && data.entry && data.entry[0] && data.entry[0].resource
-              ? data.entry[0].resource
-              : null;
-          let concepts =
-            resource && resource.compose && resource.compose.include
-              ? resource.compose.include
-                  .map(obj => obj.concept)
-                  .filter(item => !!item)
-                  .flat()
-              : [];
-          const systems =
-            resource && resource.compose && resource.compose.include
-              ? resource.compose.include.map(obj => obj.system)
-              : [];
-          let systemConcepts = await Promise.all(
-            systems.map(async system => {
-              const data = await this.props.fetchResource(
-                `${this.props.baseUrl}CodeSystem?url=${system}`,
+          return await this.props
+            .fetchResource(
+              `${this.props.baseUrl}ValueSet?url=${url}`,
+              this.state.abortController,
+            )
+            .then(async data => {
+              const resource =
+                data && data.entry && data.entry[0] && data.entry[0].resource
+                  ? data.entry[0].resource
+                  : null;
+              let concepts =
+                resource && resource.compose && resource.compose.include
+                  ? resource.compose.include
+                      .map(obj => obj.concept)
+                      .filter(item => !!item)
+                      .flat()
+                  : [];
+              const systems =
+                resource && resource.compose && resource.compose.include
+                  ? resource.compose.include.map(obj => obj.system)
+                  : [];
+              let systemConcepts = await Promise.all(
+                systems.map(async system => {
+                  return await this.props
+                    .fetchResource(
+                      `${this.props.baseUrl}CodeSystem?url=${system}`,
+                      this.state.abortController,
+                    )
+                    .then(data =>
+                      data &&
+                      data.entry &&
+                      data.entry[0] &&
+                      data.entry[0].resource &&
+                      data.entry[0].resource.concept
+                        ? data.entry[0].resource.concept
+                        : null,
+                    )
+                    .catch(err => {
+                      logErrors('Error getting systems:', err);
+                      throw err;
+                    });
+                }),
               );
-              return data &&
-                data.entry &&
-                data.entry[0] &&
-                data.entry[0].resource &&
-                data.entry[0].resource.concept
-                ? data.entry[0].resource.concept
-                : null;
-            }),
-          );
-          systemConcepts = systemConcepts.flat().filter(item => !!item);
-          concepts.push(...systemConcepts);
-          return {
-            ...attribute,
-            queryParams: concepts, // how to handle large sets of parameters? very slow
-          };
+              systemConcepts = systemConcepts.flat().filter(item => !!item);
+              concepts.push(...systemConcepts);
+              return {
+                ...attribute,
+                queryParams: concepts, // how to handle large sets of parameters? very slow
+              };
+            })
+            .catch(err => {
+              logErrors('Error getting query params', err);
+              throw err;
+            });
         } else {
           return attribute;
         }
@@ -377,8 +455,13 @@ class ResourceDetails extends React.Component {
     );
 
   setQueryResults = async () => {
-    let results = await this.getQueryResults();
-    this.setState({attributes: results, queriesComplete: true});
+    await this.getQueryResults()
+      .then(results => {
+        this.setState({attributes: results, queriesComplete: true});
+      })
+      .catch(err => {
+        logErrors('Error setting query results:', err);
+      });
   };
 
   getQueryResults = async () =>
@@ -399,11 +482,16 @@ class ResourceDetails extends React.Component {
               } else {
                 url = url.concat(`?${name}=${param.code}`);
               }
-              const count = await this.props.getCount(url);
-              return {
-                ...param,
-                count: count ? count : 0,
-              };
+              return await this.props
+                .getCount(url, this.state.abortController)
+                .then(count => ({
+                  ...param,
+                  count: count ? count : 0,
+                }))
+                .catch(err => {
+                  logErrors('Error getting parameter counts:', err);
+                  throw err;
+                });
             }),
           );
         }
@@ -488,23 +576,32 @@ class ResourceDetails extends React.Component {
           url = url.concat('?');
         }
         if (chartType === 'count') {
-          data = await this.props.fetchResource(
-            `${url}${attribute.name}:missing=false`,
-          );
+          data = await this.props
+            .fetchResource(
+              `${url}${attribute.name}:missing=false`,
+              this.state.abortController,
+            )
+            .catch(err => logErrors('Error getting table results:', err));
           attribute.queryParams.forEach(param => {
             totalResults += param.count;
           });
         } else {
           param = attribute.queryParams.find(x => x.display === payload.name);
           if (!!param) {
-            data = await this.props.fetchResource(
-              `${url}${attribute.name}=${param.code}`,
-            );
+            data = await this.props
+              .fetchResource(
+                `${url}${attribute.name}=${param.code}`,
+                this.state.abortController,
+              )
+              .catch(err => logErrors('Error getting table results:', err));
           } else {
             param = {code: 'null'};
-            data = await this.props.fetchResource(
-              `${url}${attribute.name}:missing=true`,
-            );
+            data = await this.props
+              .fetchResource(
+                `${url}${attribute.name}:missing=true`,
+                this.state.abortController,
+              )
+              .catch(err => logErrors('Error getting table results:', err));
           }
           totalResults = payload.value;
         }
