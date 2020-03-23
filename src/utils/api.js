@@ -1,7 +1,13 @@
 import {shouldUseProxyUrl, proxyUrl, fhirUrl} from '../config';
+import {logErrors} from '../utils/common';
 import store from '../store';
 
-const fetchWithHeaders = async (url, headers, summary = false) => {
+const fetchWithHeaders = async (
+  url,
+  headers,
+  abortController,
+  summary = false,
+) => {
   let fullUrl = shouldUseProxyUrl(url) ? `${proxyUrl}${url}` : `${url}`;
   if (summary && !fullUrl.includes('_summary')) {
     fullUrl = fullUrl
@@ -9,7 +15,9 @@ const fetchWithHeaders = async (url, headers, summary = false) => {
       .concat('_summary=count');
   }
   const token = store.getState().user.token;
+  console.log('abort controller', abortController);
   return fetch(`${fullUrl}`, {
+    signal: abortController ? abortController.signal : null,
     headers: {
       ...headers,
       Authorization: `Basic ${token}`,
@@ -24,107 +32,166 @@ const fetchWithHeaders = async (url, headers, summary = false) => {
     })
     .then(data => data)
     .catch(err => {
-      console.log('Error:', err);
-      return err;
+      logErrors('Error:', err);
+      throw err;
     });
 };
 
-export const fetchResource = async (url, summary = false) =>
+export const fetchResource = async (url, abortController, summary = false) =>
   fetchWithHeaders(
     url,
     {
       Accept: 'application/fhir+json;charset=utf-8',
       'Content-Type': 'application/fhir+json;charset=utf-8',
     },
+    abortController,
     summary,
-  );
+  ).catch(err => {
+    throw err;
+  });
 
-export const fetchAllResources = async (url, allData) =>
-  fetchResource(url).then(data => {
-    if (data && data.entry) {
-      allData = allData.concat(data.entry);
-      const nextPage = data.link.findIndex(x => x.relation === 'next');
-      if (nextPage > -1) {
-        const nextPageUrl = data.link[nextPage].url.replace(
-          'localhost',
-          '10.10.1.191',
-        );
-        return fetchAllResources(nextPageUrl, allData);
+export const fetchAllResources = async (url, allData, abortController) =>
+  fetchResource(url, abortController)
+    .then(data => {
+      if (data && data.entry) {
+        allData = allData.concat(data.entry);
+        const nextPage = data.link.findIndex(x => x.relation === 'next');
+        if (nextPage > -1) {
+          const nextPageUrl = data.link[nextPage].url.replace(
+            'localhost',
+            '10.10.1.191',
+          );
+          return fetchAllResources(nextPageUrl, allData, abortController);
+        }
       }
-    }
-    return allData;
-  });
+      return allData;
+    })
+    .catch(err => {
+      throw err;
+    });
 
-export const getResourceCount = async url =>
-  fetchResource(url, true).then(data => (data ? data.total : 0));
+export const getResourceCount = async (url, abortController) =>
+  fetchResource(url, abortController, true)
+    .then(data => (data ? data.total : 0))
+    .catch(err => {
+      throw err;
+    });
 
-export const getSearchParams = async url =>
-  fetchResource(url).then(data =>
-    data && data.entry ? data.entry.map(x => x.resource.code) : [],
-  );
+export const getSearchParams = async (url, abortController) =>
+  fetchResource(url, abortController)
+    .then(data =>
+      data && data.entry ? data.entry.map(x => x.resource.code) : [],
+    )
+    .catch(err => {
+      throw err;
+    });
 
-export const getCapabilityStatementSearchParams = async (url, resourceType) =>
-  fetchResource(url).then(data => {
-    let params =
-      data && data.rest && data.rest[0] && data.rest[0].resource
-        ? data.rest[0].resource.find(x => x.type === resourceType)
-        : [];
-    return params && params.searchParam ? params.searchParam : [];
-  });
+export const getCapabilityStatementSearchParams = async (
+  url,
+  resourceType,
+  abortController,
+) =>
+  fetchResource(url, abortController)
+    .then(data => {
+      let params =
+        data && data.rest && data.rest[0] && data.rest[0].resource
+          ? data.rest[0].resource.find(x => x.type === resourceType)
+          : [];
+      return params && params.searchParam ? params.searchParam : [];
+    })
+    .catch(err => {
+      throw err;
+    });
 
-export const getOntologies = async url =>
-  fetchAllResources(url, []).then(data =>
-    data
-      .map(item => item.resource)
-      .map(resource => ({name: resource.name, url: resource.url})),
-  );
+export const getOntologies = async (url, abortController) =>
+  fetchAllResources(url, [], abortController)
+    .then(data =>
+      data
+        .map(item => item.resource)
+        .map(resource => ({name: resource.name, url: resource.url})),
+    )
+    .catch(err => {
+      throw err;
+    });
 
-export const getCapabilityStatementReferences = async (url, resourceType) =>
-  fetchResource(url).then(data => {
-    let references =
-      data && data.rest && data.rest[0] && data.rest[0].resource
-        ? data.rest[0].resource.filter(x =>
-            x.searchInclude.includes(`${x.type}:${resourceType.toLowerCase()}`),
-          )
-        : [];
-    return references;
-  });
+export const getCapabilityStatementReferences = async (
+  url,
+  resourceType,
+  abortController,
+) =>
+  fetchResource(url, abortController)
+    .then(data => {
+      let references =
+        data && data.rest && data.rest[0] && data.rest[0].resource
+          ? data.rest[0].resource.filter(x =>
+              x.searchInclude.includes(
+                `${x.type}:${resourceType.toLowerCase()}`,
+              ),
+            )
+          : [];
+      return references;
+    })
+    .catch(err => {
+      throw err;
+    });
 
-export const getReferencedBy = async (url, baseType, id) => {
+export const getReferencedBy = async (url, baseType, id, abortController) => {
   if (baseType) {
-    let allReferences = await getCapabilityStatementReferences(
+    return await getCapabilityStatementReferences(
       `${url}metadata`,
       baseType,
-    );
-    let resourceReferences = await Promise.all(
-      allReferences.map(async ref => {
-        const data = await fetchAllResources(
-          `${url}${ref.type}?${baseType.toLowerCase()}=${baseType}/${id}`,
-          [],
+      abortController,
+    )
+      .then(async allReferences => {
+        let resourceReferences = await Promise.all(
+          allReferences.map(async ref => {
+            return await fetchAllResources(
+              `${url}${ref.type}?${baseType.toLowerCase()}=${baseType}/${id}`,
+              [],
+              abortController,
+            )
+              .then(data => data.flat())
+              .catch(err => {
+                throw err;
+              });
+          }),
         );
-        return data.flat();
-      }),
-    );
-    resourceReferences = [].concat
-      .apply([], resourceReferences)
-      .map(item => item.resource);
-    return await formatReferences(url, resourceReferences);
+        resourceReferences = [].concat
+          .apply([], resourceReferences)
+          .map(item => item.resource);
+        return await formatReferences(url, resourceReferences, abortController)
+          .then(references => references)
+          .catch(err => {
+            throw err;
+          });
+      })
+      .catch(err => {
+        throw err;
+      });
   } else {
     return [];
   }
 };
 
-export const getReferences = async (url, referenceIds) => {
+export const getReferences = async (url, referenceIds, abortController) => {
   const resources = await Promise.all(
-    referenceIds.map(async reference => {
-      const resource = await fetchResource(`${url}${reference}`);
-      return resource;
-    }),
+    referenceIds.map(
+      async reference =>
+        await fetchResource(`${url}${reference}`, abortController)
+          .then(resource => resource)
+          .catch(err => {
+            throw err;
+          }),
+    ),
   );
-  return await formatReferences(url, resources);
+  return await formatReferences(url, resources, abortController)
+    .then(references => references)
+    .catch(err => {
+      throw err;
+    });
 };
 
-export const formatReferences = async (url, references) => {
+export const formatReferences = async (url, references, abortController) => {
   references = references.map(item => ({
     ...item,
     profile:
@@ -133,23 +200,36 @@ export const formatReferences = async (url, references) => {
         : [`${fhirUrl}${item.resourceType}`],
   }));
   references = await Promise.all(
-    references.map(async ref => {
-      const data = await fetchResource(
-        `${url}StructureDefinition?url=${ref.profile[0]}`,
-      );
-      const name =
-        data && data.entry && data.entry[0] && data.entry[0].resource
-          ? data.entry[0].resource.name
-          : null;
-      return {...ref, name};
-    }),
+    references.map(
+      async ref =>
+        await fetchResource(
+          `${url}StructureDefinition?url=${ref.profile[0]}`,
+          abortController,
+        )
+          .then(data => {
+            const name =
+              data && data.entry && data.entry[0] && data.entry[0].resource
+                ? data.entry[0].resource.name
+                : null;
+            return {...ref, name};
+          })
+          .catch(err => {
+            throw err;
+          }),
+    ),
   );
   return references.filter(ref => ref.name);
 };
 
-export const userIsAuthorized = (username, password, baseUrl) => {
+export const userIsAuthorized = (
+  username,
+  password,
+  baseUrl,
+  abortController,
+) => {
   const token = btoa(`${username}:${password}`);
   return fetch(`${baseUrl}StructureDefinition`, {
+    signal: abortController ? abortController.signal : null,
     headers: {
       Authorization: `Basic ${token}`,
     },
