@@ -15,7 +15,6 @@ const fetchWithHeaders = async (
       .concat('_summary=count');
   }
   const token = store.getState().user.token;
-  console.log('abort controller', abortController);
   return fetch(`${fullUrl}`, {
     signal: abortController ? abortController.signal : null,
     headers: {

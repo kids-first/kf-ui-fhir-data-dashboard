@@ -1,4 +1,4 @@
-import {SET_ONTOLOGIES} from '../actions';
+import {SET_ONTOLOGIES, SET_API} from '../actions';
 
 const initialState = {
   ontologies: {},
@@ -12,6 +12,10 @@ const ontologies = (state = initialState, action) => {
         ...state,
         ontologies: action.ontologies,
         ontologiesFetched: true,
+      };
+    case SET_API:
+      return {
+        ...initialState,
       };
     default:
       return state;
