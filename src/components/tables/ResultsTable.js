@@ -9,6 +9,7 @@ import {
   CellMeasurer,
 } from 'react-virtualized';
 import {Modal, Icon} from 'semantic-ui-react';
+import ReactJson from 'react-json-view';
 import {defaultTableFields} from '../../config';
 import ReferenceTable from './ReferenceTable';
 import './ResultsTable.css';
@@ -235,7 +236,7 @@ class ResultsTable extends React.Component {
           <Modal.Content>
             <Modal.Description>
               <div className="results-table__details">
-                <pre>{JSON.stringify(this.state.rowData, null, 2)}</pre>
+                <ReactJson src={this.state.rowData} />
               </div>
             </Modal.Description>
           </Modal.Content>
