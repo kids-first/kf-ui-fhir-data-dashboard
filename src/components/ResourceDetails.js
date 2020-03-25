@@ -220,48 +220,47 @@ class ResourceDetails extends React.Component {
     snapshot = null,
   ) => {
     const {resourceBaseType, schemaUrl} = this.props;
-    return await this.props
-      .fetchResource(
-        `${schemaUrl}?type=${resourceBaseType}&url=${fhirUrl}${resourceBaseType}`,
-        this.state.abortController,
-      )
-      .then(async data => {
-        const snapshot =
-          data &&
-          data.entry &&
-          data.entry[0] &&
-          data.entry[0].resource &&
-          data.entry[0].resource.snapshot &&
-          data.entry[0].resource.snapshot.element
-            ? data.entry[0].resource.snapshot.element
-            : null;
-        let snapshotAttributes = [];
-        if (snapshot) {
-          snapshotAttributes = await this.getSnapshot(
-            snapshot,
-            queryableAttributes,
-          );
-          const omittedAttributes = differential
-            .filter(attribute => attribute.max === '0')
-            .map(attribute => attribute.id);
-          snapshotAttributes = snapshotAttributes.filter(
-            attribute => !omittedAttributes.includes(attribute.id),
-          );
-        }
-        const differentialAttributes = await this.getSnapshot(
-          differential,
-          queryableAttributes,
-        );
-        const allAttributes = differentialAttributes.concat(snapshotAttributes);
-        let resourceAttributes = [
-          ...new Set(allAttributes.map(x => x.name)),
-        ].map(name => allAttributes.find(attribute => attribute.name === name));
-        return resourceAttributes;
-      })
-      .catch(err => {
-        logErrors('Error getting differential:', err);
-        throw err;
-      });
+    if (!snapshot) {
+      await this.props
+        .fetchResource(
+          `${schemaUrl}?type=${resourceBaseType}&url=${fhirUrl}${resourceBaseType}`,
+          this.state.abortController,
+        )
+        .then(async data => {
+          snapshot =
+            data &&
+            data.entry &&
+            data.entry[0] &&
+            data.entry[0].resource &&
+            data.entry[0].resource.snapshot &&
+            data.entry[0].resource.snapshot.element
+              ? data.entry[0].resource.snapshot.element
+              : null;
+        })
+        .catch(err => logErrors('Error fetching snapshot:', err));
+    }
+    let snapshotAttributes = [];
+    if (snapshot) {
+      snapshotAttributes = await this.getSnapshot(
+        snapshot,
+        queryableAttributes,
+      );
+      const omittedAttributes = differential
+        .filter(attribute => attribute.max === '0')
+        .map(attribute => attribute.id);
+      snapshotAttributes = snapshotAttributes.filter(
+        attribute => !omittedAttributes.includes(attribute.id),
+      );
+    }
+    const differentialAttributes = await this.getSnapshot(
+      differential,
+      queryableAttributes,
+    );
+    const allAttributes = differentialAttributes.concat(snapshotAttributes);
+    let resourceAttributes = [
+      ...new Set(allAttributes.map(x => x.name)),
+    ].map(name => allAttributes.find(attribute => attribute.name === name));
+    return resourceAttributes;
   };
 
   parseSchema = (schema, queryableAttributes) =>
@@ -490,7 +489,10 @@ class ResourceDetails extends React.Component {
                 }))
                 .catch(err => {
                   logErrors('Error getting parameter counts:', err);
-                  throw err;
+                  return {
+                    ...param,
+                    count: 0,
+                  };
                 });
             }),
           );
