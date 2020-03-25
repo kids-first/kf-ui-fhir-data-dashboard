@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import ReactJson from 'react-json-view';
 import {Dropdown, Modal} from 'semantic-ui-react';
 import {
   getHumanReadableNumber,
@@ -179,9 +180,7 @@ class OntologyHomepage extends React.Component {
           <Modal.Content>
             {!this.state.fetchingOntologyDetails &&
             this.state.selectedOntology ? (
-              <pre>
-                {JSON.stringify(this.state.selectedOntology.payload, null, 2)}
-              </pre>
+              <ReactJson src={this.state.selectedOntology.payload} />
             ) : (
               <div className="ui active loader">
                 <p>{this.props.loadingMessage}</p>
