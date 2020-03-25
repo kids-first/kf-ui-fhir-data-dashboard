@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import {Modal} from 'semantic-ui-react';
 import ReactJson from 'react-json-view';
 import {getReferencedBy, getReferences} from '../../utils/api';
-import {logErrors} from '../../utils/common';
 import SortableTable from './SortableTable';
 import './ReferenceTable.css';
 
