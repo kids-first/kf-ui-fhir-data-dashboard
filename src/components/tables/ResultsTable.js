@@ -11,6 +11,7 @@ import {
 import {Modal, Icon} from 'semantic-ui-react';
 import ReactJson from 'react-json-view';
 import {defaultTableFields} from '../../config';
+import {logErrors} from '../../utils/common';
 import SearchBar from '../SearchBar';
 import ReferenceTable from './ReferenceTable';
 import './ResultsTable.css';
@@ -201,7 +202,7 @@ class ResultsTable extends React.Component {
               searchMode: true,
             });
           })
-          .catch(err => console.log(`Error searching for ID ${input}: `, err));
+          .catch(err => logErrors(`Error searching for ID ${input}: `, err));
       }
     }
   };
