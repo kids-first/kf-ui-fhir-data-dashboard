@@ -6,7 +6,7 @@ import {
   getBaseResourceCount,
   logErrors,
 } from '../utils/common';
-import {fhirUrl, defaultTableFields} from '../config';
+import {fhirUrl, defaultTableFields, defaultFhirServerPrefix} from '../config';
 import AppBreadcrumb from './AppBreadcrumb';
 import DataPieChart from './DataPieChart';
 import DataBarChart from './DataBarChart';
@@ -613,7 +613,7 @@ class ResourceDetails extends React.Component {
         if (nextPage > -1) {
           nextPageUrl = data.link[nextPage].url.replace(
             'localhost',
-            '10.10.1.191',
+            defaultFhirServerPrefix,
           );
         }
         this.setState({

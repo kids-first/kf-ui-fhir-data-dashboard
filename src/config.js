@@ -14,6 +14,9 @@ export const defaultFhirServers = [
   },
 ];
 
+export const defaultFhirServerPrefix = '10.10.1.191';
+export const defaultFhirServerUrl = `http://${defaultFhirServerPrefix}:8000/`;
+
 export const oAuthUrl = 'https://syntheticmass.mitre.org/oauth2/accesstoken';
 
 export const shouldUseProxyUrl = url =>

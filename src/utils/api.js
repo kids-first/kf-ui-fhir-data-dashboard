@@ -1,4 +1,10 @@
-import {shouldUseProxyUrl, proxyUrl, fhirUrl} from '../config';
+import {
+  shouldUseProxyUrl,
+  proxyUrl,
+  fhirUrl,
+  defaultFhirServerPrefix,
+} from '../config';
+
 import {logErrors} from '../utils/common';
 import store from '../store';
 
@@ -58,7 +64,7 @@ export const fetchAllResources = async (url, allData, abortController) =>
         if (nextPage > -1) {
           const nextPageUrl = data.link[nextPage].url.replace(
             'localhost',
-            '10.10.1.191',
+            defaultFhirServerPrefix,
           );
           return fetchAllResources(nextPageUrl, allData, abortController);
         }

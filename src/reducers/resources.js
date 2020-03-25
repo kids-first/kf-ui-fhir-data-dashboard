@@ -4,11 +4,12 @@ import {
   SET_HOMEPAGE_VIEW,
   SET_LOADING_MESSAGE,
 } from '../actions';
+import {defaultFhirServerUrl} from '../config';
 
 const initialState = {
   baseUrl: process.env.REACT_APP_FHIR_API
     ? `${process.env.REACT_APP_FHIR_API}`
-    : 'http://10.10.1.191:8000/',
+    : defaultFhirServerUrl,
   allResources: {},
   allResourcesFetched: false,
   cardView: true,

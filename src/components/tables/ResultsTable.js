@@ -10,8 +10,8 @@ import {
 } from 'react-virtualized';
 import {Modal, Icon} from 'semantic-ui-react';
 import ReactJson from 'react-json-view';
-import {defaultTableFields} from '../../config';
 import {logErrors} from '../../utils/common';
+import {defaultTableFields, defaultFhirServerPrefix} from '../../config';
 import SearchBar from '../SearchBar';
 import ReferenceTable from './ReferenceTable';
 import './ResultsTable.css';
@@ -151,7 +151,7 @@ class ResultsTable extends React.Component {
     if (nextPage > -1) {
       nextPageUrl = results.link[nextPage].url.replace(
         'localhost',
-        '10.10.1.191',
+        defaultFhirServerPrefix,
       );
     }
     return nextPageUrl;
