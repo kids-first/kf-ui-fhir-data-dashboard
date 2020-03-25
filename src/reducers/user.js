@@ -22,7 +22,7 @@ const user = (state = initialState, action) => {
         serverOptions: currentOptions.concat({
           name: action.url,
           url: action.url,
-          authRequired: false,
+          authRequired: action.url.includes('://10.10.1'),
         }),
       };
     default:
