@@ -2,7 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import {tabletWidth} from '../config';
-import {Search} from 'semantic-ui-react';
+import {Search, Button} from 'semantic-ui-react';
+import './SearchBar.css';
 
 export class SearchBar extends React.Component {
   constructor(props) {
@@ -62,17 +63,35 @@ export class SearchBar extends React.Component {
       const re = new RegExp(_.escapeRegExp(this.state.value), 'i');
       const isMatch = result => re.test(result.title);
 
-      this.setState({
-        isLoading: false,
-        results: _.filter(this.props.data, isMatch),
-      });
+      this.setState(
+        {
+          isLoading: false,
+          results: _.filter(this.props.data, isMatch),
+        },
+        () => {
+          this.props.handleSearchChange(this.state.value);
+        },
+      );
     });
+  };
+
+  handleSubmit = e => {
+    e.preventDefault();
+    this.props.handleSubmit(this.state.value);
+  };
+
+  clearResults = () => {
+    this.setState(
+      {
+        value: '',
+      },
+      () => this.props.clearResults(),
+    );
   };
 
   render() {
     const {isLoading, value, results} = this.state;
-
-    return (
+    const searchBar = (
       <Search
         className={this.props.className}
         input={{fluid: this.state.fluid}}
@@ -85,7 +104,29 @@ export class SearchBar extends React.Component {
         results={results}
         value={value}
         data={this.props.data}
+        open={this.props.open}
       />
+    );
+
+    return (
+      <div className="search-bar">
+        {this.props.searchOnClick ? (
+          <form className="search-bar__form" onSubmit={this.handleSubmit}>
+            {searchBar}
+            <Button type="submit" className="search-bar__button">
+              Search
+            </Button>
+            <Button
+              className="search-bar__button"
+              onClick={() => this.clearResults()}
+            >
+              Clear
+            </Button>
+          </form>
+        ) : (
+          searchBar
+        )}
+      </div>
     );
   }
 }
@@ -94,12 +135,22 @@ SearchBar.propTypes = {
   data: PropTypes.array,
   handleResultSelect: PropTypes.func,
   placeholder: PropTypes.string,
+  handleSearchChange: PropTypes.func,
+  open: PropTypes.bool,
+  searchOnClick: PropTypes.bool,
+  clearResults: PropTypes.func,
+  handleSubmit: PropTypes.func,
 };
 
 SearchBar.defaultProps = {
   data: [],
   handleResultSelect: () => {},
   placeholder: 'Search for a resource',
+  handleSearchChange: () => {},
+  open: undefined,
+  searchOnClick: false,
+  clearResults: () => {},
+  handleSubmit: () => {},
 };
 
 export default SearchBar;

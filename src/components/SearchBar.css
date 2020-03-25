@@ -1,0 +1,13 @@
+.search-bar {
+  display: flex;
+  margin: 10px 0 20px 0;
+}
+
+.search-bar__form {
+  display: flex;
+}
+
+.search-bar__button {
+  margin: 0 10px !important;
+  width: fit-content !important;
+}

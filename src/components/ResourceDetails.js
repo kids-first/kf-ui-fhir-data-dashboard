@@ -670,6 +670,11 @@ class ResourceDetails extends React.Component {
                   tableColumns={this.state.tableColumns}
                   loadingMessage={this.props.loadingMessage}
                   setLoadingMessage={this.props.setLoadingMessage}
+                  searchCriteria={
+                    selectedAttribute && selectedParam
+                      ? `${selectedAttribute}=${selectedParam}`
+                      : null
+                  }
                 />
               ) : (
                 <div className="ui active loader">

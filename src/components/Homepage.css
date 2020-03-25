@@ -176,7 +176,7 @@ i.inverted.circular.icon.homepage__controls-view-icon--selected {
 }
 
 .ui.search > .results {
-  width: 100%;
+  width: 100% !important;
 }
 
 #homepage__card-description > i.inverted.bordered.icon,
