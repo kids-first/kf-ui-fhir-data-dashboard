@@ -3,7 +3,11 @@ import PropTypes from 'prop-types';
 import {Card, Icon, Dropdown} from 'semantic-ui-react';
 import Avatar from 'react-avatar';
 import _ from 'lodash';
-import {getHumanReadableNumber, getDropdownOptions} from '../utils/common';
+import {
+  getHumanReadableNumber,
+  getDropdownOptions,
+  logErrors,
+} from '../utils/common';
 import {resourceCategories} from '../config';
 import SearchBar from './SearchBar';
 import SortableTable from './tables/SortableTable';
@@ -19,6 +23,7 @@ class Homepage extends React.Component {
       searchResourceTitle: 'Resource Types',
       resourcesByCategory: resourceCategories,
       openTabs: Object.keys(resourceCategories),
+      abortController: new AbortController(),
     };
   }
 
@@ -34,9 +39,17 @@ class Homepage extends React.Component {
     }
   }
 
+  componentWillUnmount() {
+    this.state.abortController.abort();
+  }
+
   fetchAllResources = () => {
     this.props
-      .fetchAllResources(this.props.baseUrl, this.state.searchResourceType)
+      .fetchAllResources(
+        this.props.baseUrl,
+        this.state.searchResourceType,
+        this.state.abortController,
+      )
       .then(() => {
         const resources = this.props.allResources;
         const resourcesByCategory = this.setCategories(resources);
@@ -45,7 +58,8 @@ class Homepage extends React.Component {
           listResources: _.toArray(resources),
           resourcesByCategory,
         });
-      });
+      })
+      .catch(err => logErrors('Error fetching resources:', err));
   };
 
   setCategories = resources => {

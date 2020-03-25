@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {Modal} from 'semantic-ui-react';
 import ReactJson from 'react-json-view';
 import {getReferencedBy, getReferences} from '../../utils/api';
+import {logErrors} from '../../utils/common';
 import SortableTable from './SortableTable';
 import './ReferenceTable.css';
 
@@ -18,6 +19,7 @@ class ReferenceTable extends React.Component {
       showChildModal: null,
       referencingChildRowOpen: -1,
       referencedByChildRowOpen: -1,
+      abortController: new AbortController(),
     };
   }
 
@@ -29,6 +31,10 @@ class ReferenceTable extends React.Component {
     if (this.props.resource.resourceId !== prevProps.resource.resourceId) {
       this.fetchAllReferences();
     }
+  }
+
+  componentWillUnmount() {
+    this.state.abortController.abort();
   }
 
   fetchAllReferences = async () => {
@@ -48,32 +54,40 @@ class ReferenceTable extends React.Component {
                 filteredReferencedByData: referencedByData,
               });
             })
-            .catch(err => console.log('Error getting references:', err));
+            .catch(err => logErrors('Error getting references:', err));
         })
         .catch(err =>
-          console.log('Error getting resources that reference ID:', err),
+          logErrors('Error getting resources that reference ID:', err),
         );
     });
   };
 
   fetchReferencedBy = async () => {
-    const references = await getReferencedBy(
+    return await getReferencedBy(
       this.props.baseUrl,
       this.props.resource.resourceType,
       this.props.resource.id,
-    );
-    return this.getReferenceMap(references);
+      this.state.abortController,
+    )
+      .then(references => this.getReferenceMap(references))
+      .catch(err => {
+        throw err;
+      });
   };
 
   fetchReferencing = async () => {
     const referencingIds = Object.keys(this.props.resource)
       .map(field => this.props.resource[field].reference)
       .filter(field => field);
-    const allReferences = await getReferences(
+    return await getReferences(
       this.props.baseUrl,
       referencingIds,
-    );
-    return this.getReferenceMap(allReferences);
+      this.state.abortController,
+    )
+      .then(allReferences => this.getReferenceMap(allReferences))
+      .catch(err => {
+        throw err;
+      });
   };
 
   getReferenceMap = references => {
