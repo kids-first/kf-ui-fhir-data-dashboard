@@ -3,7 +3,7 @@ import {addServer, updateServer} from '../actions';
 import ServerConfiguration from './ServerConfiguration';
 
 const mapStateToProps = (state, ownProps) => ({
-  serverOptions: state.user ? state.user.serverOptions : [],
+  serverOptions: state.app ? state.app.serverOptions : [],
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => {

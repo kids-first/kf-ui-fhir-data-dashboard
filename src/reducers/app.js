@@ -5,7 +5,7 @@ const initialState = {
   serverOptions: defaultFhirServers,
 };
 
-const user = (state = initialState, action) => {
+const app = (state = initialState, action) => {
   switch (action.type) {
     case SET_USER:
       const token = btoa(`${action.username}:${action.password}`);
@@ -64,4 +64,4 @@ const user = (state = initialState, action) => {
   }
 };
 
-export default user;
+export default app;
