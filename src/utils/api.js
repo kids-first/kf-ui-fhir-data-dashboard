@@ -227,7 +227,10 @@ export const userIsAuthorized = (
   abortController,
 ) => {
   const token = btoa(`${username}:${password}`);
-  return fetch(`${baseUrl}StructureDefinition`, {
+  const fullUrl = shouldUseProxyUrl(baseUrl)
+    ? `${proxyUrl}${baseUrl}`
+    : `${baseUrl}`;
+  return fetch(`${fullUrl}StructureDefinition`, {
     signal: abortController ? abortController.signal : null,
     headers: {
       Authorization: `Basic ${token}`,

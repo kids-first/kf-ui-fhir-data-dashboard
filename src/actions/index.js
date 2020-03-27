@@ -6,6 +6,7 @@ export const SET_LOADING_MESSAGE = 'SET_LOADING_MESSAGE';
 export const SET_USER = 'SET_USER';
 export const CLEAR_USER = 'CLEAR_USER';
 export const ADD_SERVER = 'ADD_SERVER';
+export const UPDATE_SERVER = 'UPDATE_SERVER';
 
 export const setResources = allResources => ({
   type: SET_RESOURCES,
@@ -42,7 +43,18 @@ export const clearUser = () => ({
   type: CLEAR_USER,
 });
 
-export const addServer = url => ({
+export const addServer = (id, name, url, authRequired) => ({
   type: ADD_SERVER,
+  id,
+  name,
   url,
+  authRequired,
+});
+
+export const updateServer = (id, name, url, authRequired) => ({
+  type: UPDATE_SERVER,
+  id,
+  name,
+  url,
+  authRequired,
 });

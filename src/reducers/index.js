@@ -13,7 +13,6 @@ const appReducer = combineReducers({
 const rootReducer = (state, action) => {
   if (action.type === CLEAR_USER || action.type === SET_USER) {
     sessionStorage.removeItem('token');
-    state = undefined;
   }
   return appReducer(state, action);
 };

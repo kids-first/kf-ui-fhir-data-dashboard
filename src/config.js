@@ -1,18 +1,44 @@
 export const mobileWidth = 425;
 export const tabletWidth = 768;
 
-export const defaultFhirServers = [
-  {
-    name: 'HAPI',
-    url: 'http://hapi.fhir.org/baseR4/',
-    authRequired: false,
-  },
-  {
-    name: 'Kids First',
-    url: 'http://10.10.1.191:8000/',
-    authRequired: true,
-  },
-];
+export const getBaseUrl = () => {
+  let envVar = process.env.REACT_APP_FHIR_API;
+  if (envVar) {
+    if (envVar.substring(envVar.length - 1, envVar.length) !== '/') {
+      envVar = envVar.concat('/');
+    }
+    return envVar;
+  }
+  return 'http://10.10.1.191:8000/';
+};
+
+const getDefaultFhirServers = () => {
+  let servers = [
+    {
+      id: 0,
+      name: 'HAPI',
+      url: 'http://hapi.fhir.org/baseR4/',
+      authRequired: false,
+    },
+    {
+      id: 1,
+      name: 'Kids First',
+      url: 'http://10.10.1.191:8000/',
+      authRequired: true,
+    },
+  ];
+  if (getBaseUrl && servers.findIndex(x => x.url === getBaseUrl()) < 0) {
+    servers.push({
+      id: 2,
+      name: getBaseUrl(),
+      url: getBaseUrl(),
+      authRequired: false,
+    });
+  }
+  return servers;
+};
+
+export const defaultFhirServers = getDefaultFhirServers();
 
 export const oAuthUrl = 'https://syntheticmass.mitre.org/oauth2/accesstoken';
 

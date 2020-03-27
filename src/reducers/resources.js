@@ -3,12 +3,12 @@ import {
   SET_API,
   SET_HOMEPAGE_VIEW,
   SET_LOADING_MESSAGE,
+  CLEAR_USER,
 } from '../actions';
+import {getBaseUrl} from '../config';
 
 const initialState = {
-  baseUrl: process.env.REACT_APP_FHIR_API
-    ? `${process.env.REACT_APP_FHIR_API}`
-    : 'http://10.10.1.191:8000/',
+  baseUrl: getBaseUrl(),
   allResources: {},
   allResourcesFetched: false,
   cardView: true,
@@ -38,6 +38,12 @@ const resources = (state = initialState, action) => {
       return {
         ...state,
         loadingMessage: action.loadingMessage,
+      };
+    case CLEAR_USER:
+      const {baseUrl} = state;
+      return {
+        ...initialState,
+        baseUrl,
       };
     default:
       return state;
