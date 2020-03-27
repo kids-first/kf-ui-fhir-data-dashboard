@@ -8,17 +8,25 @@ import ReduxResourceDetails from './ReduxResourceDetails';
 import ReduxOntologyHomepage from './ReduxOntologyHomepage';
 import ReduxLogin from './ReduxLogin';
 import ReduxServerConfiguration from './ReduxServerConfiguration';
+import {NO_AUTH, BASIC_AUTH} from '../config';
 import logo from '../img/d3b-cube.svg';
 import './App.css';
 
 class App extends React.Component {
-  render() {
-    const serverConfig = this.props.serverOptions.find(
-      x => x.url === this.props.baseUrl,
-    );
-    const authorized =
-      serverConfig && serverConfig.authRequired ? !!this.props.token : true;
+  isAuthorized = () => {
+    switch (this.props.selectedServer.authType) {
+      case NO_AUTH:
+        return true;
+      case BASIC_AUTH:
+        return !!this.props.token;
+      default:
+        return true;
+    }
+  };
 
+  authRequired = () => this.props.selectedServer.authType !== NO_AUTH;
+
+  render() {
     return (
       <Router>
         <div className="app">
@@ -27,9 +35,9 @@ class App extends React.Component {
               <img src={logo} alt="D3b" />
               <h1>FHIR Data Dashboard</h1>
             </Link>
-            {authorized ? (
+            {this.isAuthorized() ? (
               <div className="app__header-info">
-                {serverConfig && serverConfig.authRequired ? (
+                {this.authRequired() ? (
                   <div className="app__header-user">
                     <p>Welcome, {this.props.username}</p>
                     <Button onClick={() => this.props.logout()}>Logout</Button>
@@ -52,31 +60,31 @@ class App extends React.Component {
           <Switch>
             <DecisionRoute
               path="/login"
-              renderComponent={!authorized}
+              renderComponent={!this.isAuthorized()}
               component={ReduxLogin}
               redirectPath="/"
             />
             <DecisionRoute
               path="/ontologies"
-              renderComponent={!!authorized}
+              renderComponent={!!this.isAuthorized()}
               component={ReduxOntologyHomepage}
               redirectPath="/login"
             />
             <DecisionRoute
               path="/settings"
-              renderComponent={!!authorized}
+              renderComponent={!!this.isAuthorized()}
               component={ReduxServerConfiguration}
               redirectPath="/login"
             />
             <DecisionRoute
               path="/:resourceBaseType"
-              renderComponent={!!authorized}
+              renderComponent={!!this.isAuthorized()}
               component={ReduxResourceDetails}
               redirectPath="/login"
             />
             <DecisionRoute
               path="/"
-              renderComponent={!!authorized}
+              renderComponent={!!this.isAuthorized()}
               component={ReduxHomepage}
               redirectPath="/login"
             />
@@ -89,16 +97,15 @@ class App extends React.Component {
 
 App.propTypes = {
   baseUrl: PropTypes.string.isRequired,
+  selectedServer: PropTypes.object.isRequired,
   token: PropTypes.string,
   username: PropTypes.string,
   logout: PropTypes.func.isRequired,
-  serverOptions: PropTypes.array,
 };
 
 App.defaultProps = {
   token: null,
   username: null,
-  serverOptions: [],
 };
 
 export default App;

@@ -23,8 +23,8 @@ const mapStateToProps = (state, ownProps) => ({
   ontologies: state && state.ontologies ? state.ontologies.ontologies : [],
   ontologiesFetched:
     state && state.ontologies ? state.ontologies.ontologiesFetched : false,
-  baseUrl: state.resources.baseUrl,
-  loadingMessage: state.resources.loadingMessage,
+  baseUrl: state.app.selectedServer.url,
+  loadingMessage: state.app.loadingMessage,
   serverOptions: state.app ? state.app.serverOptions : [],
 });
 

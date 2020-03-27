@@ -97,9 +97,10 @@ const mapStateToProps = (state, ownProps) => ({
   allResources: state && state.resources ? state.resources.allResources : {},
   allResourcesFetched:
     state && state.resources ? state.resources.allResourcesFetched : false,
-  baseUrl: state.resources.baseUrl,
+  baseUrl:
+    state.app && state.app.selectedServer ? state.app.selectedServer.url : '',
   cardView: state.resources.cardView,
-  loadingMessage: state.resources.loadingMessage,
+  loadingMessage: state.app.loadingMessage,
   serverOptions: state.app ? state.app.serverOptions : [],
 });
 

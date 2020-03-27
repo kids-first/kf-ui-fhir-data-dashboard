@@ -1,7 +1,22 @@
-import {SET_USER, ADD_SERVER, UPDATE_SERVER, CLEAR_USER} from '../actions';
-import {defaultFhirServers} from '../config';
+import {
+  SET_USER,
+  ADD_SERVER,
+  UPDATE_SERVER,
+  CLEAR_USER,
+  SET_API,
+  SET_LOADING_MESSAGE,
+} from '../actions';
+import {defaultFhirServers, getBaseUrl} from '../config';
 
+const initialServer = defaultFhirServers.find(
+  server => server.url === getBaseUrl(),
+);
 const initialState = {
+  selectedServer: {
+    url: initialServer.url,
+    authType: initialServer.authType,
+    authUrl: initialServer.authUrl,
+  },
   serverOptions: defaultFhirServers,
 };
 
@@ -16,9 +31,21 @@ const app = (state = initialState, action) => {
         username: action.username,
       };
     case CLEAR_USER:
+      let {baseUrl, serverOptions, authType} = state;
       return {
         ...initialState,
-        serverOptions: [...state.serverOptions],
+        baseUrl,
+        authType,
+        serverOptions,
+      };
+    case SET_API:
+      const selectedServer = state.serverOptions.find(
+        server => server.url === action.baseUrl,
+      );
+      return {
+        ...state,
+        baseUrl: action.baseUrl,
+        authType: selectedServer.authType,
       };
     case ADD_SERVER:
       const currentOptions = [...state.serverOptions];
@@ -36,7 +63,7 @@ const app = (state = initialState, action) => {
         }),
       };
     case UPDATE_SERVER:
-      let serverOptions = [...state.serverOptions];
+      serverOptions = [...state.serverOptions];
       const updatedServerIndex = serverOptions.findIndex(
         server => server.id === action.id,
       );
@@ -52,6 +79,11 @@ const app = (state = initialState, action) => {
       return {
         ...state,
         serverOptions,
+      };
+    case SET_LOADING_MESSAGE:
+      return {
+        ...state,
+        loadingMessage: action.loadingMessage,
       };
     default:
       return {

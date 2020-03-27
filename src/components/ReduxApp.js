@@ -5,8 +5,9 @@ import App from './App';
 const mapStateToProps = (state, ownProps) => ({
   token: state.app ? state.app.token : null,
   username: state.app ? state.app.username : null,
-  baseUrl: state.resources ? state.resources.baseUrl : '',
-  serverOptions: state.app ? state.app.serverOptions : [],
+  baseUrl:
+    state.app && state.app.selectedServer ? state.app.selectedServer.url : '',
+  selectedServer: state.app ? state.app.selectedServer : {},
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => {
