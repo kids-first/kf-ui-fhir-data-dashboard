@@ -29,7 +29,7 @@ const getDefaultFhirServers = () => {
   ];
   if (getBaseUrl && servers.findIndex(x => x.url === getBaseUrl()) < 0) {
     servers.push({
-      id: 2,
+      id: servers.length,
       name: getBaseUrl(),
       url: getBaseUrl(),
       authRequired: false,

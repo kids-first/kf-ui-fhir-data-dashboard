@@ -204,6 +204,8 @@ ServerConfiguration.propTypes = {
       authRequired: PropTypes.bool.isRequired,
     }),
   ),
+  addServer: PropTypes.func.isRequired,
+  updateServer: PropTypes.func.isRequired,
 };
 
 ServerConfiguration.defaultProps = {

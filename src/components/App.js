@@ -29,16 +29,12 @@ class App extends React.Component {
             </Link>
             {authorized ? (
               <div className="app__header-info">
-                <div className="app__header-user">
-                  {serverConfig && serverConfig.authRequired ? (
-                    <React.Fragment>
-                      <p>Welcome, {this.props.username}</p>
-                      <Button onClick={() => this.props.logout()}>
-                        Logout
-                      </Button>
-                    </React.Fragment>
-                  ) : null}
-                </div>
+                {serverConfig && serverConfig.authRequired ? (
+                  <div className="app__header-user">
+                    <p>Welcome, {this.props.username}</p>
+                    <Button onClick={() => this.props.logout()}>Logout</Button>
+                  </div>
+                ) : null}
                 <div className="app__header-nav">
                   <Link to="/">
                     <div className="app__header-nav-item">Resources</div>
