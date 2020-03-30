@@ -169,7 +169,13 @@ class ServerConfiguration extends React.Component {
           <Modal.Content>
             <div className="server-configuration__modal">
               {!!selectedServer ? (
-                <Form>
+                <Form
+                  onSubmit={() =>
+                    selectedServer.exists
+                      ? this.updateServer()
+                      : this.submitServer()
+                  }
+                >
                   <Input
                     label="Name:"
                     value={selectedServer.name}
@@ -191,16 +197,7 @@ class ServerConfiguration extends React.Component {
                       }
                     />
                   </div>
-                  <Button
-                    type="submit"
-                    onClick={() =>
-                      selectedServer.exists
-                        ? this.updateServer()
-                        : this.submitServer()
-                    }
-                  >
-                    Save
-                  </Button>
+                  <Button type="submit">Save</Button>
                 </Form>
               ) : null}
             </div>

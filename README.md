@@ -33,7 +33,7 @@ environment variables (also found at `.env.example`):
 
 `REACT_APP_FHIR_API`: The url at which the FHIR server is located<br>
 `REACT_APP_FHIR_API_NAME`: The display name of the FHIR server<br>
-`REACT_APP_FHIR_API_AUTH_REQUIRED`: `true` if the server requires auth (Basic), otherwise `false`
+`REACT_APP_FHIR_AUTH_TYPE`: The two options for this are `NO_AUTH` or `BASIC_AUTH`
 
 The default server on startup if these variables are empty is the Kids First server.
 Servers are configurable and more can be added after startup.

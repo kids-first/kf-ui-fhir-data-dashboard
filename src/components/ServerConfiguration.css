@@ -22,12 +22,6 @@
   flex-flow: column;
 }
 
-.server-configuration__modal .ui.form textarea {
-  display: flex;
-  flex-flow: column;
-  font-family: monospace;
-}
-
 .server-configuration__modal .ui.input {
   margin: 10px 0;
 }

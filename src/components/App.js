@@ -27,7 +27,6 @@ class App extends React.Component {
   authRequired = () => this.props.selectedServer.authType !== NO_AUTH;
 
   render() {
-    console.log('this.props', this.props);
     return (
       <Router>
         <div className="app">

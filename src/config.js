@@ -34,7 +34,7 @@ const getDefaultFhirServers = () => {
       id: 2,
       name: 'Kids First',
       url: 'http://10.10.1.141:8000/',
-      authRequired: true,
+      authType: BASIC_AUTH,
     },
   ];
   if (envVar && servers.findIndex(x => x.url === envVar) < 0) {
@@ -42,7 +42,7 @@ const getDefaultFhirServers = () => {
       id: servers.length,
       name: process.env.REACT_APP_FHIR_API_NAME || envVar,
       url: envVar,
-      authRequired: process.env.REACT_APP_FHIR_API_AUTH_REQUIRED || false,
+      authType: process.env.REACT_APP_FHIR_API_AUTH_TYPE || NO_AUTH,
     });
   }
   return servers;

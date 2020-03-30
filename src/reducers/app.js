@@ -59,7 +59,6 @@ const app = (state = initialState, action) => {
         }),
       };
     case UPDATE_SERVER:
-      console.log('update server');
       let newServerOptions = [...state.serverOptions];
       const updatedServerIndex = newServerOptions.findIndex(
         server => server.id === action.id,
@@ -76,15 +75,10 @@ const app = (state = initialState, action) => {
       const currentServer = newServerOptions.find(
         x => x.id === state.selectedServer.id,
       );
-      console.log('new server options', newServerOptions);
-      const newState = {
+      return {
         ...state,
         serverOptions: newServerOptions,
         selectedServer: currentServer,
-      };
-      console.log('new state', newState);
-      return {
-        ...newState,
       };
     case SET_LOADING_MESSAGE:
       return {
