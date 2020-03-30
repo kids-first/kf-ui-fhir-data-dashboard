@@ -1,5 +1,5 @@
 import {shouldUseProxyUrl, proxyUrl, fhirUrl} from '../config';
-import {logErrors} from '../utils/common';
+import {logErrors, replaceLocalhost} from '../utils/common';
 import store from '../store';
 
 const fetchWithHeaders = async (
@@ -56,10 +56,7 @@ export const fetchAllResources = async (url, allData, abortController) =>
         allData = allData.concat(data.entry);
         const nextPage = data.link.findIndex(x => x.relation === 'next');
         if (nextPage > -1) {
-          const nextPageUrl = data.link[nextPage].url.replace(
-            'localhost',
-            '10.10.1.191',
-          );
+          const nextPageUrl = replaceLocalhost(data.link[nextPage].url);
           return fetchAllResources(nextPageUrl, allData, abortController);
         }
       }

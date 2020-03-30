@@ -13,6 +13,7 @@ export const getBaseUrl = () => {
 };
 
 const getDefaultFhirServers = () => {
+  const envVar = getBaseUrl();
   let servers = [
     {
       id: 0,
@@ -26,13 +27,19 @@ const getDefaultFhirServers = () => {
       url: 'http://10.10.1.191:8000/',
       authRequired: true,
     },
+    {
+      id: 2,
+      name: 'Phenopackets',
+      url: 'http://10.10.1.141:8000/',
+      authRequired: true,
+    },
   ];
-  if (getBaseUrl && servers.findIndex(x => x.url === getBaseUrl()) < 0) {
+  if (envVar && servers.findIndex(x => x.url === envVar) < 0) {
     servers.push({
       id: servers.length,
-      name: getBaseUrl(),
-      url: getBaseUrl(),
-      authRequired: false,
+      name: process.env.REACT_APP_FHIR_API_NAME || envVar,
+      url: envVar,
+      authRequired: process.env.REACT_APP_FHIR_API_AUTH_REQUIRED || false,
     });
   }
   return servers;
