@@ -13,9 +13,7 @@ const initialServer = defaultFhirServers.find(
 );
 const initialState = {
   selectedServer: {
-    url: initialServer.url,
-    authType: initialServer.authType,
-    authUrl: initialServer.authUrl,
+    ...initialServer,
   },
   serverOptions: defaultFhirServers,
 };
@@ -31,21 +29,19 @@ const app = (state = initialState, action) => {
         username: action.username,
       };
     case CLEAR_USER:
-      let {baseUrl, serverOptions, authType} = state;
+      let {serverOptions, selectedServer} = state;
       return {
         ...initialState,
-        baseUrl,
-        authType,
+        selectedServer,
         serverOptions,
       };
     case SET_API:
-      const selectedServer = state.serverOptions.find(
+      const newSelectedServer = state.serverOptions.find(
         server => server.url === action.baseUrl,
       );
       return {
         ...state,
-        baseUrl: action.baseUrl,
-        authType: selectedServer.authType,
+        selectedServer: newSelectedServer,
       };
     case ADD_SERVER:
       const currentOptions = [...state.serverOptions];
@@ -59,26 +55,36 @@ const app = (state = initialState, action) => {
             '/'
               ? action.url
               : action.url.concat('/'),
-          authRequired: action.authRequired,
+          authType: action.authType,
         }),
       };
     case UPDATE_SERVER:
-      serverOptions = [...state.serverOptions];
-      const updatedServerIndex = serverOptions.findIndex(
+      console.log('update server');
+      let newServerOptions = [...state.serverOptions];
+      const updatedServerIndex = newServerOptions.findIndex(
         server => server.id === action.id,
       );
-      serverOptions[updatedServerIndex] = {
+      newServerOptions[updatedServerIndex] = {
         id: action.id,
         name: action.name,
         url:
           action.url.substring(action.url.length - 1, action.url.length) === '/'
             ? action.url
             : action.url.concat('/'),
-        authRequired: action.authRequired,
+        authType: action.authType,
       };
-      return {
+      const currentServer = newServerOptions.find(
+        x => x.id === state.selectedServer.id,
+      );
+      console.log('new server options', newServerOptions);
+      const newState = {
         ...state,
-        serverOptions,
+        serverOptions: newServerOptions,
+        selectedServer: currentServer,
+      };
+      console.log('new state', newState);
+      return {
+        ...newState,
       };
     case SET_LOADING_MESSAGE:
       return {

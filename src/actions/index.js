@@ -52,15 +52,13 @@ export const addServer = (id, name, url, authType) => ({
   authType,
 });
 
-export const updateServer = (id, name, url, authType) => ({
-  type: UPDATE_SERVER,
-  id,
-  name,
-  url,
-  authType,
-});
-
-export const selectServer = id => ({
-  type: SELECT_SERVER,
-  id,
-});
+export const updateServer = (id, name, url, authType) => {
+  console.log('update server');
+  return {
+    type: UPDATE_SERVER,
+    id,
+    name,
+    url,
+    authType,
+  };
+};

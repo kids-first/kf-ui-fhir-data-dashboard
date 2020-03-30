@@ -8,10 +8,10 @@ const mapStateToProps = (state, ownProps) => ({
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    addServer: (id, name, url, authRequired) =>
-      dispatch(addServer(id, name, url, authRequired)),
-    updateServer: (id, name, url, authRequired) =>
-      dispatch(updateServer(id, name, url, authRequired)),
+    addServer: (id, name, url, authType) =>
+      dispatch(addServer(id, name, url, authType)),
+    updateServer: (id, name, url, authType) =>
+      dispatch(updateServer(id, name, url, authType)),
   };
 };
 
