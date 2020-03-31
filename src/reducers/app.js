@@ -40,8 +40,9 @@ const app = (state = initialState, action) => {
         server => server.url === action.baseUrl,
       );
       return {
-        ...state,
+        ...initialState,
         selectedServer: newSelectedServer,
+        serverOptions,
       };
     case ADD_SERVER:
       const currentOptions = [...state.serverOptions];
