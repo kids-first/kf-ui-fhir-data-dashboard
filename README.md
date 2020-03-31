@@ -24,13 +24,6 @@ npm start
 This will open up the application at `localhost:3000`.
 More on `create-react-app` [here](https://reactjs.org/docs/create-a-new-react-app.html).
 
-### Auth
-
-To authenticate, the user can either use the UI login screen, or set environment
-variables. To use environment variables, set the `REACT_APP_KF_USER` and `REACT_APP_KF_PW`
-environment variables to the appropriate username and password, respectively. The
-app will use this and Basic Auth to make requests.
-
 ### FHIR APIs
 
 Creating a data dashboard over the FHIR API standard means that a user potentially
@@ -40,7 +33,7 @@ environment variables (also found at `.env.example`):
 
 `REACT_APP_FHIR_API`: The url at which the FHIR server is located<br>
 `REACT_APP_FHIR_API_NAME`: The display name of the FHIR server<br>
-`REACT_APP_FHIR_AUTH_REQUIRED`: `true` if the server requires auth (Basic), otherwise `false`
+`REACT_APP_FHIR_API_AUTH_REQUIRED`: `true` if the server requires auth (Basic), otherwise `false`
 
 The default server on startup if these variables are empty is the Kids First server.
 Servers are configurable and more can be added after startup.
