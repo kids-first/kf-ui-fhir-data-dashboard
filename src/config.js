@@ -23,13 +23,13 @@ const getDefaultFhirServers = () => {
     },
     {
       id: 1,
-      name: 'Kids First',
+      name: 'Phenopackets',
       url: 'http://10.10.1.191:8000/',
       authRequired: true,
     },
     {
       id: 2,
-      name: 'Phenopackets',
+      name: 'Kids First',
       url: 'http://10.10.1.141:8000/',
       authRequired: true,
     },
