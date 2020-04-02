@@ -36,13 +36,14 @@ const app = (state = initialState, action) => {
         serverOptions,
       };
     case SET_API:
+      let stateServerOptions = [...state.serverOptions];
       const newSelectedServer = state.serverOptions.find(
         server => server.url === action.baseUrl,
       );
       return {
         ...initialState,
+        serverOptions: stateServerOptions,
         selectedServer: newSelectedServer,
-        serverOptions,
       };
     case ADD_SERVER:
       const currentOptions = [...state.serverOptions];
