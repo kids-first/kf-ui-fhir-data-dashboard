@@ -52,6 +52,7 @@
 
 .app__header-nav {
   display: flex;
+  align-items: center;
 }
 
 @media screen and (max-width: 768px) {
@@ -69,4 +70,16 @@
 .app__header-nav-item:hover {
   color: var(--d3b-brightblue);
   cursor: pointer;
+}
+
+/* Semantic UI overrides */
+
+.app__header-nav i.icon {
+  height: unset;
+  color: var(--d3b-lightgray);
+  margin: 0 20px;
+}
+
+.app__header-nav i.icon:hover {
+  color: var(--d3b-brightblue);
 }

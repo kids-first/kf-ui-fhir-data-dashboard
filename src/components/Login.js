@@ -44,6 +44,9 @@ class Login extends React.Component {
       <div className="login">
         <div className="login__content">
           <h2>Login</h2>
+          <h3>
+            {this.props.baseUrl.substring(0, this.props.baseUrl.length - 1)}
+          </h3>
           <form onSubmit={this.login}>
             <Input
               placeholder="Enter your username"

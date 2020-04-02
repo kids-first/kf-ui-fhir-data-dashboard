@@ -1,5 +1,5 @@
 import {connect} from 'react-redux';
-import {clearUser, addServer} from '../actions';
+import {clearUser} from '../actions';
 import App from './App';
 
 const mapStateToProps = (state, ownProps) => ({
@@ -12,7 +12,6 @@ const mapStateToProps = (state, ownProps) => ({
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     logout: () => dispatch(clearUser()),
-    addServer: url => dispatch(addServer(url)),
   };
 };
 

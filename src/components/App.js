@@ -1,12 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {BrowserRouter as Router, Switch, Link} from 'react-router-dom';
-import {Button} from 'semantic-ui-react';
+import {Button, Icon} from 'semantic-ui-react';
 import DecisionRoute from './DecisionRoute';
 import ReduxHomepage from './ReduxHomepage';
 import ReduxResourceDetails from './ReduxResourceDetails';
 import ReduxOntologyHomepage from './ReduxOntologyHomepage';
 import ReduxLogin from './ReduxLogin';
+import ReduxServerConfiguration from './ReduxServerConfiguration';
 import logo from '../img/d3b-cube.svg';
 import './App.css';
 
@@ -15,9 +16,6 @@ class App extends React.Component {
     const serverConfig = this.props.serverOptions.find(
       x => x.url === this.props.baseUrl,
     );
-    if (!serverConfig) {
-      this.props.addServer(this.props.baseUrl);
-    }
     const authorized =
       serverConfig && serverConfig.authRequired ? !!this.props.token : true;
 
@@ -44,6 +42,9 @@ class App extends React.Component {
                   <Link to="/ontologies">
                     <div className="app__header-nav-item">Ontologies</div>
                   </Link>
+                  <Link to="/settings">
+                    <Icon name="setting" size="large" />
+                  </Link>
                 </div>
               </div>
             ) : null}
@@ -59,6 +60,12 @@ class App extends React.Component {
               path="/ontologies"
               renderComponent={!!authorized}
               component={ReduxOntologyHomepage}
+              redirectPath="/login"
+            />
+            <DecisionRoute
+              path="/settings"
+              renderComponent={!!authorized}
+              component={ReduxServerConfiguration}
               redirectPath="/login"
             />
             <DecisionRoute
@@ -86,7 +93,6 @@ App.propTypes = {
   username: PropTypes.string,
   logout: PropTypes.func.isRequired,
   serverOptions: PropTypes.array,
-  addServer: PropTypes.func.isRequired,
 };
 
 App.defaultProps = {

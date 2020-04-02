@@ -1,4 +1,4 @@
-import {SET_ONTOLOGIES, SET_API} from '../actions';
+import {SET_ONTOLOGIES, SET_API, CLEAR_USER} from '../actions';
 
 const initialState = {
   ontologies: {},
@@ -14,6 +14,10 @@ const ontologies = (state = initialState, action) => {
         ontologiesFetched: true,
       };
     case SET_API:
+      return {
+        ...initialState,
+      };
+    case CLEAR_USER:
       return {
         ...initialState,
       };

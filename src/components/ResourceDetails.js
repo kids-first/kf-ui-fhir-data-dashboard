@@ -5,6 +5,7 @@ import {
   getHumanReadableNumber,
   getBaseResourceCount,
   logErrors,
+  replaceLocalhost,
 } from '../utils/common';
 import {fhirUrl, defaultTableFields} from '../config';
 import AppBreadcrumb from './AppBreadcrumb';
@@ -611,10 +612,7 @@ class ResourceDetails extends React.Component {
         const nextPage = data.link.findIndex(x => x.relation === 'next');
         let nextPageUrl = null;
         if (nextPage > -1) {
-          nextPageUrl = data.link[nextPage].url.replace(
-            'localhost',
-            '10.10.1.191',
-          );
+          nextPageUrl = replaceLocalhost(data.link[nextPage].url);
         }
         this.setState({
           tableLoaded: true,

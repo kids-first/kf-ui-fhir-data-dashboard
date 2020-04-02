@@ -11,7 +11,7 @@ import {
 import {Modal, Icon} from 'semantic-ui-react';
 import ReactJson from 'react-json-view';
 import {defaultTableFields} from '../../config';
-import {logErrors} from '../../utils/common';
+import {logErrors, replaceLocalhost} from '../../utils/common';
 import SearchBar from '../SearchBar';
 import ReferenceTable from './ReferenceTable';
 import './ResultsTable.css';
@@ -149,10 +149,7 @@ class ResultsTable extends React.Component {
     const nextPage = results.link.findIndex(x => x.relation === 'next');
     let nextPageUrl = null;
     if (nextPage > -1) {
-      nextPageUrl = results.link[nextPage].url.replace(
-        'localhost',
-        '10.10.1.191',
-      );
+      nextPageUrl = replaceLocalhost(results.link[nextPage].url);
     }
     return nextPageUrl;
   };

@@ -1,4 +1,4 @@
-import {SET_USER, ADD_SERVER} from '../actions';
+import {SET_USER, ADD_SERVER, UPDATE_SERVER, CLEAR_USER} from '../actions';
 import {defaultFhirServers} from '../config';
 
 const initialState = {
@@ -15,15 +15,43 @@ const user = (state = initialState, action) => {
         token,
         username: action.username,
       };
+    case CLEAR_USER:
+      return {
+        ...initialState,
+        serverOptions: [...state.serverOptions],
+      };
     case ADD_SERVER:
-      const currentOptions = state.serverOptions;
+      const currentOptions = [...state.serverOptions];
       return {
         ...state,
         serverOptions: currentOptions.concat({
-          name: action.url,
-          url: action.url,
-          authRequired: false,
+          id: action.id,
+          name: action.name,
+          url:
+            action.url.substring(action.url.length - 1, action.url.length) ===
+            '/'
+              ? action.url
+              : action.url.concat('/'),
+          authRequired: action.authRequired,
         }),
+      };
+    case UPDATE_SERVER:
+      let serverOptions = [...state.serverOptions];
+      const updatedServerIndex = serverOptions.findIndex(
+        server => server.id === action.id,
+      );
+      serverOptions[updatedServerIndex] = {
+        id: action.id,
+        name: action.name,
+        url:
+          action.url.substring(action.url.length - 1, action.url.length) === '/'
+            ? action.url
+            : action.url.concat('/'),
+        authRequired: action.authRequired,
+      };
+      return {
+        ...state,
+        serverOptions,
       };
     default:
       return {

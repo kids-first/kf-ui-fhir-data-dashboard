@@ -1,4 +1,5 @@
 import {getResourceCount, fetchAllResources} from './api';
+import store from '../store';
 
 export const getHumanReadableNumber = value =>
   value.toLocaleString(navigator.language, {minimumFractionDigits: 0});
@@ -71,4 +72,15 @@ export const getBaseResourceCount = async (
 
 export const logErrors = (msg, error) => {
   console.log(msg, error);
+};
+
+export const replaceLocalhost = url => {
+  const baseUrl = store.getState().resources.baseUrl;
+  let splitUrl = baseUrl.split(':');
+  if (splitUrl.length > 1) {
+    splitUrl = splitUrl[1];
+  } else {
+    splitUrl = splitUrl[0];
+  }
+  return url.replace('localhost', splitUrl);
 };
