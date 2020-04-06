@@ -120,6 +120,7 @@ class ResourceDetails extends React.Component {
   getSchema = async () => {
     const {
       resourceBaseType,
+      resourceType,
       resourceUrl,
       fetchResource,
       getSearchParams,
@@ -129,14 +130,10 @@ class ResourceDetails extends React.Component {
       capabilityStatementUrl,
     } = this.props;
     return await fetchResource(
-      `${schemaUrl}?type=${resourceBaseType}&url=${resourceUrl}`,
+      `${schemaUrl}/${resourceType}/$snapshot`,
       this.state.abortController,
     )
-      .then(async data => {
-        const schema =
-          data && data.entry && data.entry[0] && data.entry[0].resource
-            ? data.entry[0].resource
-            : null;
+      .then(async schema => {
         return await getSearchParams(
           `${baseUrl}SearchParameter?base=${resourceBaseType}`,
           this.state.abortController,
@@ -220,22 +217,19 @@ class ResourceDetails extends React.Component {
     queryableAttributes,
     snapshot = null,
   ) => {
-    const {resourceBaseType, schemaUrl} = this.props;
+    const {resourceBaseType, resourceType, schemaUrl} = this.props;
     if (!snapshot) {
       await this.props
         .fetchResource(
-          `${schemaUrl}?type=${resourceBaseType}&url=${fhirUrl}${resourceBaseType}`,
+          `${schemaUrl}/${resourceType}/$snapshot`,
           this.state.abortController,
         )
         .then(async data => {
           snapshot =
             data &&
-            data.entry &&
-            data.entry[0] &&
-            data.entry[0].resource &&
-            data.entry[0].resource.snapshot &&
-            data.entry[0].resource.snapshot.element
-              ? data.entry[0].resource.snapshot.element
+            data.snapshot &&
+            data.snapshot.element
+              ? data.snapshot.element
               : null;
         })
         .catch(err => logErrors('Error fetching snapshot:', err));
