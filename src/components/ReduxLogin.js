@@ -4,7 +4,8 @@ import {setUser} from '../actions';
 import Login from './Login';
 
 const mapStateToProps = (state, ownProps) => ({
-  baseUrl: state.resources.baseUrl,
+  baseUrl:
+    state.app && state.app.selectedServer ? state.app.selectedServer.url : '',
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => {

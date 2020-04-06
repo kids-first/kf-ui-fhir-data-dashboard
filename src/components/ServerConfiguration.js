@@ -1,6 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Card, Icon, Modal, Input, Radio, Button} from 'semantic-ui-react';
+import {
+  Card,
+  Icon,
+  Modal,
+  Input,
+  Button,
+  Dropdown,
+  Label,
+  Form,
+} from 'semantic-ui-react';
+import {NO_AUTH, BASIC_AUTH} from '../config';
 import './ServerConfiguration.css';
 
 class ServerConfiguration extends React.Component {
@@ -13,7 +23,7 @@ class ServerConfiguration extends React.Component {
       newServer: {
         name: '',
         url: '',
-        authRequired: false,
+        authType: NO_AUTH,
       },
     };
   }
@@ -46,14 +56,14 @@ class ServerConfiguration extends React.Component {
     }
   };
 
-  onAuthChange = option => {
+  onAuthTypeChange = (e, option) => {
     if (option) {
       let serverOption = {...this.state.editServerOption};
-      serverOption.authRequired = !this.state.editServerOption.authRequired;
+      serverOption.authType = e;
       this.setState({editServerOption: serverOption});
     } else {
       let server = this.state.newServer;
-      server.authRequired = !this.state.newServer.authRequired;
+      server.authType = e;
       this.setState({newServer: server});
     }
   };
@@ -66,7 +76,7 @@ class ServerConfiguration extends React.Component {
       newServer: {
         name: '',
         url: '',
-        authRequired: false,
+        authType: NO_AUTH,
       },
     });
   };
@@ -78,23 +88,39 @@ class ServerConfiguration extends React.Component {
   };
 
   submitServer = () => {
-    const {name, url, authRequired} = this.state.newServer;
-    this.props.addServer(
-      this.props.serverOptions.length,
-      name,
-      url,
-      authRequired,
-    );
+    const {name, url, authType} = this.state.newServer;
+    this.props.addServer(this.props.serverOptions.length, name, url, authType);
     this.closeModal();
   };
 
   updateServer = () => {
-    const {id, name, url, authRequired} = this.state.editServerOption;
-    this.props.updateServer(id, name, url, authRequired);
+    const {id, name, url, authType} = this.state.editServerOption;
+    this.props.updateServer(id, name, url, authType);
     this.closeModal();
   };
 
+  getSelectedServer = () => {
+    if (this.state.editMode) {
+      return {
+        ...this.state.editServerOption,
+        exists: true,
+      };
+    } else if (this.state.createMode) {
+      return {
+        ...this.state.newServer,
+        exists: false,
+      };
+    } else return null;
+  };
+
   render() {
+    const authOptions = [
+      {key: NO_AUTH, text: 'None', value: NO_AUTH},
+      {key: BASIC_AUTH, text: 'Basic', value: BASIC_AUTH},
+    ];
+
+    const selectedServer = this.getSelectedServer();
+
     return (
       <div className="server-configuration">
         <h2>Servers</h2>
@@ -103,36 +129,37 @@ class ServerConfiguration extends React.Component {
           Add a new server
         </Button>
         <div className="server-configuration__options">
-          {this.props.serverOptions.map(option => (
-            <Card key={option.id}>
-              <Card.Content>
-                <Card.Header>
-                  {option.name}
-                  <Icon
-                    name="pencil"
-                    size="small"
-                    onClick={() => this.editServer(option)}
-                  />
-                </Card.Header>
-                <Card.Description>
-                  <p>
-                    <b>URL:</b> {option.url}
-                  </p>
-                  <p>
-                    <b>Requires auth?</b>{' '}
-                    {option.authRequired ? (
-                      <Icon name="check" color="green" />
-                    ) : (
-                      <Icon name="ban" color="red" />
-                    )}
-                  </p>
-                </Card.Description>
-              </Card.Content>
-            </Card>
-          ))}
+          {this.props.serverOptions.map(option => {
+            return (
+              <Card key={option.id}>
+                <Card.Content>
+                  <Card.Header>
+                    {option.name}
+                    <Icon
+                      name="pencil"
+                      size="small"
+                      onClick={() => this.editServer(option)}
+                    />
+                  </Card.Header>
+                  <Card.Description>
+                    <p>
+                      <b>URL:</b> {option.url}
+                    </p>
+                    <p>
+                      <b>AuthN/AuthZ method:</b>{' '}
+                      {
+                        authOptions.find(elt => elt.value === option.authType)
+                          .text
+                      }
+                    </p>
+                  </Card.Description>
+                </Card.Content>
+              </Card>
+            );
+          })}
         </div>
         <Modal
-          open={this.state.editMode || this.state.createMode}
+          open={!!selectedServer}
           onClose={() => this.closeModal()}
           dimmer="inverted"
         >
@@ -141,53 +168,38 @@ class ServerConfiguration extends React.Component {
           </Modal.Header>
           <Modal.Content>
             <div className="server-configuration__modal">
-              {this.state.editMode && this.state.editServerOption ? (
-                <React.Fragment>
+              {!!selectedServer ? (
+                <Form
+                  onSubmit={() =>
+                    selectedServer.exists
+                      ? this.updateServer()
+                      : this.submitServer()
+                  }
+                >
                   <Input
                     label="Name:"
-                    value={this.state.editServerOption.name}
-                    onChange={e =>
-                      this.onNameChange(e, this.state.editServerOption)
-                    }
+                    value={selectedServer.name}
+                    onChange={e => this.onNameChange(e, selectedServer.exists)}
                   />
                   <Input
                     label="URL:"
-                    value={this.state.editServerOption.url}
-                    onChange={e =>
-                      this.onURLChange(e, this.state.editServerOption)
-                    }
+                    value={selectedServer.url}
+                    onChange={e => this.onURLChange(e, selectedServer.exists)}
                   />
-                  <Radio
-                    toggle
-                    label="Requires auth?"
-                    checked={this.state.editServerOption.authRequired}
-                    onChange={() =>
-                      this.onAuthChange(this.state.editServerOption)
-                    }
-                  />
-                  <Button onClick={() => this.updateServer()}>Save</Button>
-                </React.Fragment>
-              ) : (
-                <React.Fragment>
-                  <Input
-                    label="Name:"
-                    value={this.state.newServer.name}
-                    onChange={e => this.onNameChange(e)}
-                  />
-                  <Input
-                    label="URL:"
-                    value={this.state.newServer.url}
-                    onChange={e => this.onURLChange(e)}
-                  />
-                  <Radio
-                    toggle
-                    label="Requires auth?"
-                    checked={this.state.newServer.authRequired}
-                    onChange={() => this.onAuthChange()}
-                  />
-                  <Button onClick={() => this.submitServer()}>Add</Button>
-                </React.Fragment>
-              )}
+                  <div className="ui labeled input">
+                    <Label>Auth Type:</Label>
+                    <Dropdown
+                      defaultValue={selectedServer.authType}
+                      selection
+                      options={authOptions}
+                      onChange={(e, {value}) =>
+                        this.onAuthTypeChange(value, selectedServer.exists)
+                      }
+                    />
+                  </div>
+                  <Button type="submit">Save</Button>
+                </Form>
+              ) : null}
             </div>
           </Modal.Content>
         </Modal>
@@ -201,7 +213,7 @@ ServerConfiguration.propTypes = {
     PropTypes.shape({
       name: PropTypes.string.isRequired,
       url: PropTypes.string.isRequired,
-      authRequired: PropTypes.bool.isRequired,
+      authType: PropTypes.string.isRequired,
     }),
   ),
   addServer: PropTypes.func.isRequired,

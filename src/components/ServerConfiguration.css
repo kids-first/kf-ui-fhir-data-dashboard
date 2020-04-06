@@ -10,11 +10,6 @@
   flex-flow: wrap;
 }
 
-.server-configuration__modal {
-  display: flex;
-  flex-flow: column;
-}
-
 /* Semantic UI overrides */
 .server-configuration .ui.card > .content > .header:not(.ui),
 .server-configuration .ui.cards > .card > .content > .header:not(.ui) {
@@ -22,8 +17,12 @@
   justify-content: space-between;
 }
 
-.server-configuration__modal .ui.input,
-.server-configuration__modal .ui.toggle.checkbox {
+.server-configuration__modal .ui.form {
+  display: flex;
+  flex-flow: column;
+}
+
+.server-configuration__modal .ui.input {
   margin: 10px 0;
 }
 
@@ -35,4 +34,11 @@
 .server-configuration__modal .ui.button {
   width: fit-content;
   margin-top: 20px;
+}
+
+.server-configuration__modal .ui.selection.dropdown {
+  width: fit-content;
+  margin: 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
 }

@@ -14,7 +14,7 @@ const fetchWithHeaders = async (
       .concat(`${url.includes('?') ? '&' : '?'}`)
       .concat('_summary=count');
   }
-  const token = store.getState().user.token;
+  const token = store.getState().app.token;
   return fetch(`${fullUrl}`, {
     signal: abortController ? abortController.signal : null,
     headers: {

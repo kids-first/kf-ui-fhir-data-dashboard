@@ -3,10 +3,11 @@ import {clearUser} from '../actions';
 import App from './App';
 
 const mapStateToProps = (state, ownProps) => ({
-  token: state.user ? state.user.token : null,
-  username: state.user ? state.user.username : null,
-  baseUrl: state.resources ? state.resources.baseUrl : '',
-  serverOptions: state.user ? state.user.serverOptions : [],
+  token: state.app ? state.app.token : null,
+  username: state.app ? state.app.username : null,
+  baseUrl:
+    state.app && state.app.selectedServer ? state.app.selectedServer.url : '',
+  selectedServer: state.app ? state.app.selectedServer : {},
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => {

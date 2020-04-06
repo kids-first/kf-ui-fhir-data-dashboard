@@ -7,6 +7,7 @@ export const SET_USER = 'SET_USER';
 export const CLEAR_USER = 'CLEAR_USER';
 export const ADD_SERVER = 'ADD_SERVER';
 export const UPDATE_SERVER = 'UPDATE_SERVER';
+export const SELECT_SERVER = 'SELECT_SERVER';
 
 export const setResources = allResources => ({
   type: SET_RESOURCES,
@@ -43,18 +44,20 @@ export const clearUser = () => ({
   type: CLEAR_USER,
 });
 
-export const addServer = (id, name, url, authRequired) => ({
+export const addServer = (id, name, url, authType) => ({
   type: ADD_SERVER,
   id,
   name,
   url,
-  authRequired,
+  authType,
 });
 
-export const updateServer = (id, name, url, authRequired) => ({
-  type: UPDATE_SERVER,
-  id,
-  name,
-  url,
-  authRequired,
-});
+export const updateServer = (id, name, url, authType) => {
+  return {
+    type: UPDATE_SERVER,
+    id,
+    name,
+    url,
+    authType,
+  };
+};

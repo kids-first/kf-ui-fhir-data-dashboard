@@ -1,11 +1,24 @@
-import {SET_USER, ADD_SERVER, UPDATE_SERVER, CLEAR_USER} from '../actions';
-import {defaultFhirServers} from '../config';
+import {
+  SET_USER,
+  ADD_SERVER,
+  UPDATE_SERVER,
+  CLEAR_USER,
+  SET_API,
+  SET_LOADING_MESSAGE,
+} from '../actions';
+import {defaultFhirServers, getBaseUrl} from '../config';
 
+const initialServer = defaultFhirServers.find(
+  server => server.url === getBaseUrl(),
+);
 const initialState = {
+  selectedServer: {
+    ...initialServer,
+  },
   serverOptions: defaultFhirServers,
 };
 
-const user = (state = initialState, action) => {
+const app = (state = initialState, action) => {
   switch (action.type) {
     case SET_USER:
       const token = btoa(`${action.username}:${action.password}`);
@@ -16,9 +29,21 @@ const user = (state = initialState, action) => {
         username: action.username,
       };
     case CLEAR_USER:
+      let {serverOptions, selectedServer} = state;
       return {
         ...initialState,
-        serverOptions: [...state.serverOptions],
+        selectedServer,
+        serverOptions,
+      };
+    case SET_API:
+      let stateServerOptions = [...state.serverOptions];
+      const newSelectedServer = state.serverOptions.find(
+        server => server.url === action.baseUrl,
+      );
+      return {
+        ...initialState,
+        serverOptions: stateServerOptions,
+        selectedServer: newSelectedServer,
       };
     case ADD_SERVER:
       const currentOptions = [...state.serverOptions];
@@ -32,26 +57,35 @@ const user = (state = initialState, action) => {
             '/'
               ? action.url
               : action.url.concat('/'),
-          authRequired: action.authRequired,
+          authType: action.authType,
         }),
       };
     case UPDATE_SERVER:
-      let serverOptions = [...state.serverOptions];
-      const updatedServerIndex = serverOptions.findIndex(
+      let newServerOptions = [...state.serverOptions];
+      const updatedServerIndex = newServerOptions.findIndex(
         server => server.id === action.id,
       );
-      serverOptions[updatedServerIndex] = {
+      newServerOptions[updatedServerIndex] = {
         id: action.id,
         name: action.name,
         url:
           action.url.substring(action.url.length - 1, action.url.length) === '/'
             ? action.url
             : action.url.concat('/'),
-        authRequired: action.authRequired,
+        authType: action.authType,
       };
+      const currentServer = newServerOptions.find(
+        x => x.id === state.selectedServer.id,
+      );
       return {
         ...state,
-        serverOptions,
+        serverOptions: newServerOptions,
+        selectedServer: currentServer,
+      };
+    case SET_LOADING_MESSAGE:
+      return {
+        ...state,
+        loadingMessage: action.loadingMessage,
       };
     default:
       return {
@@ -64,4 +98,4 @@ const user = (state = initialState, action) => {
   }
 };
 
-export default user;
+export default app;

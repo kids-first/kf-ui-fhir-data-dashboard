@@ -25,10 +25,10 @@ const mapStateToProps = (state, ownProps) => {
     resourceType,
     resourceUrl,
     resourceFetched: hasResources,
-    baseUrl: state.resources.baseUrl,
-    schemaUrl: `${state.resources.baseUrl}StructureDefinition`,
-    capabilityStatementUrl: `${state.resources.baseUrl}metadata`,
-    loadingMessage: state.resources.loadingMessage,
+    baseUrl: state.app.selectedServer.url,
+    schemaUrl: `${state.app.selectedServer.url}StructureDefinition`,
+    capabilityStatementUrl: `${state.app.selectedServer.url}metadata`,
+    loadingMessage: state.app.loadingMessage,
   };
 };
 

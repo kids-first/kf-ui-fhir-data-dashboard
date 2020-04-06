@@ -75,7 +75,7 @@ export const logErrors = (msg, error) => {
 };
 
 export const replaceLocalhost = url => {
-  const baseUrl = store.getState().resources.baseUrl;
+  const baseUrl = store.getState().app.selectedServer.url;
   let splitUrl = baseUrl.split(':');
   if (splitUrl.length > 1) {
     splitUrl = splitUrl[1];

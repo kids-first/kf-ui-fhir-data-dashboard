@@ -1,6 +1,9 @@
 export const mobileWidth = 425;
 export const tabletWidth = 768;
 
+export const NO_AUTH = 'NO_AUTH';
+export const BASIC_AUTH = 'BASIC_AUTH';
+
 export const getBaseUrl = () => {
   let envVar = process.env.REACT_APP_FHIR_API;
   if (envVar) {
@@ -19,19 +22,19 @@ const getDefaultFhirServers = () => {
       id: 0,
       name: 'HAPI',
       url: 'http://hapi.fhir.org/baseR4/',
-      authRequired: false,
+      authType: NO_AUTH,
     },
     {
       id: 1,
       name: 'Phenopackets',
       url: 'http://10.10.1.191:8000/',
-      authRequired: true,
+      authType: BASIC_AUTH,
     },
     {
       id: 2,
       name: 'Kids First',
       url: 'http://10.10.1.141:8000/',
-      authRequired: true,
+      authType: BASIC_AUTH,
     },
   ];
   if (envVar && servers.findIndex(x => x.url === envVar) < 0) {
@@ -39,7 +42,7 @@ const getDefaultFhirServers = () => {
       id: servers.length,
       name: process.env.REACT_APP_FHIR_API_NAME || envVar,
       url: envVar,
-      authRequired: process.env.REACT_APP_FHIR_API_AUTH_REQUIRED || false,
+      authType: process.env.REACT_APP_FHIR_API_AUTH_TYPE || NO_AUTH,
     });
   }
   return servers;

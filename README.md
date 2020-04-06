@@ -29,11 +29,11 @@ More on `create-react-app` [here](https://reactjs.org/docs/create-a-new-react-ap
 Creating a data dashboard over the FHIR API standard means that a user potentially
 has the ability to search over multiple datasets. This application can be launched
 over any FHIR server. To use a specific FHIR server, set the following
-environment variables (also found at `.env.example`):
+environment variables (also found at `/src/.env.example`):
 
 `REACT_APP_FHIR_API`: The url at which the FHIR server is located<br>
 `REACT_APP_FHIR_API_NAME`: The display name of the FHIR server<br>
-`REACT_APP_FHIR_API_AUTH_REQUIRED`: `true` if the server requires auth (Basic), otherwise `false`
+`REACT_APP_FHIR_API_AUTH_TYPE`: The two options for this are `NO_AUTH` or `BASIC_AUTH`
 
 The default server on startup if these variables are empty is the Kids First server.
 Servers are configurable and more can be added after startup.

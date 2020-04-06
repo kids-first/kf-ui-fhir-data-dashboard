@@ -2,12 +2,12 @@ import {combineReducers} from 'redux';
 import {CLEAR_USER, SET_USER, SET_API} from '../actions';
 import resources from './resources';
 import ontologies from './ontologies';
-import user from './user';
+import app from './app';
 
 const appReducer = combineReducers({
   resources,
   ontologies,
-  user,
+  app,
 });
 
 const rootReducer = (state, action) => {
