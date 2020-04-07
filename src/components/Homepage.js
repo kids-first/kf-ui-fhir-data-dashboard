@@ -94,7 +94,7 @@ class Homepage extends React.Component {
 
   onClick = resource => {
     this.props.history.push(
-      `/${resource.baseType}?name=${resource.name}&url=${resource.url}`,
+      `/${resource.id}`,
     );
   };
 
