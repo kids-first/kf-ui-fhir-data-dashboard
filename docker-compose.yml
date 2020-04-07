@@ -1,0 +1,12 @@
+version: "3.7"
+services:
+  app:
+    container_name: dashboard
+    build:
+        context: '.'
+        args:
+            - REACT_APP_FHIR_API_NAME=my-fhir-server
+            - REACT_APP_FHIR_API_AUTH_TYPE=BASIC_AUTH
+            - REACT_APP_FHIR_API=http://localhost:8000
+    ports:
+      - "3000:80"
