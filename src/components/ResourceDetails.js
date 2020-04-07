@@ -7,7 +7,7 @@ import {
   logErrors,
   replaceLocalhost,
 } from '../utils/common';
-import {fhirUrl, defaultTableFields} from '../config';
+import {defaultTableFields} from '../config';
 import AppBreadcrumb from './AppBreadcrumb';
 import DataPieChart from './DataPieChart';
 import DataBarChart from './DataBarChart';
@@ -19,7 +19,7 @@ class ResourceDetails extends React.Component {
     super(props);
     this.state = {
       schema: null,
-      resourceType: null,
+      resourceType: props.resourceId,
       resourceBaseType: null,
       resourceUrl: null,
       total: props.total,
@@ -82,6 +82,7 @@ class ResourceDetails extends React.Component {
               total = await getBaseResourceCount(
                 baseUrl,
                 resourceBaseType,
+                null,
                 this.state.abortController,
               ).catch(err => {
                 logErrors('Error getting resource total:', err);
@@ -127,15 +128,12 @@ class ResourceDetails extends React.Component {
 
   getSchema = async () => {
     const {
-      resourceId,
-      fetchResource,
       getSearchParams,
       getCapabilityStatement,
       baseUrl,
-      schemaUrl,
       capabilityStatementUrl,
     } = this.props;
-    const {schema, resourceBaseType, resourceUrl, resourceType} = this.state;
+    const {schema, resourceBaseType} = this.state;
     return await getSearchParams(
       `${baseUrl}SearchParameter?base=${resourceBaseType}`,
       this.state.abortController,
@@ -153,7 +151,6 @@ class ResourceDetails extends React.Component {
                 searchParams.concat(defaultParams),
               );
               let resourceAttributes = [];
-              console.log('schema', schema);
               if (
                 schema &&
                 schema.snapshot &&
@@ -169,15 +166,6 @@ class ResourceDetails extends React.Component {
               } else if (schema && schema.snapshot && schema.snapshot.element) {
                 resourceAttributes = await this.getSnapshot(
                   schema.snapshot.element,
-                  queryableAttributes,
-                );
-              } else if (
-                schema &&
-                schema.differential &&
-                schema.differential.element
-              ) {
-                resourceAttributes = await this.getDifferential(
-                  schema.differential.element,
                   queryableAttributes,
                 );
               }
@@ -206,40 +194,15 @@ class ResourceDetails extends React.Component {
     return resourceAttributes;
   };
 
-  getDifferential = async (
-    differential,
-    queryableAttributes,
-    snapshot = null,
-  ) => {
-    const {schemaUrl} = this.props;
-    const {resourceBaseType, resourceType} = this.state;
-    if (!snapshot) {
-      await this.props
-        .fetchResource(
-          `${schemaUrl}/${resourceType}/$snapshot`,
-          this.state.abortController,
-        )
-        .then(async data => {
-          snapshot =
-            data && data.snapshot && data.snapshot.element
-              ? data.snapshot.element
-              : null;
-        })
-        .catch(err => logErrors('Error fetching snapshot:', err));
-    }
+  getDifferential = async (differential, queryableAttributes, snapshot) => {
     let snapshotAttributes = [];
-    if (snapshot) {
-      snapshotAttributes = await this.getSnapshot(
-        snapshot,
-        queryableAttributes,
-      );
-      const omittedAttributes = differential
-        .filter(attribute => attribute.max === '0')
-        .map(attribute => attribute.id);
-      snapshotAttributes = snapshotAttributes.filter(
-        attribute => !omittedAttributes.includes(attribute.id),
-      );
-    }
+    snapshotAttributes = await this.getSnapshot(snapshot, queryableAttributes);
+    const omittedAttributes = differential
+      .filter(attribute => attribute.max === '0')
+      .map(attribute => attribute.id);
+    snapshotAttributes = snapshotAttributes.filter(
+      attribute => !omittedAttributes.includes(attribute.id),
+    );
     const differentialAttributes = await this.getSnapshot(
       differential,
       queryableAttributes,
