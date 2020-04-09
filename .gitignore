@@ -105,3 +105,6 @@ dist
 
 # macOS metadata
 .DS_Store
+
+# Build
+build
