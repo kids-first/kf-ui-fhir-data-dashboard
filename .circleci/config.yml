@@ -30,8 +30,12 @@ jobs:
          name: 'Push docker images'
          command: |
             if [ $CIRCLE_BRANCH == 'master' ]; then
+                GIT_COMMIT=$(git rev-parse HEAD)
                 docker login -u $KF_DOCKER_HUB_USER -p $KF_DOCKER_HUB_PW
+                docker tag kidsfirstdrc/kf-ui-fhir-data-dashboard:dev \
+                           kidsfirstdrc/kf-ui-fhir-data-dashboard:$GIT_COMMIT
                 docker push kidsfirstdrc/kf-ui-fhir-data-dashboard:dev
                 docker push kidsfirstdrc/kf-ui-fhir-data-dashboard:latest
                 docker push kidsfirstdrc/kf-ui-fhir-data-dashboard:kidsfirst
+                docker push kidsfirstdrc/kf-ui-fhir-data-dashboard:$GIT_COMMIT
             fi
