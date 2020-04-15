@@ -77,7 +77,7 @@ class App extends React.Component {
               redirectPath="/login"
             />
             <DecisionRoute
-              path="/:resourceBaseType"
+              path="/:resourceId"
               renderComponent={!!this.isAuthorized()}
               component={ReduxResourceDetails}
               redirectPath="/login"

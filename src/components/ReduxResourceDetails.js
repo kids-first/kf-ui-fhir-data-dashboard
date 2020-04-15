@@ -6,24 +6,18 @@ import {
   getCapabilityStatementSearchParams,
 } from '../utils/api';
 import {setLoadingMessage} from '../actions';
-import queryString from 'query-string';
 import ResourceDetails from './ResourceDetails';
 
 const mapStateToProps = (state, ownProps) => {
-  const resourceBaseType = ownProps.match.params.resourceBaseType;
-  const queryValues = queryString.parse(ownProps.location.search);
-  const resourceType = queryValues.name;
-  const resourceUrl = queryValues.url;
+  const resourceId = ownProps.match.params.resourceId;
   const hasResources =
     state && state.resources && state.resources.allResourcesFetched;
   const resource = hasResources
-    ? state.resources.allResources[resourceType]
+    ? state.resources.allResources[resourceId]
     : {};
   return {
     total: resource.count ? resource.count : 0,
-    resourceBaseType,
-    resourceType,
-    resourceUrl,
+    resourceId,
     resourceFetched: hasResources,
     baseUrl: state.app.selectedServer.url,
     schemaUrl: `${state.app.selectedServer.url}StructureDefinition`,
