@@ -18,8 +18,9 @@ class SortableTable extends React.Component {
 
   componentDidUpdate(prevProps) {
     if (
+      this.props.data !== prevProps.data ||
       this.props.data.map(x => x.children).flat().length !==
-      this.state.sortedData.map(x => x.children).flat().length
+        this.state.sortedData.map(x => x.children).flat().length
     ) {
       this.setState({
         sortedData: _.sortBy(this.props.data, this.props.headerCells[0].sortId),
