@@ -35,6 +35,7 @@ export class SearchBar extends React.Component {
   handleResultSelect = (e, {result}) => {
     this.setState(
       {
+        key: result.key,
         value: result.title,
         results: [result],
       },

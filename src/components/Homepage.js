@@ -93,16 +93,14 @@ class Homepage extends React.Component {
   };
 
   onClick = resource => {
-    this.props.history.push(
-      `/${resource.id}`,
-    );
+    this.props.history.push(`/${resource.id}`);
   };
 
   handleResultSelect = searchResults => {
     const {allResources} = this.props;
     const filteredResources = {};
     searchResults.forEach(result => {
-      filteredResources[result.title] = allResources[result.title];
+      filteredResources[result.key] = allResources[result.key];
     });
     this.setState({
       filteredResources,
@@ -241,7 +239,8 @@ class Homepage extends React.Component {
             <SearchBar
               className="homepage__searchbar"
               data={Object.keys(allResources).map(key => ({
-                title: allResources[key].name,
+                key,
+                title: allResources[key].name || key,
               }))}
               handleResultSelect={this.handleResultSelect}
             />
@@ -305,39 +304,31 @@ class Homepage extends React.Component {
                                     ...resourcesByCategory[category][
                                       subCategory
                                     ],
-                                  ].map(resourceType => {
+                                  ].map(resourceId => {
                                     const resource =
-                                      filteredResources[resourceType];
+                                      filteredResources[resourceId];
                                     if (resource) {
                                       return (
                                         <Card
-                                          key={resourceType}
+                                          key={resourceId}
                                           onClick={() => this.onClick(resource)}
                                         >
                                           <Card.Content>
                                             <Card.Header>
-                                              {resourceType}
+                                              {resource.name}
                                             </Card.Header>
                                             <Card.Meta>
-                                              Base type:{' '}
-                                              {
-                                                filteredResources[resourceType]
-                                                  .baseType
-                                              }
+                                              Base type: {resource.baseType}
                                             </Card.Meta>
                                             <Card.Description>
                                               <div id="homepage__card-description">
                                                 {this.getIcon(
-                                                  resourceType,
-                                                  filteredResources[
-                                                    resourceType
-                                                  ].baseType,
+                                                  resource.name,
+                                                  resource.baseType,
                                                 )}
                                                 <div className="homepage__card-description-count">
                                                   {getHumanReadableNumber(
-                                                    filteredResources[
-                                                      resourceType
-                                                    ].count,
+                                                    resource.count,
                                                   )}
                                                 </div>
                                               </div>

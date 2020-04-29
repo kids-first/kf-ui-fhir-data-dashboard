@@ -85,7 +85,7 @@ const formatResources = items => {
   let newItems = {};
   items.forEach(item => {
     if (item) {
-      newItems[item.name] = {
+      newItems[item.id] = {
         ...item,
       };
     }
