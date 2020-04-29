@@ -6,10 +6,10 @@ import {
   getBaseResourceCount,
   logErrors,
   replaceLocalhost,
+  capitalize,
 } from '../utils/common';
 import {defaultTableFields} from '../config';
 import AppBreadcrumb from './AppBreadcrumb';
-import DataPieChart from './DataPieChart';
 import DataBarChart from './DataBarChart';
 import ResultsTable from './tables/ResultsTable';
 import './ResourceDetails.css';
@@ -246,8 +246,8 @@ class ResourceDetails extends React.Component {
             ) {
               newAttribute.type = 'boolean';
               newAttribute.queryParams = [
-                {code: 'true', display: 'true'},
-                {code: 'false', display: 'false'},
+                {code: 'true', display: 'True'},
+                {code: 'false', display: 'False'},
               ];
             } else {
               newAttribute.type = 'count';
@@ -626,88 +626,94 @@ class ResourceDetails extends React.Component {
           <p>{this.props.loadingMessage}</p>
         </div>
         <div className="resource-details__header">
-          <div className="resource-details__header-title">
-            <h2>{resourceType}:</h2>
-            <p className="resource-details__count">
-              {getHumanReadableNumber(total)}
-            </p>
-            <h2>total</h2>
-          </div>
+          <h2>{resourceType}</h2>
           <p>Base type: {resourceBaseType}</p>
         </div>
         {queriesComplete && attributes.length === 0 ? (
           <h3>No statistics to display.</h3>
         ) : null}
-        <div className="resource-details__queries">
-          {Object.keys(charts).map(chartType => (
-            <div key={chartType} className="resource-details__queries-section">
-              {charts[chartType].map((attribute, i) => {
-                if (queriesComplete) {
+        {queriesComplete && attributes.length > 0 ? (
+          <div>
+            <div className="resource-details__count-section">
+              <div className="resource-details__count card">
+                <p className="resource-details__number">
+                  {getHumanReadableNumber(total)}
+                </p>
+                <p>total</p>
+              </div>
+              {charts.count.map((attribute, i) => (
+                <div
+                  className="resource-details__count card"
+                  key={`${attribute}-${i}`}
+                  onClick={() =>
+                    this.getAttributeTableResults(attribute, 'count')
+                  }
+                >
+                  {attribute.queryParams.map((param, i) => (
+                    <React.Fragment key={`${param}-${i}`}>
+                      <p className="resource-details__number">
+                        {getHumanReadableNumber(param.count)}
+                      </p>
+                      <p>have {attribute.name}</p>
+                    </React.Fragment>
+                  ))}
+                </div>
+              ))}
+            </div>
+            <div className="resource-details__bottom-section">
+              <div className="resource-details__pie-section">
+                {charts.pie.map((attribute, i) => {
+                  const pieResults = this.formatResults(attribute.queryParams);
+                  console.log('pieResults', pieResults);
                   return (
                     <div
-                      className={'resource-details__query'
-                        .concat(chartType === 'count' ? ' clickable' : '')
-                        .concat(chartType === 'bar' ? ' expand' : '')}
-                      key={`${attribute}-${i}`}
-                      onClick={
-                        chartType === 'count'
-                          ? () =>
-                              this.getAttributeTableResults(
-                                attribute,
-                                chartType,
-                              )
-                          : () => {}
-                      }
+                      key={attribute.name}
+                      className="resource-details__pie card"
                     >
-                      <h3>{attribute.name}</h3>
-                      {chartType === 'count' ? (
-                        <div className="resource-details__query-count">
-                          {attribute.queryParams.map((param, i) => (
-                            <p
-                              key={`${param}-${i}`}
-                              className="resource-details__count"
-                            >
-                              {getHumanReadableNumber(param.count)}
+                      <h4>{capitalize(attribute.name)}</h4>
+                      <div className="resource-details__pie-values">
+                        {pieResults.map(result => (
+                          <div
+                            key={result.name}
+                            className="resource-details__pie-value"
+                            onClick={() =>
+                              this.getAttributeTableResults(
+                                attribute,
+                                'pie',
+                                result,
+                              )
+                            }
+                          >
+                            <p className="resource-details__number">
+                              {getHumanReadableNumber(result.value)}
                             </p>
-                          ))}
-                        </div>
-                      ) : null}
-                      {chartType === 'pie' ? (
-                        <div className="resource-details__query-pie">
-                          <DataPieChart
-                            data={this.formatResults(attribute.queryParams)}
-                            handleClick={payload =>
-                              this.getAttributeTableResults(
-                                attribute,
-                                chartType,
-                                payload,
-                              )
-                            }
-                          />
-                        </div>
-                      ) : null}
-                      {chartType === 'bar' ? (
-                        <div className="resource-details__query-bar">
-                          <DataBarChart
-                            data={this.formatResults(attribute.queryParams)}
-                            handleClick={payload =>
-                              this.getAttributeTableResults(
-                                attribute,
-                                chartType,
-                                payload,
-                              )
-                            }
-                          />
-                        </div>
-                      ) : null}
+                            <p>{result.name}</p>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   );
-                }
-                return null;
-              })}
+                })}
+              </div>
+              <div className="resource-details__bar-section">
+                {charts.bar.map((attribute, i) => (
+                  <div
+                    key={attribute.name}
+                    className="resource-details__bar card expand"
+                  >
+                    <h4>{capitalize(attribute.name)}</h4>
+                    <DataBarChart
+                      data={this.formatResults(attribute.queryParams)}
+                      handleClick={payload =>
+                        this.getAttributeTableResults(attribute, 'bar', payload)
+                      }
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ) : null}
         <Modal
           open={this.state.showModal}
           onClose={() => this.closeModal()}

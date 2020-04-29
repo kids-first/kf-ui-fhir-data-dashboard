@@ -1,85 +1,27 @@
-.app {
-  display: flex;
-  flex-flow: column;
-}
-
-.app img {
-  height: 100px;
-  margin: 0 20px;
-}
-
-.app__header {
-  display: flex;
-  width: 100%;
+/* Semantic UI Overrides */
+.app .ui.menu {
   background-color: var(--d3b-gray);
-  align-items: center;
-  padding: 10px 10px;
+  border-radius: 0;
 }
 
-@media screen and (max-width: 768px) {
-  .app__header {
-    flex-flow: column;
-  }
+.app .ui.menu .item:before {
+  background: none;
 }
 
-.app__header-banner {
-  display: flex;
-  align-items: center;
-}
-
-.app__header-banner h1 {
-  color: #fff;
-  margin: 0;
-}
-
-.app__header-info {
-  display: flex;
-  flex-flow: column;
-  align-items: flex-end;
-  flex: 1;
-}
-
-.app__header-user {
-  display: flex;
-  color: #fff;
-  margin-bottom: 10px;
-  align-items: center;
-}
-
-.app__header-user > * {
-  margin: 0 20px;
-}
-
-.app__header-nav {
-  display: flex;
-  align-items: center;
-}
-
-@media screen and (max-width: 768px) {
-  .app__header-nav {
-    flex-flow: column;
-  }
-}
-
-.app__header-nav-item {
-  margin: 0 20px;
-  font-size: 24px;
-  color: #fff;
-}
-
-.app__header-nav-item:hover {
-  color: var(--d3b-brightblue);
-  cursor: pointer;
-}
-
-/* Semantic UI overrides */
-
-.app__header-nav i.icon {
-  height: unset;
+.app .ui.menu a {
   color: var(--d3b-lightgray);
-  margin: 0 20px;
+  font-size: 18px;
 }
 
-.app__header-nav i.icon:hover {
+.app .ui.menu a:hover {
   color: var(--d3b-brightblue);
+}
+
+.app .ui.menu i.icon {
+  color: var(--d3b-lightgray);
+  margin: 0 5px;
+}
+
+.app .ui.menu i.icon.chevron {
+  font-size: 0.75em;
 }

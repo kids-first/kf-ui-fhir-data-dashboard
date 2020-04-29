@@ -1,7 +1,6 @@
 .homepage {
   display: flex;
   flex-flow: column;
-  padding: 20px 20px;
   width: 100%;
 }
 

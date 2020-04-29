@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {BrowserRouter as Router, Switch, Link} from 'react-router-dom';
-import {Button, Icon} from 'semantic-ui-react';
+import {Icon, Container, Menu, Segment, Image} from 'semantic-ui-react';
 import DecisionRoute from './DecisionRoute';
 import ReduxHomepage from './ReduxHomepage';
 import ReduxResourceDetails from './ReduxResourceDetails';
@@ -30,65 +30,79 @@ class App extends React.Component {
     return (
       <Router>
         <div className="app">
-          <div className="app__header">
-            <Link className="app__header-banner" to="/">
-              <img src={logo} alt="D3b" />
-              <h1>FHIR Data Dashboard</h1>
-            </Link>
-            {this.isAuthorized() ? (
-              <div className="app__header-info">
-                {this.authRequired() ? (
-                  <div className="app__header-user">
-                    <p>Welcome, {this.props.username}</p>
-                    <Button onClick={() => this.props.logout()}>Logout</Button>
-                  </div>
-                ) : null}
-                <div className="app__header-nav">
-                  <Link to="/">
-                    <div className="app__header-nav-item">Resources</div>
-                  </Link>
-                  <Link to="/ontologies">
-                    <div className="app__header-nav-item">Ontologies</div>
-                  </Link>
-                  <Link to="/settings">
-                    <Icon name="setting" size="large" />
-                  </Link>
-                </div>
-              </div>
-            ) : null}
-          </div>
-          <Switch>
-            <DecisionRoute
-              path="/login"
-              renderComponent={!this.isAuthorized()}
-              component={ReduxLogin}
-              redirectPath="/"
-            />
-            <DecisionRoute
-              path="/ontologies"
-              renderComponent={!!this.isAuthorized()}
-              component={ReduxOntologyHomepage}
-              redirectPath="/login"
-            />
-            <DecisionRoute
-              path="/settings"
-              renderComponent={!!this.isAuthorized()}
-              component={ReduxServerConfiguration}
-              redirectPath="/login"
-            />
-            <DecisionRoute
-              path="/:resourceId"
-              renderComponent={!!this.isAuthorized()}
-              component={ReduxResourceDetails}
-              redirectPath="/login"
-            />
-            <DecisionRoute
-              path="/"
-              renderComponent={!!this.isAuthorized()}
-              component={ReduxHomepage}
-              redirectPath="/login"
-            />
-          </Switch>
+          <Menu>
+            <Container>
+              <Menu.Item>
+                <Link to="/">
+                  <Image src={logo} alt="D3b" size="mini" />
+                </Link>
+              </Menu.Item>
+              <Menu.Item>
+                <Link to="/">FHIR Data Dashboard</Link>
+              </Menu.Item>
+              {this.isAuthorized() ? (
+                <React.Fragment>
+                  <Menu.Item>
+                    <Link to="/">Resources</Link>
+                  </Menu.Item>
+                  <Menu.Item>
+                    <Link to="/ontologies">Ontologies</Link>
+                  </Menu.Item>
+
+                  <Menu.Menu position="right">
+                    <Menu.Item>
+                      <Link to="/settings">
+                        Server
+                        <Icon name="chevron down" size="small" />
+                      </Link>
+                    </Menu.Item>
+                    {this.authRequired() ? (
+                      <Menu.Item>
+                        <Link to="/user">
+                          <Icon name="user circle" size="big" />
+                          <Icon name="chevron down" size="small" />
+                        </Link>
+                      </Menu.Item>
+                    ) : null}
+                  </Menu.Menu>
+                </React.Fragment>
+              ) : null}
+            </Container>
+          </Menu>
+          <Container as={Segment} basic>
+            <Switch>
+              <DecisionRoute
+                path="/login"
+                renderComponent={!this.isAuthorized()}
+                component={ReduxLogin}
+                redirectPath="/"
+              />
+              <DecisionRoute
+                path="/ontologies"
+                renderComponent={!!this.isAuthorized()}
+                component={ReduxOntologyHomepage}
+                redirectPath="/login"
+              />
+              <DecisionRoute
+                path="/settings"
+                renderComponent={!!this.isAuthorized()}
+                component={ReduxServerConfiguration}
+                redirectPath="/login"
+              />
+              <DecisionRoute
+                path="/:resourceId"
+                renderComponent={!!this.isAuthorized()}
+                component={ReduxResourceDetails}
+                redirectPath="/login"
+              />
+              <DecisionRoute
+                path="/"
+                renderComponent={!!this.isAuthorized()}
+                component={ReduxHomepage}
+                redirectPath="/login"
+              />
+            </Switch>
+          </Container>
         </div>
       </Router>
     );
