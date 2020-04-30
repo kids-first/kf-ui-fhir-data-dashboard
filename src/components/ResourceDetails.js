@@ -664,7 +664,6 @@ class ResourceDetails extends React.Component {
               <div className="resource-details__pie-section">
                 {charts.pie.map((attribute, i) => {
                   const pieResults = this.formatResults(attribute.queryParams);
-                  console.log('pieResults', pieResults);
                   return (
                     <div
                       key={attribute.name}

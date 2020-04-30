@@ -130,31 +130,24 @@ class OntologyHomepage extends React.Component {
 
     return (
       <div className="ontology-homepage">
-        <div className="ontology-homepage__header">
-          <div className="ontology-homepage__header-title">
-            <h2>Ontologies:</h2>
-            <h2 className="ontology-homepage__count">
-              {getHumanReadableNumber(Object.keys(filteredOntologies).length)}
-            </h2>
-            <h2>total</h2>
+        <div className="header">
+          <div className="header__text">
+            <h2>Ontologies</h2>
+            <h3>
+              {getHumanReadableNumber(Object.keys(filteredOntologies).length)}{' '}
+              total
+            </h3>
           </div>
-          <Dropdown
-            className="ontology-homepage__dropdown"
-            defaultValue={this.props.baseUrl}
-            selection
-            options={getDropdownOptions(this.props.serverOptions)}
-            onChange={this.selectApi}
-            disabled={!ontologiesFetched}
-          />
-        </div>
-        <div className="ontology-homepage__search">
-          <SearchBar
-            data={Object.keys(ontologies).map(key => ({
-              title: key,
-            }))}
-            handleResultSelect={this.handleResultSelect}
-            placeholder="Search for an ontology"
-          />
+          <div className="header__controls">
+            <SearchBar
+              className="header__searchbar"
+              data={Object.keys(ontologies).map(key => ({
+                title: key,
+              }))}
+              handleResultSelect={this.handleResultSelect}
+              placeholder="Search for an ontology"
+            />
+          </div>
         </div>
         {ontologiesFetched ? (
           <SortableTable

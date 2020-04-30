@@ -39,11 +39,12 @@ h1 {
 h2 {
   font-size: 18px;
   color: var(--d3b-blue);
+  font-weight: bold;
 }
 
 h3 {
   font-size: 16px;
-  color: var(--d3b-gray);
+  color: var(--d3b-blue);
 }
 
 h4 {

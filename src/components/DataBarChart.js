@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Chart from 'react-apexcharts';
 import {Button, Icon} from 'semantic-ui-react';
 import {
   BarChart,

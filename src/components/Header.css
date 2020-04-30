@@ -1,0 +1,64 @@
+/* Semantic UI Overrides */
+.app .ui.menu {
+  background-color: var(--d3b-gray);
+  border-radius: 0;
+}
+
+.app .ui.menu .item {
+  color: var(--d3b-lightgray);
+  font-size: 18px;
+}
+
+.app .ui.menu .item:hover {
+  background-color: unset;
+}
+
+.app .ui.menu .item:before {
+  background: none;
+}
+
+.app .ui.menu a {
+  color: var(--d3b-lightgray);
+  font-size: 18px;
+}
+
+.app .ui.menu i.icon {
+  color: var(--d3b-lightgray);
+  margin: 0 5px;
+}
+
+.app .ui.menu i.icon.chevron {
+  font-size: 0.75em;
+}
+
+.app .ui.dropdown .menu {
+  font-size: 14px;
+}
+
+.ui.menu .dropdown.item .menu {
+  background-color: var(--d3b-gray) !important;
+}
+
+.app .ui.menu .ui.dropdown .menu > .item {
+  color: var(--d3b-lightgray) !important;
+  text-decoration: underline;
+}
+
+.app .ui.link.menu .item:hover,
+.app .ui.menu .dropdown.item:hover,
+.app .ui.menu .link.item:hover,
+.app .ui.menu a:hover,
+.app .ui.menu .active.item,
+.app .ui.menu .ui.dropdown .menu > .item:hover {
+  color: var(--d3b-brightblue) !important;
+}
+
+.app .ui.dropdown .menu > .header {
+  text-transform: none;
+  font-size: 14px;
+  color: var(--d3b-lightgray);
+}
+
+.app .ui.menu .ui.dropdown .menu > .item {
+  color: var(--d3b-lightgray) !important;
+}

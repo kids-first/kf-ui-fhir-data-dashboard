@@ -1,14 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Card, Icon, Dropdown} from 'semantic-ui-react';
+import {Card, Icon, Loader} from 'semantic-ui-react';
 import Avatar from 'react-avatar';
 import _ from 'lodash';
-import {
-  getHumanReadableNumber,
-  getDropdownOptions,
-  logErrors,
-} from '../utils/common';
-import {resourceCategories} from '../config';
+import {getHumanReadableNumber, logErrors} from '../utils/common';
 import SearchBar from './SearchBar';
 import SortableTable from './tables/SortableTable';
 import './Homepage.css';
@@ -21,8 +16,6 @@ class Homepage extends React.Component {
       listResources: _.toArray(props.allResources),
       searchResourceType: 'StructureDefinition',
       searchResourceTitle: 'Resource Types',
-      resourcesByCategory: resourceCategories,
-      openTabs: Object.keys(resourceCategories),
       abortController: new AbortController(),
     };
   }
@@ -51,45 +44,12 @@ class Homepage extends React.Component {
         this.state.abortController,
       )
       .then(() => {
-        const resources = this.props.allResources;
-        const resourcesByCategory = this.setCategories(resources);
         this.setState({
-          filteredResources: resources,
-          listResources: _.toArray(resources),
-          resourcesByCategory,
+          filteredResources: this.props.allResources,
+          listResources: _.toArray(this.props.allResources),
         });
       })
       .catch(err => logErrors('Error fetching resources:', err));
-  };
-
-  setCategories = resources => {
-    let resourcesByCategory = resourceCategories;
-    let flatCategories = new Set(
-      Object.keys(resourceCategories).map(category =>
-        Object.keys(resourceCategories[category]).map(
-          subCategory => resourceCategories[category][subCategory],
-        ),
-      ),
-    );
-    const uncategorizedResources = Object.keys(resources).filter(
-      resource => !flatCategories.has(resources[resource].name),
-    );
-    uncategorizedResources.forEach(resource => {
-      Object.keys(resourceCategories).forEach(category => {
-        Object.keys(resourceCategories[category]).forEach(subCategory => {
-          if (
-            resourceCategories[category][subCategory].has(
-              resources[resource].baseType,
-            )
-          ) {
-            resourcesByCategory[category][subCategory].add(resource);
-            resources[resource].module = category;
-            resources[resource].category = subCategory;
-          }
-        });
-      });
-    });
-    return resourcesByCategory;
   };
 
   onClick = resource => {
@@ -106,38 +66,6 @@ class Homepage extends React.Component {
       filteredResources,
       listResources: _.toArray(filteredResources),
     });
-  };
-
-  toggleTab = tab => {
-    let openTabs = this.state.openTabs;
-    const index = openTabs.indexOf(tab);
-    index > -1 ? openTabs.splice(index, 1) : openTabs.push(tab);
-    this.setState({openTabs});
-  };
-
-  expandAllTabs = () => {
-    this.setState({openTabs: Object.keys(this.state.resourcesByCategory)});
-  };
-
-  collapseAllTabs = () => {
-    this.setState({openTabs: []});
-  };
-
-  getCategoryCount = categoryName => {
-    const {resourcesByCategory, filteredResources} = this.state;
-    const category = resourcesByCategory[categoryName];
-    return Object.keys(category)
-      .map(subCategory =>
-        [...category[subCategory]].filter(x => filteredResources[x]),
-      )
-      .flat().length;
-  };
-
-  getSubCategoryCount = (categoryName, subCategoryName) => {
-    const {resourcesByCategory, filteredResources} = this.state;
-    return [...resourcesByCategory[categoryName][subCategoryName]].filter(
-      x => filteredResources[x],
-    ).length;
   };
 
   selectApi = (e, {value}) => {
@@ -190,13 +118,7 @@ class Homepage extends React.Component {
   };
 
   render() {
-    const {
-      searchResourceTitle,
-      filteredResources,
-      listResources,
-      resourcesByCategory,
-      openTabs,
-    } = this.state;
+    const {searchResourceTitle, filteredResources, listResources} = this.state;
     const {allResources, allResourcesFetched, cardView} = this.props;
     const tableHeaders = [
       {display: 'Name', sortId: 'name'},
@@ -208,36 +130,41 @@ class Homepage extends React.Component {
     ];
     return (
       <div className="homepage">
-        <div
-          className={`ui ${allResourcesFetched ? 'disabled' : 'active'} loader`}
-        >
-          <p>{this.props.loadingMessage}</p>
-        </div>
-        <div className="homepage__header">
-          <div className="homepage__header-title">
-            <h2>{searchResourceTitle}:</h2>
-            <h2 className="homepage__count">
-              {getHumanReadableNumber(Object.keys(filteredResources).length)}
-            </h2>
-            <h2>total</h2>
+        <Loader
+          active={allResourcesFetched ? false : true}
+          content={this.props.loadingMessage}
+        />
+        <div className="header">
+          <div className="header__text">
+            <h2>{searchResourceTitle}</h2>
+            <h3>
+              {getHumanReadableNumber(Object.keys(filteredResources).length)}{' '}
+              total
+            </h3>
           </div>
-          <Dropdown
-            defaultValue={this.props.baseUrl}
-            selection
-            options={getDropdownOptions(this.props.serverOptions)}
-            onChange={this.selectApi}
-            disabled={!this.props.allResourcesFetched}
-          />
-        </div>
-        <div className="homepage__controls">
-          <div className="homepage__controls-tabs">
-            <p onClick={() => this.expandAllTabs()}>Expand All</p>
-            <p> | </p>
-            <p onClick={() => this.collapseAllTabs()}>Collapse All</p>
-          </div>
-          <div className="homepage__header-search">
+          <div className="header__controls">
+            <div className="header__controls-view">
+              <Icon
+                inverted
+                bordered
+                className={'header__controls-view-icon'.concat(
+                  !cardView ? '--selected' : '',
+                )}
+                name="list"
+                onClick={() => this.toggleView('list')}
+              />
+              <Icon
+                className={'header__controls-view-icon'.concat(
+                  cardView ? '--selected' : '',
+                )}
+                inverted
+                bordered
+                name="grid layout"
+                onClick={() => this.toggleView('grid')}
+              />
+            </div>
             <SearchBar
-              className="homepage__searchbar"
+              className="header__searchbar"
               data={Object.keys(allResources).map(key => ({
                 key,
                 title: allResources[key].name || key,
@@ -246,110 +173,31 @@ class Homepage extends React.Component {
             />
           </div>
         </div>
-        <div className="homepage__controls-view">
-          <Icon
-            inverted
-            bordered
-            className={'homepage__controls-view-icon'.concat(
-              !cardView ? '--selected' : '',
-            )}
-            name="list"
-            onClick={() => this.toggleView('list')}
-          />
-          <Icon
-            className={'homepage__controls-view-icon'.concat(
-              cardView ? '--selected' : '',
-            )}
-            inverted
-            bordered
-            name="grid layout"
-            onClick={() => this.toggleView('grid')}
-          />
-        </div>
         {allResourcesFetched && cardView ? (
-          <div className="homepage__content">
-            {Object.keys(resourcesByCategory).map(category => {
-              const categoryCount = this.getCategoryCount(category);
-              const showSection =
-                openTabs.includes(category) && categoryCount > 0;
-              return (
-                <div className="homepage__section" key={category}>
-                  <div className="homepage__section-header">
-                    <h3>
-                      {category}: {getHumanReadableNumber(categoryCount)}
-                    </h3>
-                    <Icon
-                      name={showSection ? 'chevron up' : 'chevron down'}
-                      onClick={() => {
-                        if (categoryCount > 0) {
-                          this.toggleTab(category);
-                        }
-                      }}
-                    />
-                  </div>
-                  {showSection ? (
-                    <div className="homepage__section-subcategory">
-                      {Object.keys(resourcesByCategory[category]).map(
-                        subCategory => {
-                          const subCategoryCount = this.getSubCategoryCount(
-                            category,
-                            subCategory,
-                          );
-                          if (subCategoryCount > 0) {
-                            return (
-                              <React.Fragment key={subCategory}>
-                                <h4>{subCategory}</h4>
-                                <div className="homepage__section-resources">
-                                  {[
-                                    ...resourcesByCategory[category][
-                                      subCategory
-                                    ],
-                                  ].map(resourceId => {
-                                    const resource =
-                                      filteredResources[resourceId];
-                                    if (resource) {
-                                      return (
-                                        <Card
-                                          key={resourceId}
-                                          onClick={() => this.onClick(resource)}
-                                        >
-                                          <Card.Content>
-                                            <Card.Header>
-                                              {resource.name}
-                                            </Card.Header>
-                                            <Card.Meta>
-                                              Base type: {resource.baseType}
-                                            </Card.Meta>
-                                            <Card.Description>
-                                              <div id="homepage__card-description">
-                                                {this.getIcon(
-                                                  resource.name,
-                                                  resource.baseType,
-                                                )}
-                                                <div className="homepage__card-description-count">
-                                                  {getHumanReadableNumber(
-                                                    resource.count,
-                                                  )}
-                                                </div>
-                                              </div>
-                                            </Card.Description>
-                                          </Card.Content>
-                                        </Card>
-                                      );
-                                    }
-                                    return null;
-                                  })}
-                                </div>
-                              </React.Fragment>
-                            );
-                          }
-                          return null;
-                        },
-                      )}
-                    </div>
-                  ) : null}
-                </div>
-              );
+          <div className="homepage__section-resources">
+            {this.props.sortedResources.map(elt => {
+              const resource = filteredResources[elt.id];
+              if (resource) {
+                return (
+                  <Card
+                    key={resource.id}
+                    onClick={() => this.onClick(resource)}
+                  >
+                    <Card.Content>
+                      <Card.Header>{resource.name}</Card.Header>
+                      <Card.Meta>Base type: {resource.baseType}</Card.Meta>
+                      <Card.Description>
+                        <div id="homepage__card-description">
+                          {this.getIcon(resource.name, resource.baseType)}
+                          <div className="homepage__card-description-count">
+                            {getHumanReadableNumber(resource.count)}
+                          </div>
+                        </div>
+                      </Card.Description>
+                    </Card.Content>
+                  </Card>
+                );
+              } else return null;
             })}
           </div>
         ) : null}

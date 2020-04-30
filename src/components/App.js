@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {BrowserRouter as Router, Switch, Link} from 'react-router-dom';
-import {Icon, Container, Menu, Segment, Image} from 'semantic-ui-react';
+import {BrowserRouter as Router, Switch} from 'react-router-dom';
+import {Container, Segment} from 'semantic-ui-react';
+import Header from './Header';
 import DecisionRoute from './DecisionRoute';
 import ReduxHomepage from './ReduxHomepage';
 import ReduxResourceDetails from './ReduxResourceDetails';
@@ -9,7 +10,6 @@ import ReduxOntologyHomepage from './ReduxOntologyHomepage';
 import ReduxLogin from './ReduxLogin';
 import ReduxServerConfiguration from './ReduxServerConfiguration';
 import {NO_AUTH, BASIC_AUTH} from '../config';
-import logo from '../img/d3b-cube.svg';
 import './App.css';
 
 class App extends React.Component {
@@ -30,45 +30,13 @@ class App extends React.Component {
     return (
       <Router>
         <div className="app">
-          <Menu>
-            <Container>
-              <Menu.Item>
-                <Link to="/">
-                  <Image src={logo} alt="D3b" size="mini" />
-                </Link>
-              </Menu.Item>
-              <Menu.Item>
-                <Link to="/">FHIR Data Dashboard</Link>
-              </Menu.Item>
-              {this.isAuthorized() ? (
-                <React.Fragment>
-                  <Menu.Item>
-                    <Link to="/">Resources</Link>
-                  </Menu.Item>
-                  <Menu.Item>
-                    <Link to="/ontologies">Ontologies</Link>
-                  </Menu.Item>
-
-                  <Menu.Menu position="right">
-                    <Menu.Item>
-                      <Link to="/settings">
-                        Server
-                        <Icon name="chevron down" size="small" />
-                      </Link>
-                    </Menu.Item>
-                    {this.authRequired() ? (
-                      <Menu.Item>
-                        <Link to="/user">
-                          <Icon name="user circle" size="big" />
-                          <Icon name="chevron down" size="small" />
-                        </Link>
-                      </Menu.Item>
-                    ) : null}
-                  </Menu.Menu>
-                </React.Fragment>
-              ) : null}
-            </Container>
-          </Menu>
+          <Header
+            isAuthRequired={!!this.authRequired()}
+            selectedServer={this.props.selectedServer}
+            userIsAuthorized={!!this.isAuthorized()}
+            username={this.props.username}
+            logout={this.props.logout}
+          />
           <Container as={Segment} basic>
             <Switch>
               <DecisionRoute

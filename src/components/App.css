@@ -1,27 +1,57 @@
-/* Semantic UI Overrides */
-.app .ui.menu {
-  background-color: var(--d3b-gray);
-  border-radius: 0;
+.header h2,
+.header h3 {
+  margin: 5px 0;
 }
 
-.app .ui.menu .item:before {
-  background: none;
+.header {
+  display: flex;
+  justify-content: space-between;
 }
 
-.app .ui.menu a {
-  color: var(--d3b-lightgray);
-  font-size: 18px;
+.header__text {
+  display: flex;
+  flex-flow: column;
 }
 
-.app .ui.menu a:hover {
-  color: var(--d3b-brightblue);
+.header__controls {
+  display: flex;
+  flex-flow: column;
+  align-items: flex-end;
+  justify-content: space-evenly;
 }
 
-.app .ui.menu i.icon {
-  color: var(--d3b-lightgray);
-  margin: 0 5px;
+@media screen and (max-width: 768px) {
+  .header__controls {
+    flex-flow: column;
+  }
+
+  .header__controls > * {
+    width: 100%;
+  }
 }
 
-.app .ui.menu i.icon.chevron {
-  font-size: 0.75em;
+.header__searchbar {
+  margin: 0 0;
+}
+
+i.icon.header__controls-view-icon {
+  margin: 0 0 !important;
+}
+
+i.inverted.bordered.icon.header__controls-view-icon,
+i.inverted.circular.icon.header__controls-view-icon {
+  background-color: var(--d3b-mediumgray) !important;
+  margin: 0 0 !important;
+}
+
+i.inverted.bordered.icon.header__controls-view-icon:hover,
+i.inverted.circular.icon.header__controls-view-icon:hover {
+  background-color: var(--d3b-brightblue) !important;
+  margin: 0 0 !important;
+}
+
+i.inverted.bordered.icon.header__controls-view-icon--selected,
+i.inverted.circular.icon.header__controls-view-icon--selected {
+  background-color: var(--d3b-blue) !important;
+  margin: 0 0 !important;
 }
