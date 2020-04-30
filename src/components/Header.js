@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Menu, Container, Icon, Image, Dropdown} from 'semantic-ui-react';
+import {Menu, Container, Image, Dropdown} from 'semantic-ui-react';
 import {Link} from 'react-router-dom';
 import logo from '../img/d3b-cube.svg';
 import './Header.css';

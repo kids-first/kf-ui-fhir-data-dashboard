@@ -4,13 +4,6 @@ import store from '../store';
 export const getHumanReadableNumber = value =>
   value.toLocaleString(navigator.language, {minimumFractionDigits: 0});
 
-export const getDropdownOptions = servers =>
-  servers.map(server => ({
-    key: server.name,
-    text: server.name,
-    value: server.url,
-  }));
-
 export const getBaseResourceCount = async (
   baseUrl,
   baseType,

@@ -1,12 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ReactJson from 'react-json-view';
-import {Dropdown, Modal} from 'semantic-ui-react';
-import {
-  getHumanReadableNumber,
-  getDropdownOptions,
-  logErrors,
-} from '../utils/common';
+import {Modal, Loader} from 'semantic-ui-react';
+import {getHumanReadableNumber, logErrors} from '../utils/common';
 import SearchBar from './SearchBar';
 import SortableTable from './tables/SortableTable';
 import './OntologyHomepage.css';
@@ -156,9 +152,7 @@ class OntologyHomepage extends React.Component {
             onRowClick={this.getOntologyDetails}
           />
         ) : (
-          <div className="ui active loader">
-            <p>{this.props.loadingMessage}</p>
-          </div>
+          <Loader inline active content={this.props.loadingMessage} />
         )}
         <Modal
           open={this.state.showModal}

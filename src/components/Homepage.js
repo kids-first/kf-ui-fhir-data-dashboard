@@ -130,10 +130,6 @@ class Homepage extends React.Component {
     ];
     return (
       <div className="homepage">
-        <Loader
-          active={allResourcesFetched ? false : true}
-          content={this.props.loadingMessage}
-        />
         <div className="header">
           <div className="header__text">
             <h2>{searchResourceTitle}</h2>
@@ -173,6 +169,11 @@ class Homepage extends React.Component {
             />
           </div>
         </div>
+        <Loader
+          inline
+          active={allResourcesFetched ? false : true}
+          content={this.props.loadingMessage}
+        />
         {allResourcesFetched && cardView ? (
           <div className="homepage__section-resources">
             {this.props.sortedResources.map(elt => {
