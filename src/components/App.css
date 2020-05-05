@@ -55,3 +55,8 @@ i.inverted.circular.icon.header__controls-view-icon--selected {
   background-color: var(--d3b-blue) !important;
   margin: 0 0 !important;
 }
+
+.ui.inline.loader.active,
+.ui.inline.loader.visible {
+  display: flex !important;
+}

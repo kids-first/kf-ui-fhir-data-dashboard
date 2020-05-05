@@ -1,47 +1,36 @@
 import {connect} from 'react-redux';
+import {fetchResource, fetchAllResources} from '../utils/api';
+import {setLoadingMessage} from '../actions';
 import AttributeDetails from './AttributeDetails';
 
 const mapStateToProps = (state, ownProps) => {
   const resourceId = ownProps.match.params.resourceId;
+  const query = ownProps.match.params.query;
   return {
-    total: resource.count ? resource.count : 0,
-    resourceId,
-    resourceFetched: hasResources,
     baseUrl: state.app.selectedServer.url,
     schemaUrl: `${state.app.selectedServer.url}StructureDefinition`,
-    capabilityStatementUrl: `${state.app.selectedServer.url}metadata`,
     loadingMessage: state.app.loadingMessage,
+    resourceId,
+    query,
   };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    getCount: (url, abortController) =>
-      getResourceCount(url, abortController).catch(err => {
-        throw err;
-      }),
-    getSearchParams: (url, abortController) =>
-      getSearchParams(url, abortController).catch(err => {
-        throw err;
-      }),
-    getCapabilityStatement: (url, resourceType, abortController) =>
-      getCapabilityStatementSearchParams(
-        url,
-        resourceType,
-        abortController,
-      ).catch(err => {
-        throw err;
-      }),
     fetchResource: (url, abortController) =>
       fetchResource(url, abortController).catch(err => {
+        throw err;
+      }),
+    fetchAllResources: (url, abortController) =>
+      fetchAllResources(url, [], abortController).catch(err => {
         throw err;
       }),
     setLoadingMessage: message => dispatch(setLoadingMessage(message)),
   };
 };
 
-const ReduxResourceDetails = connect(
+const ReduxAttributeDetails = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(ResourceDetails);
-export default ReduxResourceDetails;
+)(AttributeDetails);
+export default ReduxAttributeDetails;

@@ -79,3 +79,21 @@ export const replaceLocalhost = url => {
 };
 
 export const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1);
+
+export const getMonth = index => {
+  const months = [
+    'Jan',
+    'Feb',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'Aug',
+    'Sept',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+  return index < months.length ? months[index] : null;
+};

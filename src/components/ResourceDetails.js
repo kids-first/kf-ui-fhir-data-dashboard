@@ -1,17 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Modal, Header, Loader} from 'semantic-ui-react';
+import {Loader} from 'semantic-ui-react';
 import {
   getHumanReadableNumber,
   getBaseResourceCount,
   logErrors,
-  replaceLocalhost,
   capitalize,
 } from '../utils/common';
-import {defaultTableFields} from '../config';
 import AppBreadcrumb from './AppBreadcrumb';
 import DataBarChart from './DataBarChart';
-import ResultsTable from './tables/ResultsTable';
 import './ResourceDetails.css';
 
 class ResourceDetails extends React.Component {
@@ -25,11 +22,6 @@ class ResourceDetails extends React.Component {
       total: props.total,
       attributes: [],
       queriesComplete: false,
-      showModal: false,
-      modalAttribute: null,
-      nextPageUrl: null,
-      tableResults: [],
-      tableLoaded: false,
       abortController: new AbortController(),
     };
   }
@@ -501,75 +493,20 @@ class ResourceDetails extends React.Component {
     return chartResults;
   };
 
-  getAttributeTableResults = async (attribute, chartType, payload = null) => {
-    this.setState(
-      {
-        showModal: true,
-        tableLoaded: false,
-        modalAttribute: attribute,
-        totalResults: 0,
-        tableResults: [],
-      },
-      async () => {
-        this.props.setLoadingMessage(`Fetching ${attribute.name} details...`);
-        const {baseUrl} = this.props;
-        const {resourceBaseType, resourceType, resourceUrl} = this.state;
-        let data = null;
-        let totalResults = 0;
-        let param = null;
-        const allFields = defaultTableFields.concat(attribute.name);
-        let url = `${baseUrl}${resourceBaseType}`;
-        if (resourceBaseType !== resourceType) {
-          url = url.concat(`?_profile:below=${resourceUrl}&`);
-        } else {
-          url = url.concat('?');
-        }
-        if (chartType === 'count') {
-          data = await this.props
-            .fetchResource(
-              `${url}${attribute.name}:missing=false`,
-              this.state.abortController,
-            )
-            .catch(err => logErrors('Error getting table results:', err));
-          attribute.queryParams.forEach(param => {
-            totalResults += param.count;
-          });
-        } else {
-          param = attribute.queryParams.find(x => x.display === payload.name);
-          if (!!param) {
-            data = await this.props
-              .fetchResource(
-                `${url}${attribute.name}=${param.code}`,
-                this.state.abortController,
-              )
-              .catch(err => logErrors('Error getting table results:', err));
-          } else {
-            param = {code: 'null'};
-            data = await this.props
-              .fetchResource(
-                `${url}${attribute.name}:missing=true`,
-                this.state.abortController,
-              )
-              .catch(err => logErrors('Error getting table results:', err));
-          }
-          totalResults = payload.value;
-        }
-        data = this.transformResults(data, attribute);
-        const nextPage = data.link.findIndex(x => x.relation === 'next');
-        let nextPageUrl = null;
-        if (nextPage > -1) {
-          nextPageUrl = replaceLocalhost(data.link[nextPage].url);
-        }
-        this.setState({
-          tableLoaded: true,
-          modalAttribute: {...attribute, param: param ? param.code : null},
-          tableResults: data.results,
-          nextPageUrl: nextPageUrl,
-          totalResults,
-          tableColumns: allFields,
-        });
-      },
-    );
+  getAttributeDetails = async (attribute, chartType, payload = null) => {
+    let query = '';
+    if (chartType === 'count') {
+      query = `${attribute.name}:missing=false`;
+    } else {
+      let param = attribute.queryParams.find(x => x.display === payload.name);
+      if (!!param) {
+        query = `${attribute.name}=${param.code}`;
+      } else {
+        param = {code: 'null'};
+        query = `${attribute.name}:missing=true`;
+      }
+    }
+    this.props.history.push(`${this.props.location.pathname}/${query}`);
   };
 
   closeModal = () => {
@@ -611,14 +548,6 @@ class ResourceDetails extends React.Component {
       resourceType,
     } = this.state;
     const charts = this.getCharts(attributes);
-    const selectedAttribute =
-      this.state.modalAttribute && this.state.modalAttribute.name
-        ? this.state.modalAttribute.name
-        : null;
-    const selectedParam =
-      this.state.modalAttribute && this.state.modalAttribute.param
-        ? this.state.modalAttribute.param
-        : null;
     return (
       <div className="resource-details">
         <AppBreadcrumb history={this.props.history} />
@@ -653,9 +582,7 @@ class ResourceDetails extends React.Component {
                 <div
                   className="resource-details__count card"
                   key={`${attribute}-${i}`}
-                  onClick={() =>
-                    this.getAttributeTableResults(attribute, 'count')
-                  }
+                  onClick={() => this.getAttributeDetails(attribute, 'count')}
                 >
                   {attribute.queryParams.map((param, i) => (
                     <React.Fragment key={`${param}-${i}`}>
@@ -691,7 +618,7 @@ class ResourceDetails extends React.Component {
                               key={result.name}
                               className="resource-details__pie-value"
                               onClick={() =>
-                                this.getAttributeTableResults(
+                                this.getAttributeDetails(
                                   attribute,
                                   'pie',
                                   result,
@@ -723,11 +650,7 @@ class ResourceDetails extends React.Component {
                       <DataBarChart
                         data={this.formatResults(attribute.queryParams)}
                         handleClick={payload =>
-                          this.getAttributeTableResults(
-                            attribute,
-                            'bar',
-                            payload,
-                          )
+                          this.getAttributeDetails(attribute, 'bar', payload)
                         }
                       />
                     </div>
@@ -737,49 +660,6 @@ class ResourceDetails extends React.Component {
             </div>
           </div>
         ) : null}
-        <Modal
-          open={this.state.showModal}
-          onClose={() => this.closeModal()}
-          dimmer="inverted"
-        >
-          <Modal.Header>{this.state.resourceType}</Modal.Header>
-          <Modal.Content>
-            <Modal.Description>
-              <Header>
-                {getHumanReadableNumber(
-                  this.state.totalResults ? this.state.totalResults : 0,
-                )}{' '}
-                results for{' '}
-                {selectedAttribute
-                  ? selectedAttribute.concat(
-                      selectedParam ? ` = ${selectedParam}` : '',
-                    )
-                  : null}
-              </Header>
-              {this.state.tableLoaded ? (
-                <ResultsTable
-                  closeModal={this.closeModal}
-                  history={this.props.history}
-                  baseUrl={this.props.baseUrl}
-                  fetchResource={this.fetchNextPage}
-                  results={this.state.tableResults}
-                  nextPageUrl={this.state.nextPageUrl}
-                  totalResults={this.state.totalResults}
-                  tableColumns={this.state.tableColumns}
-                  loadingMessage={this.props.loadingMessage}
-                  setLoadingMessage={this.props.setLoadingMessage}
-                  searchCriteria={
-                    selectedAttribute && selectedParam
-                      ? `${selectedAttribute}=${selectedParam}`
-                      : null
-                  }
-                />
-              ) : (
-                <Loader inline active content={this.props.loadingMessage} />
-              )}
-            </Modal.Description>
-          </Modal.Content>
-        </Modal>
       </div>
     );
   }

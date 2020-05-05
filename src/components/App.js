@@ -6,7 +6,7 @@ import Header from './Header';
 import DecisionRoute from './DecisionRoute';
 import ReduxHomepage from './ReduxHomepage';
 import ReduxResourceDetails from './ReduxResourceDetails';
-import AttributeDetails from './AttributeDetails';
+import ReduxAttributeDetails from './ReduxAttributeDetails';
 import ReduxOntologyHomepage from './ReduxOntologyHomepage';
 import ReduxLogin from './ReduxLogin';
 import ReduxServerConfiguration from './ReduxServerConfiguration';
@@ -80,7 +80,7 @@ class App extends React.Component {
                 renderComponent={
                   !!this.serverSelected() && !!this.isAuthorized()
                 }
-                component={AttributeDetails}
+                component={ReduxAttributeDetails}
                 redirectPath={this.getRedirectPath()}
               />
               <DecisionRoute
