@@ -167,9 +167,7 @@ class ResultsTable extends React.Component {
   };
 
   onReferenceRowClick = item => {
-    this.props.history.push(
-      `/${item.resourceType}?name=${item.name}&url=${item.profile}`,
-    );
+    this.props.history.push(`/resources/${item.id}`);
     this.closeModal();
     this.props.closeModal();
   };

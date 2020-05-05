@@ -5,7 +5,7 @@ import './AppBreadcrumb.css';
 
 class AppBreadcrumb extends React.Component {
   goHome = () => {
-    this.props.history.replace('/');
+    this.props.history.replace('/resources');
   };
 
   render() {

@@ -116,6 +116,7 @@ class ServerConfiguration extends React.Component {
 
   setApi = () => {
     this.props.setApi(this.state.selectedServerOption.url);
+    this.props.history.push('/login');
   };
 
   render() {
@@ -218,6 +219,11 @@ ServerConfiguration.propTypes = {
   addServer: PropTypes.func.isRequired,
   updateServer: PropTypes.func.isRequired,
   setApi: PropTypes.func.isRequired,
+  history: PropTypes.shape({
+    location: PropTypes.shape({
+      pathname: PropTypes.string.isRequired,
+    }).isRequired,
+  }).isRequired,
 };
 
 ServerConfiguration.defaultProps = {

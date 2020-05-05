@@ -18,17 +18,17 @@ class Header extends React.Component {
       <Menu>
         <Container>
           <Menu.Item>
-            <Link to="/">
+            <Link to="/resources">
               <Image src={logo} alt="D3b" size="mini" />
             </Link>
           </Menu.Item>
           <Menu.Item>
-            <Link to="/">FHIR Data Dashboard</Link>
+            <Link to="/resources">FHIR Data Dashboard</Link>
           </Menu.Item>
           {userIsAuthorized ? (
             <React.Fragment>
               <Menu.Item>
-                <Link to="/">Resources</Link>
+                <Link to="/resources">Resources</Link>
               </Menu.Item>
               <Menu.Item>
                 <Link to="/ontologies">Ontologies</Link>
@@ -36,9 +36,15 @@ class Header extends React.Component {
               <Menu.Menu position="right">
                 <Dropdown item text="Server">
                   <Dropdown.Menu>
-                    <Dropdown.Header>{selectedServer.name}</Dropdown.Header>
-                    <Dropdown.Header>{selectedServer.url}</Dropdown.Header>
-                    <Dropdown.Item>Switch servers</Dropdown.Item>
+                    <Dropdown.Header>
+                      {selectedServer ? selectedServer.name : null}
+                    </Dropdown.Header>
+                    <Dropdown.Header>
+                      {selectedServer ? selectedServer.url : null}
+                    </Dropdown.Header>
+                    <Dropdown.Item>
+                      <Link to="/servers">Switch servers</Link>
+                    </Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
                 {isAuthRequired ? (
@@ -64,7 +70,7 @@ export default Header;
 
 Header.propTypes = {
   userIsAuthorized: PropTypes.bool,
-  selectedServer: PropTypes.object.isRequired,
+  selectedServer: PropTypes.object,
   isAuthRequired: PropTypes.bool,
   logout: PropTypes.func.isRequired,
 };

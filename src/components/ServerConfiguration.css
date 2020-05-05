@@ -5,6 +5,7 @@
 }
 
 /* Semantic UI overrides */
+
 .server-configuration__modal .ui.form {
   display: flex;
   flex-flow: column;

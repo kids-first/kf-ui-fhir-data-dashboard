@@ -13,7 +13,6 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     updateServer: (id, name, url, authType) =>
       dispatch(updateServer(id, name, url, authType)),
     setApi: url => {
-      console.log('url', url);
       dispatch(setApi(url));
     },
   };

@@ -53,7 +53,7 @@ class Homepage extends React.Component {
   };
 
   onClick = resource => {
-    this.props.history.push(`/${resource.id}`);
+    this.props.history.push(`/resources/${resource.id}`);
   };
 
   handleResultSelect = searchResults => {

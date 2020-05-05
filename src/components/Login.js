@@ -59,7 +59,12 @@ class Login extends React.Component {
               onChange={this.handlePasswordChange}
               autoComplete="current-password"
             />
-            <Button type="submit">Login</Button>
+            <div className="login__content-buttons">
+              <Button onClick={() => this.props.history.push('/servers')}>
+                Back to Servers
+              </Button>
+              <Button type="submit">Login</Button>
+            </div>
           </form>
           {this.state.authError ? (
             <div className="login__auth-error">
@@ -84,6 +89,11 @@ Login.propTypes = {
   setUser: PropTypes.func.isRequired,
   baseUrl: PropTypes.string.isRequired,
   checkUser: PropTypes.func.isRequired,
+  history: PropTypes.shape({
+    location: PropTypes.shape({
+      pathname: PropTypes.string.isRequired,
+    }).isRequired,
+  }).isRequired,
 };
 
 export default Login;

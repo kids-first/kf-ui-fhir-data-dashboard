@@ -12,7 +12,7 @@ export const getBaseUrl = () => {
     }
     return envVar;
   }
-  return 'http://10.10.1.191:8000/';
+  return null;
 };
 
 const getDefaultFhirServers = () => {

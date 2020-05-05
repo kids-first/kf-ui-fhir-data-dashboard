@@ -11,7 +11,6 @@ import {
 } from 'recharts';
 
 const CustomTooltip = ({active, payload, label}) => {
-  console.log('payload', payload);
   if (active) {
     return (
       <div className="custom-tooltip">
