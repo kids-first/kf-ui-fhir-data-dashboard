@@ -32,21 +32,22 @@ class SortableTable extends React.Component {
     }
   }
 
-  handleSort = selectedColumn => {
+  handleSort = (selectedColumn, sort) => {
     const {sortColumn, sortDirection, sortedData} = this.state;
-
-    if (selectedColumn && sortColumn !== selectedColumn) {
-      this.setState({
-        sortColumn: selectedColumn,
-        sortedData: _.sortBy(sortedData, [selectedColumn]),
-        sortDirection: 'ascending',
-      });
-    } else if (selectedColumn) {
-      this.setState({
-        sortedData: sortedData.reverse(),
-        sortDirection:
-          sortDirection === 'ascending' ? 'descending' : 'ascending',
-      });
+    if (sort) {
+      if (selectedColumn && sortColumn !== selectedColumn) {
+        this.setState({
+          sortColumn: selectedColumn,
+          sortedData: _.sortBy(sortedData, [selectedColumn]),
+          sortDirection: 'ascending',
+        });
+      } else if (selectedColumn) {
+        this.setState({
+          sortedData: sortedData.reverse(),
+          sortDirection:
+            sortDirection === 'ascending' ? 'descending' : 'ascending',
+        });
+      }
     }
   };
 
@@ -87,7 +88,7 @@ class SortableTable extends React.Component {
                 <Table.HeaderCell
                   key={`${cell.sortId}-${i}`}
                   sorted={sortColumn === cell.sortId ? sortDirection : null}
-                  onClick={() => this.handleSort(cell.sortId)}
+                  onClick={() => this.handleSort(cell.sortId, cell.sort)}
                 >
                   {cell.display}
                 </Table.HeaderCell>
@@ -151,6 +152,7 @@ SortableTable.propTypes = {
     PropTypes.shape({
       display: PropTypes.string.isRequired,
       sortId: PropTypes.string.isRequired,
+      sort: PropTypes.bool,
       func: PropTypes.func,
     }),
   ),

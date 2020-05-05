@@ -68,12 +68,6 @@ class Homepage extends React.Component {
     });
   };
 
-  selectApi = (e, {value}) => {
-    this.setState({filteredResources: {}}, () => {
-      this.props.setBaseUrl(value);
-    });
-  };
-
   getIcon = (resourceType, resourceBaseType) => {
     const iconColor = '#005788';
     switch (resourceBaseType) {
@@ -121,12 +115,17 @@ class Homepage extends React.Component {
     const {searchResourceTitle, filteredResources, listResources} = this.state;
     const {allResources, allResourcesFetched, cardView} = this.props;
     const tableHeaders = [
-      {display: 'Name', sortId: 'name'},
-      {display: 'ID', sortId: 'id'},
-      {display: 'Base Type', sortId: 'baseType'},
-      {display: 'FHIR Module', sortId: 'module'},
-      {display: 'FHIR Category', sortId: 'category'},
-      {display: '#', sortId: 'count', func: str => getHumanReadableNumber(str)},
+      {display: 'Name', sortId: 'name', sort: true},
+      {display: 'ID', sortId: 'id', sort: true},
+      {display: 'Base Type', sortId: 'baseType', sort: true},
+      {display: 'FHIR Module', sortId: 'module', sort: true},
+      {display: 'FHIR Category', sortId: 'category', sort: true},
+      {
+        display: '#',
+        sortId: 'count',
+        func: str => getHumanReadableNumber(str),
+        sort: true,
+      },
     ];
     return (
       <div className="homepage">
@@ -220,11 +219,9 @@ Homepage.propTypes = {
   allResources: PropTypes.object,
   allResourcesFetched: PropTypes.bool,
   baseUrl: PropTypes.string.isRequired,
-  setBaseUrl: PropTypes.func.isRequired,
   cardView: PropTypes.bool,
   setHomepageView: PropTypes.func.isRequired,
   loadingMessage: PropTypes.string,
-  serverOptions: PropTypes.array,
 };
 
 Homepage.defaultProps = {
@@ -232,7 +229,6 @@ Homepage.defaultProps = {
   allResourcesFetched: false,
   cardView: true,
   loadingMessage: '',
-  serverOptions: [],
 };
 
 export default Homepage;

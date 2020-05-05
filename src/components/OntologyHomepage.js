@@ -21,12 +21,6 @@ class OntologyHomepage extends React.Component {
     };
   }
 
-  selectApi = (e, {value}) => {
-    this.setState({ontologiesFetched: false, filteredOntologies: []}, () => {
-      this.props.setBaseUrl(value);
-    });
-  };
-
   componentDidMount() {
     if (!this.props.ontologiesFetched) {
       this.getOntologies();
@@ -120,8 +114,8 @@ class OntologyHomepage extends React.Component {
     const {ontologies} = this.props;
 
     const tableHeaders = [
-      {display: 'Name', sortId: 'name'},
-      {display: 'URL', sortId: 'url'},
+      {display: 'Name', sortId: 'name', sort: true},
+      {display: 'URL', sortId: 'url', sort: true},
     ];
 
     return (
@@ -183,11 +177,9 @@ class OntologyHomepage extends React.Component {
 OntologyHomepage.propTypes = {
   ontologies: PropTypes.object,
   baseUrl: PropTypes.string.isRequired,
-  setBaseUrl: PropTypes.func.isRequired,
   ontologiesFetched: PropTypes.bool,
   getOntologies: PropTypes.func.isRequired,
   loadingMessage: PropTypes.string,
-  serverOptions: PropTypes.array,
   getOntologyDetails: PropTypes.func.isRequired,
 };
 
@@ -195,7 +187,6 @@ OntologyHomepage.defaultProps = {
   ontologies: {},
   ontologiesFetched: false,
   loadingMessage: '',
-  serverOptions: [],
 };
 
 export default OntologyHomepage;

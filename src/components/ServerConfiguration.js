@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Card,
   Icon,
   Modal,
   Input,
@@ -11,12 +10,14 @@ import {
   Form,
 } from 'semantic-ui-react';
 import {NO_AUTH, BASIC_AUTH} from '../config';
+import SortableTable from './tables/SortableTable';
 import './ServerConfiguration.css';
 
 class ServerConfiguration extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      selectedServerOption: null,
       editMode: false,
       editServerOption: null,
       createMode: false,
@@ -113,11 +114,27 @@ class ServerConfiguration extends React.Component {
     } else return null;
   };
 
+  setApi = () => {
+    this.props.setApi(this.state.selectedServerOption.url);
+  };
+
   render() {
     const authOptions = [
       {key: NO_AUTH, text: 'None', value: NO_AUTH},
       {key: BASIC_AUTH, text: 'Basic', value: BASIC_AUTH},
     ];
+
+    const tableHeaders = [
+      {display: 'Name', sortId: 'name', sort: true},
+      {display: 'URL', sortId: 'url', sort: true},
+      {display: 'Auth Type', sortId: 'authType', sort: true},
+      {display: '', sortId: 'action', sort: false},
+    ];
+
+    const serverOptions = this.props.serverOptions.map(server => ({
+      ...server,
+      action: <Button onClick={() => this.editServer(server)}>Edit</Button>,
+    }));
 
     const selectedServer = this.getSelectedServer();
 
@@ -129,35 +146,17 @@ class ServerConfiguration extends React.Component {
           Add a new server
         </Button>
         <div className="server-configuration__options">
-          {this.props.serverOptions.map(option => {
-            return (
-              <Card key={option.id}>
-                <Card.Content>
-                  <Card.Header>
-                    {option.name}
-                    <Icon
-                      name="pencil"
-                      size="small"
-                      onClick={() => this.editServer(option)}
-                    />
-                  </Card.Header>
-                  <Card.Description>
-                    <p>
-                      <b>URL:</b> {option.url}
-                    </p>
-                    <p>
-                      <b>AuthN/AuthZ method:</b>{' '}
-                      {
-                        authOptions.find(elt => elt.value === option.authType)
-                          .text
-                      }
-                    </p>
-                  </Card.Description>
-                </Card.Content>
-              </Card>
-            );
-          })}
+          <SortableTable
+            headerCells={tableHeaders}
+            data={serverOptions}
+            onRowClick={server => this.setState({selectedServerOption: server})}
+          />
         </div>
+        {this.state.selectedServerOption ? (
+          <Button onClick={() => this.setApi()}>
+            Launch {this.state.selectedServerOption.name}
+          </Button>
+        ) : null}
         <Modal
           open={!!selectedServer}
           onClose={() => this.closeModal()}
@@ -218,6 +217,7 @@ ServerConfiguration.propTypes = {
   ),
   addServer: PropTypes.func.isRequired,
   updateServer: PropTypes.func.isRequired,
+  setApi: PropTypes.func.isRequired,
 };
 
 ServerConfiguration.defaultProps = {

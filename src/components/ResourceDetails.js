@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Modal, Header} from 'semantic-ui-react';
+import {Modal, Header, Loader} from 'semantic-ui-react';
 import {
   getHumanReadableNumber,
   getBaseResourceCount,
@@ -622,19 +622,27 @@ class ResourceDetails extends React.Component {
     return (
       <div className="resource-details">
         <AppBreadcrumb history={this.props.history} />
-        <div className={`ui ${queriesComplete ? 'disabled' : 'active'} loader`}>
-          <p>{this.props.loadingMessage}</p>
-        </div>
         <div className="resource-details__header">
           <h2>{resourceType}</h2>
           <p>Base type: {resourceBaseType}</p>
         </div>
+        <Loader
+          inline
+          active={queriesComplete ? false : true}
+          content={this.props.loadingMessage}
+        />
         {queriesComplete && attributes.length === 0 ? (
-          <h3>No statistics to display.</h3>
+          <h4>No statistics to display.</h4>
         ) : null}
         {queriesComplete && attributes.length > 0 ? (
           <div>
-            <div className="resource-details__count-section">
+            <div
+              className={`resource-details__count-section${
+                charts.pie.length === 0 || charts.bar.length === 0
+                  ? ' no-height'
+                  : ''
+              }`}
+            >
               <div className="resource-details__count card">
                 <p className="resource-details__number">
                   {getHumanReadableNumber(total)}
@@ -661,55 +669,71 @@ class ResourceDetails extends React.Component {
               ))}
             </div>
             <div className="resource-details__bottom-section">
-              <div className="resource-details__pie-section">
-                {charts.pie.map((attribute, i) => {
-                  const pieResults = this.formatResults(attribute.queryParams);
-                  return (
+              {charts.pie.length > 0 ? (
+                <div
+                  className={`resource-details__pie-section${
+                    charts.bar.length === 0 ? ' expand no-height' : ''
+                  }`}
+                >
+                  {charts.pie.map((attribute, i) => {
+                    const pieResults = this.formatResults(
+                      attribute.queryParams,
+                    );
+                    return (
+                      <div
+                        key={attribute.name}
+                        className="resource-details__pie card"
+                      >
+                        <h4>{capitalize(attribute.name)}</h4>
+                        <div className="resource-details__pie-values">
+                          {pieResults.map(result => (
+                            <div
+                              key={result.name}
+                              className="resource-details__pie-value"
+                              onClick={() =>
+                                this.getAttributeTableResults(
+                                  attribute,
+                                  'pie',
+                                  result,
+                                )
+                              }
+                            >
+                              <p className="resource-details__number">
+                                {getHumanReadableNumber(result.value)}
+                              </p>
+                              <p>{result.name}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : null}
+              {charts.bar.length > 0 ? (
+                <div className="resource-details__bar-section">
+                  {charts.bar.map((attribute, i) => (
                     <div
                       key={attribute.name}
-                      className="resource-details__pie card"
+                      className={`resource-details__bar card expand${
+                        charts.pie.length === 0 ? ' no-height' : ''
+                      }`}
                     >
                       <h4>{capitalize(attribute.name)}</h4>
-                      <div className="resource-details__pie-values">
-                        {pieResults.map(result => (
-                          <div
-                            key={result.name}
-                            className="resource-details__pie-value"
-                            onClick={() =>
-                              this.getAttributeTableResults(
-                                attribute,
-                                'pie',
-                                result,
-                              )
-                            }
-                          >
-                            <p className="resource-details__number">
-                              {getHumanReadableNumber(result.value)}
-                            </p>
-                            <p>{result.name}</p>
-                          </div>
-                        ))}
-                      </div>
+                      <DataBarChart
+                        data={this.formatResults(attribute.queryParams)}
+                        handleClick={payload =>
+                          this.getAttributeTableResults(
+                            attribute,
+                            'bar',
+                            payload,
+                          )
+                        }
+                      />
                     </div>
-                  );
-                })}
-              </div>
-              <div className="resource-details__bar-section">
-                {charts.bar.map((attribute, i) => (
-                  <div
-                    key={attribute.name}
-                    className="resource-details__bar card expand"
-                  >
-                    <h4>{capitalize(attribute.name)}</h4>
-                    <DataBarChart
-                      data={this.formatResults(attribute.queryParams)}
-                      handleClick={payload =>
-                        this.getAttributeTableResults(attribute, 'bar', payload)
-                      }
-                    />
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : null}
             </div>
           </div>
         ) : null}
@@ -751,9 +775,7 @@ class ResourceDetails extends React.Component {
                   }
                 />
               ) : (
-                <div className="ui active loader">
-                  <p>{this.props.loadingMessage}</p>
-                </div>
+                <Loader inline active content={this.props.loadingMessage} />
               )}
             </Modal.Description>
           </Modal.Content>

@@ -6,6 +6,7 @@ import Header from './Header';
 import DecisionRoute from './DecisionRoute';
 import ReduxHomepage from './ReduxHomepage';
 import ReduxResourceDetails from './ReduxResourceDetails';
+import AttributeDetails from './AttributeDetails';
 import ReduxOntologyHomepage from './ReduxOntologyHomepage';
 import ReduxLogin from './ReduxLogin';
 import ReduxServerConfiguration from './ReduxServerConfiguration';
@@ -55,6 +56,12 @@ class App extends React.Component {
                 path="/settings"
                 renderComponent={!!this.isAuthorized()}
                 component={ReduxServerConfiguration}
+                redirectPath="/login"
+              />
+              <DecisionRoute
+                path="/:resourceId/:query"
+                renderComponent={!!this.isAuthorized()}
+                component={AttributeDetails}
                 redirectPath="/login"
               />
               <DecisionRoute

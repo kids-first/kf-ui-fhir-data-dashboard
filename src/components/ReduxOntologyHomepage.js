@@ -1,5 +1,5 @@
 import {connect} from 'react-redux';
-import {setOntologies, setApi, setLoadingMessage} from '../actions';
+import {setOntologies, setLoadingMessage} from '../actions';
 import {getOntologies, fetchResource} from '../utils/api';
 import OntologyHomepage from './OntologyHomepage';
 
@@ -25,12 +25,10 @@ const mapStateToProps = (state, ownProps) => ({
     state && state.ontologies ? state.ontologies.ontologiesFetched : false,
   baseUrl: state.app.selectedServer.url,
   loadingMessage: state.app.loadingMessage,
-  serverOptions: state.app ? state.app.serverOptions : [],
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    setBaseUrl: url => dispatch(setApi(url)),
     getOntologies: async (url, abortController) => {
       dispatch(setLoadingMessage('Fetching all ontologies...'));
       await getOntologies(url, abortController)

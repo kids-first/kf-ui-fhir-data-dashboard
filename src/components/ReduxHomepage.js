@@ -1,10 +1,5 @@
 import {connect} from 'react-redux';
-import {
-  setResources,
-  setApi,
-  setHomepageView,
-  setLoadingMessage,
-} from '../actions';
+import {setResources, setHomepageView, setLoadingMessage} from '../actions';
 import {fetchAllResources, getResourceCount} from '../utils/api';
 import {getBaseResourceCount} from '../utils/common';
 import {acceptedResourceTypes, resourceCategories} from '../config';
@@ -112,7 +107,6 @@ const mapStateToProps = (state, ownProps) => ({
     state.app && state.app.selectedServer ? state.app.selectedServer.url : '',
   cardView: state.resources.cardView,
   loadingMessage: state.app.loadingMessage,
-  serverOptions: state.app ? state.app.serverOptions : [],
   sortedResources: sortedResources,
 });
 
@@ -128,7 +122,6 @@ const mapDispatchToProps = (dispatch, ownProps) => {
           throw err;
         });
     },
-    setBaseUrl: url => dispatch(setApi(url)),
     setHomepageView: cardView => dispatch(setHomepageView(cardView)),
   };
 };

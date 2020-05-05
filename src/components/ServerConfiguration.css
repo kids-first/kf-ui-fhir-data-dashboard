@@ -4,18 +4,7 @@
   width: 100%;
 }
 
-.server-configuration__options {
-  display: flex;
-  flex-flow: wrap;
-}
-
 /* Semantic UI overrides */
-.server-configuration .ui.card > .content > .header:not(.ui),
-.server-configuration .ui.cards > .card > .content > .header:not(.ui) {
-  display: flex;
-  justify-content: space-between;
-}
-
 .server-configuration__modal .ui.form {
   display: flex;
   flex-flow: column;
@@ -27,7 +16,6 @@
 
 .server-configuration .ui.button {
   width: fit-content;
-  margin-left: 20px;
 }
 
 .server-configuration__modal .ui.button {

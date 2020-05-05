@@ -1,5 +1,5 @@
 import {connect} from 'react-redux';
-import {addServer, updateServer} from '../actions';
+import {addServer, updateServer, setApi} from '../actions';
 import ServerConfiguration from './ServerConfiguration';
 
 const mapStateToProps = (state, ownProps) => ({
@@ -12,6 +12,10 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(addServer(id, name, url, authType)),
     updateServer: (id, name, url, authType) =>
       dispatch(updateServer(id, name, url, authType)),
+    setApi: url => {
+      console.log('url', url);
+      dispatch(setApi(url));
+    },
   };
 };
 
