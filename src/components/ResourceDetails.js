@@ -7,7 +7,6 @@ import {
   logErrors,
   capitalize,
 } from '../utils/common';
-import AppBreadcrumb from './AppBreadcrumb';
 import DataBarChart from './DataBarChart';
 import './ResourceDetails.css';
 
@@ -536,7 +535,7 @@ class ResourceDetails extends React.Component {
 
   fetchNextPage = async url =>
     await this.props
-      .fetchResource(url)
+      .fetchResource(url, this.state.abortController)
       .then(data => this.transformResults(data, this.state.modalAttribute));
 
   render() {
@@ -550,7 +549,6 @@ class ResourceDetails extends React.Component {
     const charts = this.getCharts(attributes);
     return (
       <div className="resource-details">
-        <AppBreadcrumb history={this.props.history} />
         <div className="resource-details__header">
           <h2>{resourceType}</h2>
           <p>Base type: {resourceBaseType}</p>

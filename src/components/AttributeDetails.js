@@ -4,6 +4,7 @@ import {Loader} from 'semantic-ui-react';
 import {logErrors, getMonth} from '../utils/common';
 import SortableTable from './tables/SortableTable';
 import SearchBar from './SearchBar';
+import './AttributeDetails.css';
 
 class AttributeDetails extends React.Component {
   constructor(props) {
@@ -43,6 +44,7 @@ class AttributeDetails extends React.Component {
           this.props
             .fetchAllResources(
               `${baseUrl}${this.state.resourceBaseType}?_type=${resourceId}&${query}`,
+              this.state.abortController,
             )
             .then(async data => {
               const mappedData = data
@@ -81,6 +83,10 @@ class AttributeDetails extends React.Component {
     return `${month} ${day}, ${year}`;
   };
 
+  onRowClick = row => {
+    this.props.history.push(`/resources/${this.props.resourceId}/id=${row.id}`);
+  };
+
   render() {
     const tableHeaders = [
       {display: 'ID', sortId: 'id', sort: true},
@@ -95,9 +101,7 @@ class AttributeDetails extends React.Component {
       <div className="attribute-details">
         <div className="header">
           <div className="header__text">
-            <h2>
-              {this.state.resourceType}: {this.props.query}
-            </h2>
+            <h2>{this.props.query}</h2>
             <h3>{this.state.filteredData.length} total</h3>
           </div>
           <SearchBar
@@ -119,6 +123,7 @@ class AttributeDetails extends React.Component {
           <SortableTable
             headerCells={tableHeaders}
             data={this.state.filteredData}
+            onRowClick={this.onRowClick}
           />
         ) : null}
       </div>
@@ -148,39 +153,3 @@ AttributeDetails.propTypes = {
 AttributeDetails.defaultProps = {
   loadingMessage: '',
 };
-
-/*
-{getHumanReadableNumber(
-  this.state.totalResults ? this.state.totalResults : 0,
-)}{' '}
-results for{' '}
-{selectedAttribute
-  ? selectedAttribute.concat(
-      selectedParam ? ` = ${selectedParam}` : '',
-    )
-  : null}
-{this.state.tableLoaded ? (
-<ResultsTable
-  closeModal={this.closeModal}
-  history={this.props.history}
-  baseUrl={this.props.baseUrl}
-  fetchResource={this.fetchNextPage}
-  results={this.state.tableResults}
-  nextPageUrl={this.state.nextPageUrl}
-  totalResults={this.state.totalResults}
-  tableColumns={this.state.tableColumns}
-  loadingMessage={this.props.loadingMessage}
-  setLoadingMessage={this.props.setLoadingMessage}
-  searchCriteria={
-    selectedAttribute && selectedParam
-      ? `${selectedAttribute}=${selectedParam}`
-      : null
-  }
-/>
-) : (
-<Loader inline active content={this.props.loadingMessage} />
-)}
-</Modal.Description>
-</Modal.Content>
-</Modal>
-*/

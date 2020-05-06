@@ -3,10 +3,12 @@ import PropTypes from 'prop-types';
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 import {Container, Segment} from 'semantic-ui-react';
 import Header from './Header';
+import AppBreadcrumb from './AppBreadcrumb';
 import DecisionRoute from './DecisionRoute';
 import ReduxHomepage from './ReduxHomepage';
 import ReduxResourceDetails from './ReduxResourceDetails';
 import ReduxAttributeDetails from './ReduxAttributeDetails';
+import ReduxIdDetails from './ReduxIdDetails';
 import ReduxOntologyHomepage from './ReduxOntologyHomepage';
 import ReduxLogin from './ReduxLogin';
 import ReduxServerConfiguration from './ReduxServerConfiguration';
@@ -57,6 +59,7 @@ class App extends React.Component {
             logout={this.props.logout}
           />
           <Container as={Segment} basic>
+            <AppBreadcrumb />
             <Switch>
               <Route path="/servers" component={ReduxServerConfiguration} />
               <DecisionRoute
@@ -73,6 +76,14 @@ class App extends React.Component {
                   !!this.serverSelected() && !!this.isAuthorized()
                 }
                 component={ReduxOntologyHomepage}
+                redirectPath={this.getRedirectPath()}
+              />
+              <DecisionRoute
+                path="/resources/:resourceId/id=:id"
+                renderComponent={
+                  !!this.serverSelected() && !!this.isAuthorized()
+                }
+                component={ReduxIdDetails}
                 redirectPath={this.getRedirectPath()}
               />
               <DecisionRoute

@@ -1,0 +1,12 @@
+.id-details .header {
+  margin: 20px 0;
+}
+
+/* Semantic UI Overrides */
+.id-details .ui.menu .item {
+  font-size: 14px;
+}
+
+.id-details .ui.tabular.menu .active.item {
+  color: var(--d3b-blue) !important;
+}
