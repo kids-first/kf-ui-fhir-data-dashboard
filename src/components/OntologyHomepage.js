@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import ReactJson from 'react-json-view';
 import {Loader} from 'semantic-ui-react';
 import {getHumanReadableNumber, logErrors} from '../utils/common';
 import SearchBar from './SearchBar';
