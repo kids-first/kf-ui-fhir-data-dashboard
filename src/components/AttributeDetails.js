@@ -43,7 +43,7 @@ class AttributeDetails extends React.Component {
         .then(async () => {
           this.props
             .fetchAllResources(
-              `${baseUrl}${this.state.resourceBaseType}?_type=${resourceId}&${query}`,
+              `${baseUrl}${this.state.resourceBaseType}?_profile:below=${this.state.resourceUrl}&${query}`,
               this.state.abortController,
             )
             .then(async data => {
