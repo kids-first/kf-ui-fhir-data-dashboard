@@ -71,6 +71,14 @@ class App extends React.Component {
                 redirectPath={this.getRedirectPath()}
               />
               <DecisionRoute
+                path="/ontologies/:id"
+                renderComponent={
+                  !!this.serverSelected() && !!this.isAuthorized()
+                }
+                component={ReduxIdDetails}
+                redirectPath={this.getRedirectPath()}
+              />
+              <DecisionRoute
                 path="/ontologies"
                 renderComponent={
                   !!this.serverSelected() && !!this.isAuthorized()
@@ -138,32 +146,3 @@ App.defaultProps = {
 };
 
 export default App;
-
-/*
-
-<DecisionRoute
-  path="/ontologies"
-  renderComponent={
-    !!this.serverSelected() && !!this.isAuthorized()
-  }
-  component={ReduxOntologyHomepage}
-  redirectPath={this.getRedirectPath()}
-/>
-<DecisionRoute
-  path="/resources/:resourceId/:query"
-  renderComponent={
-    !!this.serverSelected() && !!this.isAuthorized()
-  }
-  component={AttributeDetails}
-  redirectPath={this.getRedirectPath()}
-/>
-<DecisionRoute
-  path="/resources/:resourceId"
-  renderComponent={
-    !!this.serverSelected() && !!this.isAuthorized()
-  }
-  component={ReduxResourceDetails}
-  redirectPath={this.getRedirectPath()}
-/>
-
-*/

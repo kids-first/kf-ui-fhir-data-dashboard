@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import ReactJson from 'react-json-view';
 import {getReferencedBy, getReferences} from '../../utils/api';
 import {logErrors} from '../../utils/common';
 import SortableTable from './SortableTable';

@@ -549,9 +549,11 @@ class ResourceDetails extends React.Component {
     const charts = this.getCharts(attributes);
     return (
       <div className="resource-details">
-        <div className="resource-details__header">
-          <h2>{resourceType}</h2>
-          <p>Base type: {resourceBaseType}</p>
+        <div className="header">
+          <div className="header__text">
+            <h2>{resourceType}</h2>
+            <h3>Base type: {resourceBaseType}</h3>
+          </div>
         </div>
         <Loader
           inline

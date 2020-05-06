@@ -104,7 +104,11 @@ export const getOntologies = async (url, abortController) =>
     .then(data =>
       data
         .map(item => item.resource)
-        .map(resource => ({name: resource.name, url: resource.url})),
+        .map(resource => ({
+          id: resource.id,
+          name: resource.name,
+          url: resource.url,
+        })),
     )
     .catch(err => {
       throw err;

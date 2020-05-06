@@ -8,7 +8,6 @@ import './AppBreadcrumb.css';
 class AppBreadcrumb extends React.Component {
   getLink = (linkNames, i) => {
     const path = linkNames.slice(0, i + 1).join('/');
-    console.log('path', path);
     return path;
   };
   render() {
@@ -36,8 +35,7 @@ class AppBreadcrumb extends React.Component {
   }
 }
 
-AppBreadcrumb.propTyps = {
-  match: PropTypes.object.isRequired,
+AppBreadcrumb.propTypes = {
   location: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
 };

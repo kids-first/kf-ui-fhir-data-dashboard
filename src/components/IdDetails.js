@@ -53,15 +53,31 @@ class IdDetails extends React.Component {
   };
 
   render() {
-    const {id} = this.props;
+    const {id, history} = this.props;
     const {payload} = this.state;
-    console.log('payload', payload);
     const tableHeaders = [
-      {display: 'Resource Type', sortId: 'resourceType'},
-      {display: 'Resource Name', sortId: 'name'},
-      {display: 'Profile', sortId: 'profile'},
-      {display: 'Total References', sortId: 'total'},
+      {display: 'Resource Type', sortId: 'resourceType', sort: true},
+      {display: 'Resource Name', sortId: 'name', sort: true},
+      {display: 'Profile', sortId: 'profile', sort: true},
+      {display: 'Total References', sortId: 'total', sort: true},
     ];
+    const secondTab = history.location.pathname.includes('/resources')
+      ? {
+          menuItem: 'References',
+          render: () => (
+            <Tab.Pane>
+              <ReferenceTable
+                resource={payload}
+                tableHeaders={tableHeaders}
+                baseUrl={this.props.baseUrl}
+                setLoadingMessage={this.props.setLoadingMessage}
+                loadingMessage={this.props.loadingMessage}
+                history={this.props.history}
+              />
+            </Tab.Pane>
+          ),
+        }
+      : null;
     const panes = [
       {
         menuItem: 'Payload',
@@ -71,21 +87,7 @@ class IdDetails extends React.Component {
           </Tab.Pane>
         ),
       },
-      {
-        menuItem: 'References',
-        render: () => (
-          <Tab.Pane>
-            <ReferenceTable
-              resource={payload}
-              tableHeaders={tableHeaders}
-              baseUrl={this.props.baseUrl}
-              setLoadingMessage={this.props.setLoadingMessage}
-              loadingMessage={this.props.loadingMessage}
-              history={this.props.history}
-            />
-          </Tab.Pane>
-        ),
-      },
+      {...secondTab},
     ];
     return (
       <div className="id-details">
@@ -109,7 +111,7 @@ class IdDetails extends React.Component {
 }
 
 IdDetails.propTypes = {
-  resourceId: PropTypes.string.isRequired,
+  resourceId: PropTypes.string,
   id: PropTypes.string.isRequired,
   loadingMessage: PropTypes.string,
   fetchResource: PropTypes.func.isRequired,
@@ -117,6 +119,7 @@ IdDetails.propTypes = {
 };
 
 IdDetails.defaultProps = {
+  resourceId: 'CodeSystem',
   loadingMessage: '',
 };
 

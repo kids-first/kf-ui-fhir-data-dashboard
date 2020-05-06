@@ -6,13 +6,17 @@ import OntologyHomepage from './OntologyHomepage';
 const groupOntologies = ontologies => {
   const groupedOntologies = {};
   ontologies.forEach(item => {
-    if (!!item.name && !!item.url) {
-      if (groupOntologies[item.name]) {
-        groupedOntologies[item.name] = groupedOntologies[item.name].concat(
-          item.url,
-        );
+    if (!!item.id && !!item.url) {
+      if (groupedOntologies[item.id]) {
+        groupedOntologies[item.id] = {
+          url: groupedOntologies[item.id].concat(item.url),
+          ...groupedOntologies[item.id],
+        };
       } else {
-        groupedOntologies[item.name] = [item.url];
+        groupedOntologies[item.id] = {
+          url: [item.url],
+          name: item.name,
+        };
       }
     }
   });
@@ -43,7 +47,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     getOntologyDetails: async (url, abortController) => {
       dispatch(setLoadingMessage('Fetching ontology details...'));
       return await fetchResource(url, abortController)
-        .then(data => (data ? data.entry : null))
+        .then(data => data)
         .catch(err => {
           throw err;
         });

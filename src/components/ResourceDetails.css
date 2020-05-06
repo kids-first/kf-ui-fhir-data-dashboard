@@ -1,21 +1,8 @@
 .resource-details {
+  margin-top: 20px;
   display: flex;
   flex-flow: column;
   width: 100%;
-}
-
-.resource-details h4 {
-  margin: 0;
-}
-
-.resource-details__header {
-  display: flex;
-  flex-flow: column;
-  margin: 20px 0;
-}
-
-.resource-details__header-title h2 {
-  margin: 0 5px;
 }
 
 .resource-details__number {
