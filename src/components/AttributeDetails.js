@@ -27,7 +27,11 @@ class AttributeDetails extends React.Component {
   getResource = () => {
     const {fetchResource, schemaUrl, baseUrl, resourceId, query} = this.props;
     this.setState({loading: true}, () => {
-      this.props.setLoadingMessage(`Fetching results for ${query}...`);
+      this.props.setLoadingMessage(
+        query === 'all'
+          ? `Fetching all results for ${resourceId}...`
+          : `Fetching results for ${query}...`,
+      );
       fetchResource(
         `${schemaUrl}/${resourceId}/$snapshot`,
         this.state.abortController,
@@ -41,11 +45,12 @@ class AttributeDetails extends React.Component {
           });
         })
         .then(async () => {
+          let url = `${baseUrl}${this.state.resourceBaseType}?_profile:below=${this.state.resourceUrl}`;
+          if (query !== 'all') {
+            url = url.concat(`&${query}`);
+          }
           this.props
-            .fetchAllResources(
-              `${baseUrl}${this.state.resourceBaseType}?_profile:below=${this.state.resourceUrl}&${query}`,
-              this.state.abortController,
-            )
+            .fetchAllResources(url, this.state.abortController)
             .then(async data => {
               const mappedData = data
                 .map(x => x.resource)

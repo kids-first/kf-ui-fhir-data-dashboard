@@ -3,6 +3,6 @@
 }
 
 /* Semantic UI Overrides */
-.app-breadcrumb .ui.breadcrumb a {
-  color: var(--d3b-brightblue);
+.ui.breadcrumb a {
+  color: var(--d3b-brightblue) !important;
 }

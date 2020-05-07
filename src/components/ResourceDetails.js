@@ -484,6 +484,7 @@ class ResourceDetails extends React.Component {
       return {
         name: obj.display ? obj.display : obj.code,
         value: obj.count ? obj.count : 0,
+        code: obj.code,
       };
     });
     if (sum < this.state.total) {
@@ -492,20 +493,30 @@ class ResourceDetails extends React.Component {
     return chartResults;
   };
 
-  getAttributeDetails = async (attribute, chartType, payload = null) => {
-    let query = '';
-    if (chartType === 'count') {
-      query = `${attribute.name}:missing=false`;
-    } else {
-      let param = attribute.queryParams.find(x => x.display === payload.name);
-      if (!!param) {
-        query = `${attribute.name}=${param.code}`;
+  getAttributeDetails = async (
+    attribute,
+    chartType,
+    payload = {name: '', value: 0, code: null},
+  ) => {
+    if (payload.value > 0) {
+      let query = '';
+      if (chartType === 'count') {
+        if (payload.name === 'all') {
+          query = 'all';
+        } else {
+          query = `${attribute.name}:missing=false`;
+        }
       } else {
-        param = {code: 'null'};
-        query = `${attribute.name}:missing=true`;
+        let param = attribute.queryParams.find(x => x.code === payload.code);
+        if (!!param) {
+          query = `${attribute.name}=${param.code}`;
+        } else {
+          param = {code: 'null'};
+          query = `${attribute.name}:missing=true`;
+        }
       }
+      this.props.history.push(`${this.props.location.pathname}/${query}`);
     }
-    this.props.history.push(`${this.props.location.pathname}/${query}`);
   };
 
   closeModal = () => {
@@ -572,7 +583,15 @@ class ResourceDetails extends React.Component {
                   : ''
               }`}
             >
-              <div className="resource-details__count card">
+              <div
+                className="resource-details__count card"
+                onClick={() =>
+                  this.getAttributeDetails({name: 'total'}, 'count', {
+                    name: 'all',
+                    value: total,
+                  })
+                }
+              >
                 <p className="resource-details__number">
                   {getHumanReadableNumber(total)}
                 </p>
@@ -582,7 +601,13 @@ class ResourceDetails extends React.Component {
                 <div
                   className="resource-details__count card"
                   key={`${attribute}-${i}`}
-                  onClick={() => this.getAttributeDetails(attribute, 'count')}
+                  onClick={() =>
+                    this.getAttributeDetails(attribute, 'count', {
+                      value: attribute.queryParams[0]
+                        ? attribute.queryParams[0].count
+                        : 0,
+                    })
+                  }
                 >
                   {attribute.queryParams.map((param, i) => (
                     <React.Fragment key={`${param}-${i}`}>

@@ -44,6 +44,10 @@
   text-decoration: underline;
 }
 
+.app .ui.menu .ui.dropdown .menu > .item a {
+  font-size: 14px;
+}
+
 .app .ui.link.menu .item:hover,
 .app .ui.menu .dropdown.item:hover,
 .app .ui.menu .link.item:hover,

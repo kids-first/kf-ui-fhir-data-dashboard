@@ -23,9 +23,9 @@
   margin: 0;
 }
 
-.login__content-buttons {
-  display: flex;
-  justify-content: space-between;
+.login .ui.breadcrumb {
+  align-self: flex-start;
+  margin-bottom: 20px;
 }
 
 .login .ui.input {

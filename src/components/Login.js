@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Input, Button} from 'semantic-ui-react';
+import {Input, Button, Breadcrumb} from 'semantic-ui-react';
 import './Login.css';
 
 class Login extends React.Component {
@@ -42,6 +42,15 @@ class Login extends React.Component {
   render() {
     return (
       <div className="login">
+        <Breadcrumb>
+          <Breadcrumb.Divider icon="left chevron" />
+          <Breadcrumb.Section
+            link
+            onClick={() => this.props.history.push('/servers')}
+          >
+            Servers
+          </Breadcrumb.Section>
+        </Breadcrumb>
         <div className="login__content">
           <h2>Login</h2>
           <h3>
@@ -59,12 +68,7 @@ class Login extends React.Component {
               onChange={this.handlePasswordChange}
               autoComplete="current-password"
             />
-            <div className="login__content-buttons">
-              <Button onClick={() => this.props.history.push('/servers')}>
-                Back to Servers
-              </Button>
-              <Button type="submit">Login</Button>
-            </div>
+            <Button type="submit">Login</Button>
           </form>
           {this.state.authError ? (
             <div className="login__auth-error">
