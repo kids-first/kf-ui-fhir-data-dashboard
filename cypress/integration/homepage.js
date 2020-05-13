@@ -24,7 +24,7 @@ describe('Homepage', () => {
 
   it('loads resources', () => {
     cy.url().should('include', '/resources');
-    cy.contains('18 total');
+    cy.contains('8 total');
   });
 
   it('filters search results on input', () => {
@@ -36,7 +36,7 @@ describe('Homepage', () => {
 
   it('filters results on search', () => {
     cy.get('.ui.card').should($x => {
-      expect($x).to.have.length(18);
+      expect($x).to.have.length(8);
     });
     cy.get('.prompt').type('Patient');
     cy.get('.ui.search>.results')
