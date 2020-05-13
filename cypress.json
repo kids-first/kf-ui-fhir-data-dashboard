@@ -1,6 +1,8 @@
 {
   "baseUrl": "http://localhost:3000",
-  "env": {},
+  "env": {
+    "REACT_APP_FHIR_API": "http://hapi.fhir.org/baseR4/"
+  },
   "video": false,
   "chromeWebSecurity": false
 }

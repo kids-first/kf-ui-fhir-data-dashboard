@@ -6,9 +6,7 @@ describe('Homepage', () => {
       url: 'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/**',
       response: 'fixture:resources.json',
     }).as('getResources');
-    cy.visit('/servers');
-    cy.contains('hapi').click();
-    cy.contains('Launch').click();
+    cy.visit('/resources');
     cy.wait('@getResources');
   });
 
