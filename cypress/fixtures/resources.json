@@ -1972,7 +1972,7 @@
       "fullUrl": "http://hapi.fhir.org/baseR4/StructureDefinition/697625",
       "resource": {
         "resourceType": "StructureDefinition",
-        "id": "697625",
+        "id": "TestEncounter",
         "meta": {
           "versionId": "1",
           "lastUpdated": "2020-03-23T03:16:31.994+00:00",
