@@ -29,7 +29,7 @@ describe('Homepage', () => {
 
   it('filters search results on input', () => {
     cy.get('.prompt').type('Pa');
-    cy.get('.ui.search>.results').should($x => {
+    cy.get('.ui.search>.results .result').should($x => {
       expect($x).to.have.length(1);
     });
   });
@@ -39,7 +39,7 @@ describe('Homepage', () => {
       expect($x).to.have.length(8);
     });
     cy.get('.prompt').type('Patient');
-    cy.get('.ui.search>.results')
+    cy.get('.ui.search>.results .result')
       .should($x => {
         expect($x).to.have.length(1);
       })
