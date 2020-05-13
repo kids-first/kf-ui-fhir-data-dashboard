@@ -3,18 +3,13 @@ describe('Ontologies', () => {
     cy.server();
     cy.route({
       method: 'GET',
-      url: 'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/**',
+      url:
+        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/CodeSystem',
       response: 'fixture:ontologies.json',
     }).as('getOntologies');
-    cy.visit('/servers');
-    cy.contains('hapi').click();
-    cy.contains('Launch').click();
-    cy.contains('Ontologies').click();
-    cy.wait('@getOntologies');
-  });
 
-  beforeEach(() => {
-    cy.get('.prompt').clear();
+    cy.visit('/ontologies');
+    cy.wait('@getOntologies');
   });
 
   it('loads ontologies', () => {
@@ -30,6 +25,7 @@ describe('Ontologies', () => {
   });
 
   it('filters results on select', () => {
+    cy.get('.prompt').clear();
     cy.get('tr').should($x => {
       expect($x).to.have.length(4);
     });
