@@ -3,8 +3,8 @@
     {
       "resource": [
         {
-          "type": "Condition"
-          "searchParam": "condition",
+          "type": "Condition",
+          "searchInclude": ["*", "Condition:patient"]
         }
       ]
     }
