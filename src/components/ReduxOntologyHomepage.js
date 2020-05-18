@@ -52,6 +52,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
           throw err;
         });
     },
+    setLoadingMessage: message => dispatch(setLoadingMessage(message)),
   };
 };
 

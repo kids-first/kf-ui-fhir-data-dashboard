@@ -26,6 +26,10 @@ class IdDetails extends React.Component {
     }
   }
 
+  componentWillUnmount() {
+    this.props.setLoadingMessage('');
+  }
+
   getDetails = () => {
     const {
       fetchResource,

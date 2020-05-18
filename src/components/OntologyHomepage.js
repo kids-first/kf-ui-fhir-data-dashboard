@@ -31,6 +31,7 @@ class OntologyHomepage extends React.Component {
 
   componentWillUnmount() {
     this.state.abortController.abort();
+    this.props.setLoadingMessage('');
   }
 
   mapToArray = map =>

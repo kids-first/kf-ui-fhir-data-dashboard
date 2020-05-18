@@ -72,7 +72,7 @@ pre {
 .ui.loader.active {
   display: flex;
   flex-flow: column;
-  width: 200px;
+  width: 100%;
 }
 
 .ui.inverted.dimmer .ui.loader.active p,

@@ -24,6 +24,10 @@ class AttributeDetails extends React.Component {
     this.getResource();
   }
 
+  componentWillUnmount() {
+    this.props.setLoadingMessage('');
+  }
+
   getResource = () => {
     const {fetchResource, schemaUrl, baseUrl, resourceId, query} = this.props;
     this.setState({loading: true}, () => {

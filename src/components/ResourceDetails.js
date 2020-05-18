@@ -40,11 +40,13 @@ class ResourceDetails extends React.Component {
 
   componentWillUnmount() {
     this.state.abortController.abort();
+    this.props.setLoadingMessage('');
   }
 
   getResource = () => {
     const {resourceId, resourceFetched, baseUrl, schemaUrl} = this.props;
     this.setState({queriesComplete: false}, async () => {
+      this.props.setLoadingMessage(`Fetching ${resourceId}...`);
       this.props
         .fetchResource(
           `${schemaUrl}/${resourceId}/$snapshot`,

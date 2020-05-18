@@ -123,6 +123,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
         });
     },
     setHomepageView: cardView => dispatch(setHomepageView(cardView)),
+    setLoadingMessage: message => dispatch(setLoadingMessage(message)),
   };
 };
 
