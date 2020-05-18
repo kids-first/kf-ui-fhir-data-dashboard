@@ -5,6 +5,10 @@
         {
           "type": "Condition",
           "searchInclude": ["*", "Condition:patient"]
+        },
+        {
+          "type": "Observation",
+          "searchInclude": ["*", "Observation:patient"]
         }
       ]
     }
