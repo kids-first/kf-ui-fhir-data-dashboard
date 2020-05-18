@@ -55,3 +55,11 @@ npm start
 
 This will open up the application at `localhost:3000`.
 More on `create-react-app` [here](https://reactjs.org/docs/create-a-new-react-app.html).
+
+### Tests
+
+The dashboard uses [Cypress](https://www.cypress.io/) to run frontend tests. To open Cypress, use the command:
+
+`npm run cypress:open`
+
+This will pull up an interactive window for running tests. Click on any of the tests listed to run them.
