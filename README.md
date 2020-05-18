@@ -58,8 +58,8 @@ More on `create-react-app` [here](https://reactjs.org/docs/create-a-new-react-ap
 
 ### Tests
 
-The dashboard uses [Cypress](https://www.cypress.io/) to run frontend tests. To open Cypress, use the command:
+The dashboard uses [Cypress](https://www.cypress.io/) and the local development server to run frontend tests. To open Cypress, use the command:
 
 `npm run cypress:open`
 
-This will pull up an interactive window for running tests. Click on any of the tests listed to run them.
+This will pull up an interactive window for running tests. You must also be running the dashboard locally at `http://localhost:3000` to run the tests. Click on any of the tests listed to execute them.
