@@ -1,0 +1,30 @@
+{
+  "fullUrl": "http://hapi.fhir.org/baseR4/StructureDefinition/123",
+  "resource": {
+    "resourceType": "StructureDefinition",
+    "id": "123",
+    "meta": {
+      "versionId": "1",
+      "lastUpdated": "2019-09-19T09:05:12.803+00:00",
+      "source": "#5ac66523eb8d3133"
+    },
+    "url": "http://hapi.fhir.org/baseR4/StructureDefinition/123",
+    "name": "123",
+    "status": "draft",
+    "description": "TestPatient",
+    "fhirVersion": "4.0.0",
+    "kind": "complex-type",
+    "abstract": false,
+    "context": [
+      {
+        "type": "element",
+        "expression": "Patient"
+      }
+    ],
+    "type": "Patient",
+    "baseDefinition": "http://hl7.org/fhir/StructureDefinition/Patient",
+    "snapshot": {
+      "element": []
+    }
+  }
+}
