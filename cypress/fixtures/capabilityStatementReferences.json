@@ -1,0 +1,12 @@
+{
+  "rest": [
+    {
+      "resource": [
+        {
+          "type": "Condition"
+          "searchParam": "condition",
+        }
+      ]
+    }
+  ]
+}
