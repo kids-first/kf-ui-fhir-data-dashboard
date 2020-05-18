@@ -1,0 +1,62 @@
+{
+  "resourceType": "Bundle",
+  "id": "123",
+  "meta": {
+    "lastUpdated": "2020-05-18T21:06:51.938+00:00"
+  },
+  "type": "searchset",
+  "total": 3,
+  "link": [
+    {
+      "relation": "self",
+      "url": "http://localhost:8000/SearchParameter?base=Patient"
+    }
+  ],
+  "entry": [
+    {
+      "fullUrl": "http://localhost:8000/SearchParameter/1",
+      "resource": {
+        "resourceType": "SearchParameter",
+        "id": "address",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2020-01-08T19:41:47.289+00:00"
+        },
+        "code": "address",
+        "base": ["Patient"],
+        "type": "reference",
+        "expression": "Patient.address"
+      }
+    },
+    {
+      "fullUrl": "http://localhost:8000/SearchParameter/2",
+      "resource": {
+        "resourceType": "SearchParameter",
+        "id": "name",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2020-01-08T19:41:47.289+00:00"
+        },
+        "code": "name",
+        "base": ["Patient"],
+        "type": "reference",
+        "expression": "Patient.name"
+      }
+    },
+    {
+      "fullUrl": "http://localhost:8000/SearchParameter/3",
+      "resource": {
+        "resourceType": "SearchParameter",
+        "id": "email",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2020-01-08T19:41:47.289+00:00"
+        },
+        "code": "email",
+        "base": ["Patient"],
+        "type": "reference",
+        "expression": "Patient.email"
+      }
+    }
+  ]
+}

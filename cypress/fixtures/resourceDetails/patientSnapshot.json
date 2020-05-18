@@ -1,0 +1,77 @@
+{
+  "resourceType": "StructureDefinition",
+  "id": "TestPatient",
+  "meta": {
+    "versionId": "3",
+    "lastUpdated": "2020-03-05T20:17:49.435+00:00"
+  },
+  "url": "http://fhir.kidsfirst.org/StructureDefinition/Patient",
+  "version": "0.1.0",
+  "name": "TestPatient",
+  "title": "TestPatient",
+  "status": "draft",
+  "kind": "resource",
+  "abstract": false,
+  "type": "Patient",
+  "baseDefinition": "http://hl7.org/fhir/StructureDefinition/Patient",
+  "derivation": "constraint",
+  "snapshot": {
+    "element": [
+      {
+        "id": "Patient",
+        "path": "Patient",
+        "constraint": [
+          {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/elementdefinition-bestpractice",
+                "valueBoolean": true
+              },
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/elementdefinition-bestpractice-explanation"
+              }
+            ]
+          },
+          {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/elementdefinition-bestpractice",
+                "valueBoolean": true
+              },
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/elementdefinition-bestpractice-explanation"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "Patient.address",
+        "path": "Patient.address",
+        "type": [
+          {
+            "code": "Address"
+          }
+        ]
+      },
+      {
+        "id": "Patient.name",
+        "path": "Patient.name",
+        "type": [
+          {
+            "code": "HumanName"
+          }
+        ]
+      },
+      {
+        "id": "Patient.email",
+        "path": "Patient.email",
+        "type": [
+          {
+            "code": "ContactPoint"
+          }
+        ]
+      }
+    ]
+  }
+}
