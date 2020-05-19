@@ -64,17 +64,31 @@ describe('Server page', () => {
       .contains('Edited Server');
   });
 
-  it('selects a server', () => {
-    cy.contains('Kids First').click();
+  it('does not display a login screen if no auth is required', () => {
+    cy.contains('NO_AUTH').click();
     cy.contains('Launch').click();
+    cy.url().should('include', '/resources');
   });
 
   it('displays a login screen if server requires auth', () => {
+    cy.contains('Server').click();
+    cy.get('.menu')
+      .contains('Switch servers')
+      .click();
+    cy.contains('Kids First').click();
+    cy.contains('Launch').click();
     cy.url().should('include', '/login');
     cy.contains('Login');
   });
 
   it('shows error message if invalid credentials are used', () => {
+    cy.server();
+    cy.route({
+      method: 'GET',
+      url: '**/StructureDefinition',
+      status: 401,
+      response: {error: 'Error'},
+    }).as('error');
     cy.get('input').each(($el, index, $list) => {
       if (index === 0) {
         cy.get($el).type('guest');
@@ -85,13 +99,7 @@ describe('Server page', () => {
     cy.get('form')
       .children('button')
       .click();
+    cy.wait('@error');
     cy.contains('There was an error');
-  });
-
-  it('does not display a login screen if no auth is required', () => {
-    cy.contains('Servers').click();
-    cy.contains('NO_AUTH').click();
-    cy.contains('Launch').click();
-    cy.url().should('include', '/resources');
   });
 });
