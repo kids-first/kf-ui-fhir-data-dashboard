@@ -1,4 +1,4 @@
-describe('Homepage', () => {
+describe('Resource ID Details page', () => {
   before(() => {
     cy.server();
     cy.route({
