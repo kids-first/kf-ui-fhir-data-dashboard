@@ -5,7 +5,7 @@ describe('Ontologies', () => {
       method: 'GET',
       url:
         'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/CodeSystem',
-      response: 'fixture:ontologies.json',
+      response: 'fixture:ontologies/ontologies.json',
     }).as('getOntologies');
 
     cy.visit('/ontologies');

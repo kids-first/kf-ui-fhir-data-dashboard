@@ -11,7 +11,7 @@ describe('Ontology Details', () => {
       method: 'GET',
       url:
         'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/CodeSystem',
-      response: 'fixture:ontologies.json',
+      response: 'fixture:ontologies/ontologies.json',
     }).as('getOntologies');
     cy.route({
       method: 'GET',
@@ -23,7 +23,7 @@ describe('Ontology Details', () => {
       method: 'GET',
       url:
         'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/CodeSystem/**',
-      response: 'fixture:ontologyDetails.json',
+      response: 'fixture:ontologies/ontologyDetails.json',
     }).as('getOntology');
 
     cy.visit('/ontologies/Code1');
