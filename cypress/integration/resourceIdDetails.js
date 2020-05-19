@@ -11,7 +11,7 @@ describe('Homepage', () => {
       method: 'GET',
       url:
         'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/Patient/123',
-      response: 'fixture:resourceDetails.json',
+      response: 'fixture:resourceIdDetails/resourceDetails.json',
     }).as('getResource');
     cy.visit('/resources/Patient/id=123');
     cy.wait(['@getStructureDefinition', '@getResource']);
@@ -28,31 +28,31 @@ describe('Homepage', () => {
       method: 'GET',
       url:
         'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/metadata',
-      response: 'fixture:capabilityStatementReferences.json',
+      response: 'fixture:resourceIdDetails/capabilityStatementReferences.json',
     }).as('getCapabilityStatementReferences');
     cy.route({
       method: 'GET',
       url:
         'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/Condition?patient=Patient/123',
-      response: 'fixture:conditionDetails.json',
+      response: 'fixture:resourceIdDetails/conditionDetails.json',
     }).as('getConditionDetails');
     cy.route({
       method: 'GET',
       url:
         'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/StructureDefinition?url=http://fhir.kids-first.io/StructureDefinition/Condition',
-      response: 'fixture:conditionStructureDefinition.json',
+      response: 'fixture:resourceIdDetails/conditionStructureDefinition.json',
     }).as('getConditionSD');
     cy.route({
       method: 'GET',
       url:
         'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/Observation?patient=Patient/123',
-      response: 'fixture:observationDetails.json',
+      response: 'fixture:resourceIdDetails/observationDetails.json',
     }).as('getObservationDetails');
     cy.route({
       method: 'GET',
       url:
         'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/StructureDefinition?url=http://fhir.kids-first.io/StructureDefinition/Observation',
-      response: 'fixture:observationStructureDefinition.json',
+      response: 'fixture:resourceIdDetails/observationStructureDefinition.json',
     }).as('getObservationSD');
     cy.contains('References').click();
     cy.wait([
