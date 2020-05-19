@@ -1,4 +1,4 @@
-describe('Homepage', () => {
+describe('Server page', () => {
   before(() => {
     cy.visit('/servers');
   });
@@ -72,6 +72,20 @@ describe('Homepage', () => {
   it('displays a login screen if server requires auth', () => {
     cy.url().should('include', '/login');
     cy.contains('Login');
+  });
+
+  it('shows error message if invalid credentials are used', () => {
+    cy.get('input').each(($el, index, $list) => {
+      if (index === 0) {
+        cy.get($el).type('guest');
+      } else {
+        cy.get($el).type('guest');
+      }
+    });
+    cy.get('form')
+      .children('button')
+      .click();
+    cy.contains('There was an error');
   });
 
   it('does not display a login screen if no auth is required', () => {
