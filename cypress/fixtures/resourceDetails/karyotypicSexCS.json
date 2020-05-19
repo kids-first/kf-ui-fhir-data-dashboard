@@ -1,0 +1,224 @@
+{
+  "resourceType": "Bundle",
+  "id": "1",
+  "meta": {
+    "lastUpdated": "2020-05-19T15:05:07.163+00:00"
+  },
+  "type": "searchset",
+  "total": 1,
+  "link": [
+    {
+      "relation": "self",
+      "url": "http://localhost:8000/CodeSystem?url=http%3A%2F%2Fhl7.org%2Ffhir%2Fkaryotypic-sex"
+    }
+  ],
+  "entry": [
+    {
+      "fullUrl": "http://localhost:8000/CodeSystem/karyotypic-sex",
+      "resource": {
+        "resourceType": "CodeSystem",
+        "id": "karyotypic-sex",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2020-01-08T19:41:21.217+00:00"
+        },
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/structuredefinition-wg",
+            "valueCode": "pa"
+          },
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/structuredefinition-standards-status",
+            "valueCode": "normative"
+          },
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/structuredefinition-fmm",
+            "valueInteger": 5
+          },
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/structuredefinition-normative-version",
+            "valueCode": "4.0.0"
+          }
+        ],
+        "url": "http://hl7.org/fhir/karyotypic-sex",
+        "identifier": [
+          {
+            "system": "urn:ietf:rfc:3986",
+            "value": "urn:oid:2.16.840.1.113883.4.642.4.2"
+          }
+        ],
+        "version": "4.0.1",
+        "name": "KaryotypicSex",
+        "title": "KaryotypicSex",
+        "status": "active",
+        "experimental": false,
+        "valueSet": "http://hl7.org/fhir/ValueSet/karyotypic-sex",
+        "concept": [
+          {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/codesystem-concept-comments",
+                "valueString": "A"
+              }
+            ],
+            "code": "A",
+            "display": "A"
+          },
+          {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/codesystem-concept-comments",
+                "valueString": "B"
+              }
+            ],
+            "code": "B",
+            "display": "B"
+          },
+          {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/codesystem-concept-comments",
+                "valueString": "C"
+              }
+            ],
+            "code": "C",
+            "display": "C"
+          },
+          {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/codesystem-concept-comments",
+                "valueString": "D"
+              }
+            ],
+            "code": "D",
+            "display": "D"
+          },
+          {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/codesystem-concept-comments",
+                "valueString": "E"
+              }
+            ],
+            "code": "E",
+            "display": "E"
+          },
+          {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/codesystem-concept-comments",
+                "valueString": "F"
+              }
+            ],
+            "code": "F",
+            "display": "F"
+          },
+          {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/codesystem-concept-comments",
+                "valueString": "G"
+              }
+            ],
+            "code": "G",
+            "display": "G"
+          },
+          {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/codesystem-concept-comments",
+                "valueString": "H"
+              }
+            ],
+            "code": "H",
+            "display": "H"
+          },
+          {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/codesystem-concept-comments",
+                "valueString": "I"
+              }
+            ],
+            "code": "I",
+            "display": "I"
+          },
+          {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/codesystem-concept-comments",
+                "valueString": "J"
+              }
+            ],
+            "code": "J",
+            "display": "J"
+          },
+          {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/codesystem-concept-comments",
+                "valueString": "K"
+              }
+            ],
+            "code": "K",
+            "display": "K"
+          },
+          {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/codesystem-concept-comments",
+                "valueString": "L"
+              }
+            ],
+            "code": "L",
+            "display": "L"
+          },
+          {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/codesystem-concept-comments",
+                "valueString": "M"
+              }
+            ],
+            "code": "M",
+            "display": "M"
+          },
+          {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/codesystem-concept-comments",
+                "valueString": "N"
+              }
+            ],
+            "code": "N",
+            "display": "N"
+          },
+          {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/codesystem-concept-comments",
+                "valueString": "O"
+              }
+            ],
+            "code": "O",
+            "display": "O"
+          },
+          {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/codesystem-concept-comments",
+                "valueString": "P"
+              }
+            ],
+            "code": "P",
+            "display": "P"
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      }
+    }
+  ]
+}

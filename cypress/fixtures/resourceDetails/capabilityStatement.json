@@ -65,6 +65,10 @@
               "name": "phone",
               "type": "token",
               "documentation": "A value in a phone contact"
+            },
+            {
+              "name": "karyotypic-sex",
+              "type": "token"
             }
           ]
         }

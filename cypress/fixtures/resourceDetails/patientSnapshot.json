@@ -71,6 +71,31 @@
             "code": "ContactPoint"
           }
         ]
+      },
+      {
+        "id": "Patient.deceased",
+        "path": "Patient.deceased",
+        "type": [
+          {
+            "code": "boolean"
+          }
+        ]
+      },
+      {
+        "id": "Patient.extension:karyotypic-sex",
+        "path": "Patient.extension",
+        "sliceName": "karyotypic-sex",
+        "label": "karyotypicSex",
+        "min": 0,
+        "max": "1",
+        "type": [
+          {
+            "code": "Extension",
+            "profile": [
+              "http://fhir.kids-first.io/StructureDefinition/karyotypic-sex"
+            ]
+          }
+        ]
       }
     ]
   }

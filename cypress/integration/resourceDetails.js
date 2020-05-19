@@ -25,16 +25,37 @@ describe('Resource Details', () => {
         'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/Patient?_profile:below=http://fhir.kidsfirst.org/StructureDefinition/Patient&**',
       response: 'fixture:resourceDetails/resourceCount.json',
     }).as('getResourceCounts');
+    cy.route({
+      method: 'GET',
+      url:
+        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/StructureDefinition?url=http://fhir.kids-first.io/StructureDefinition/karyotypic-sex',
+      response: 'fixture:resourceDetails/karyotypicSexSD.json',
+    }).as('getExtension');
+    cy.route({
+      method: 'GET',
+      url:
+        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/ValueSet?url=http://fhir.kids-first.io/ValueSet/karyotypic-sex',
+      response: 'fixture:resourceDetails/karyotypicSexVS.json',
+    }).as('getValueSet');
+    cy.route({
+      method: 'GET',
+      url:
+        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/CodeSystem?url=http://hl7.org/fhir/karyotypic-sex',
+      response: 'fixture:resourceDetails/karyotypicSexCS.json',
+    }).as('getCodeSystem');
     cy.visit('/resources/TestPatient');
     cy.wait([
       '@getPatientDetails',
       '@getPatientSearchParams',
       '@getCapabilityStatement',
       '@getResourceCounts',
+      '@getExtension',
+      '@getValueSet',
+      '@getCodeSystem',
     ]);
   });
 
-  it('loads the resource details', () => {
+  it('loads the resource details and presents the proper charts', () => {
     cy.get('.resource-details__count-section')
       .children('div')
       .should('have.class', 'resource-details__count card')
@@ -45,6 +66,18 @@ describe('Resource Details', () => {
         cy.get(x)
           .children('p')
           .contains('10');
+      });
+    cy.get('.resource-details__pie-section')
+      .children('div')
+      .should('have.class', 'resource-details__pie card')
+      .should($x => {
+        expect($x).to.have.length(1);
+      });
+    cy.get('.resource-details__bar-section')
+      .children('div')
+      .should('have.class', 'resource-details__bar card')
+      .should($x => {
+        expect($x).to.have.length(1);
       });
   });
 
