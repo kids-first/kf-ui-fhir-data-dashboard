@@ -46,10 +46,10 @@ jobs:
 workflows:
   build_and_test:
     jobs:
-      - build
       - cypress/install:
           build: 'npm run build'
       - cypress/run:
           requires:
             - cypress/install
           start: 'npm start'
+      - build
