@@ -1,10 +1,13 @@
-version: 2
+version: 2.1
+orbs:
+  cypress: cypress-io/cypress@1
+
 jobs:
   build:
     docker:
       - image: circleci/node:12
 
-    working_directory: ~/repo
+    working_directory: ~/rep
 
     steps:
       - checkout
@@ -27,8 +30,8 @@ jobs:
                       -t "kidsfirstdrc/kf-ui-fhir-data-dashboard:kidsfirst" .
             fi
       - run:
-         name: 'Push docker images'
-         command: |
+          name: 'Push docker images'
+          command: |
             if [ $CIRCLE_BRANCH == 'master' ]; then
                 GIT_COMMIT=$(git rev-parse HEAD)
                 docker login -u $KF_DOCKER_HUB_USER -p $KF_DOCKER_HUB_PW
@@ -39,3 +42,14 @@ jobs:
                 docker push kidsfirstdrc/kf-ui-fhir-data-dashboard:kidsfirst
                 docker push kidsfirstdrc/kf-ui-fhir-data-dashboard:$GIT_COMMIT
             fi
+
+workflows:
+  build_and_test:
+    jobs:
+      - build
+      - cypress/install:
+          build: 'npm run build'
+      - cypress/run:
+          requires:
+            - cypress/install
+          start: 'npm start'
