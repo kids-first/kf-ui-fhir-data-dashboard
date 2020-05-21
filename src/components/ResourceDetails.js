@@ -1,17 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Modal, Header} from 'semantic-ui-react';
+import {Loader} from 'semantic-ui-react';
 import {
   getHumanReadableNumber,
   getBaseResourceCount,
   logErrors,
-  replaceLocalhost,
+  capitalize,
 } from '../utils/common';
-import {defaultTableFields} from '../config';
-import AppBreadcrumb from './AppBreadcrumb';
-import DataPieChart from './DataPieChart';
 import DataBarChart from './DataBarChart';
-import ResultsTable from './tables/ResultsTable';
 import './ResourceDetails.css';
 
 class ResourceDetails extends React.Component {
@@ -25,11 +21,6 @@ class ResourceDetails extends React.Component {
       total: props.total,
       attributes: [],
       queriesComplete: false,
-      showModal: false,
-      modalAttribute: null,
-      nextPageUrl: null,
-      tableResults: [],
-      tableLoaded: false,
       abortController: new AbortController(),
     };
   }
@@ -49,11 +40,13 @@ class ResourceDetails extends React.Component {
 
   componentWillUnmount() {
     this.state.abortController.abort();
+    this.props.setLoadingMessage('');
   }
 
   getResource = () => {
     const {resourceId, resourceFetched, baseUrl, schemaUrl} = this.props;
     this.setState({queriesComplete: false}, async () => {
+      this.props.setLoadingMessage(`Fetching ${resourceId}...`);
       this.props
         .fetchResource(
           `${schemaUrl}/${resourceId}/$snapshot`,
@@ -246,8 +239,8 @@ class ResourceDetails extends React.Component {
             ) {
               newAttribute.type = 'boolean';
               newAttribute.queryParams = [
-                {code: 'true', display: 'true'},
-                {code: 'false', display: 'false'},
+                {code: 'true', display: 'True'},
+                {code: 'false', display: 'False'},
               ];
             } else {
               newAttribute.type = 'count';
@@ -493,6 +486,7 @@ class ResourceDetails extends React.Component {
       return {
         name: obj.display ? obj.display : obj.code,
         value: obj.count ? obj.count : 0,
+        code: obj.code,
       };
     });
     if (sum < this.state.total) {
@@ -501,75 +495,30 @@ class ResourceDetails extends React.Component {
     return chartResults;
   };
 
-  getAttributeTableResults = async (attribute, chartType, payload = null) => {
-    this.setState(
-      {
-        showModal: true,
-        tableLoaded: false,
-        modalAttribute: attribute,
-        totalResults: 0,
-        tableResults: [],
-      },
-      async () => {
-        this.props.setLoadingMessage(`Fetching ${attribute.name} details...`);
-        const {baseUrl} = this.props;
-        const {resourceBaseType, resourceType, resourceUrl} = this.state;
-        let data = null;
-        let totalResults = 0;
-        let param = null;
-        const allFields = defaultTableFields.concat(attribute.name);
-        let url = `${baseUrl}${resourceBaseType}`;
-        if (resourceBaseType !== resourceType) {
-          url = url.concat(`?_profile:below=${resourceUrl}&`);
+  getAttributeDetails = async (
+    attribute,
+    chartType,
+    payload = {name: '', value: 0, code: null},
+  ) => {
+    if (payload.value > 0) {
+      let query = '';
+      if (chartType === 'count') {
+        if (payload.name === 'all') {
+          query = 'all';
         } else {
-          url = url.concat('?');
+          query = `${attribute.name}:missing=false`;
         }
-        if (chartType === 'count') {
-          data = await this.props
-            .fetchResource(
-              `${url}${attribute.name}:missing=false`,
-              this.state.abortController,
-            )
-            .catch(err => logErrors('Error getting table results:', err));
-          attribute.queryParams.forEach(param => {
-            totalResults += param.count;
-          });
+      } else {
+        let param = attribute.queryParams.find(x => x.code === payload.code);
+        if (!!param) {
+          query = `${attribute.name}=${param.code}`;
         } else {
-          param = attribute.queryParams.find(x => x.display === payload.name);
-          if (!!param) {
-            data = await this.props
-              .fetchResource(
-                `${url}${attribute.name}=${param.code}`,
-                this.state.abortController,
-              )
-              .catch(err => logErrors('Error getting table results:', err));
-          } else {
-            param = {code: 'null'};
-            data = await this.props
-              .fetchResource(
-                `${url}${attribute.name}:missing=true`,
-                this.state.abortController,
-              )
-              .catch(err => logErrors('Error getting table results:', err));
-          }
-          totalResults = payload.value;
+          param = {code: 'null'};
+          query = `${attribute.name}:missing=true`;
         }
-        data = this.transformResults(data, attribute);
-        const nextPage = data.link.findIndex(x => x.relation === 'next');
-        let nextPageUrl = null;
-        if (nextPage > -1) {
-          nextPageUrl = replaceLocalhost(data.link[nextPage].url);
-        }
-        this.setState({
-          tableLoaded: true,
-          modalAttribute: {...attribute, param: param ? param.code : null},
-          tableResults: data.results,
-          nextPageUrl: nextPageUrl,
-          totalResults,
-          tableColumns: allFields,
-        });
-      },
-    );
+      }
+      this.props.history.push(`${this.props.location.pathname}/${query}`);
+    }
   };
 
   closeModal = () => {
@@ -599,7 +548,7 @@ class ResourceDetails extends React.Component {
 
   fetchNextPage = async url =>
     await this.props
-      .fetchResource(url)
+      .fetchResource(url, this.state.abortController)
       .then(data => this.transformResults(data, this.state.modalAttribute));
 
   render() {
@@ -611,148 +560,133 @@ class ResourceDetails extends React.Component {
       resourceType,
     } = this.state;
     const charts = this.getCharts(attributes);
-    const selectedAttribute =
-      this.state.modalAttribute && this.state.modalAttribute.name
-        ? this.state.modalAttribute.name
-        : null;
-    const selectedParam =
-      this.state.modalAttribute && this.state.modalAttribute.param
-        ? this.state.modalAttribute.param
-        : null;
     return (
       <div className="resource-details">
-        <AppBreadcrumb history={this.props.history} />
-        <div className={`ui ${queriesComplete ? 'disabled' : 'active'} loader`}>
-          <p>{this.props.loadingMessage}</p>
-        </div>
-        <div className="resource-details__header">
-          <div className="resource-details__header-title">
-            <h2>{resourceType}:</h2>
-            <p className="resource-details__count">
-              {getHumanReadableNumber(total)}
-            </p>
-            <h2>total</h2>
+        <div className="header">
+          <div className="header__text">
+            <h2>{resourceType}</h2>
+            <h3>Base type: {resourceBaseType}</h3>
           </div>
-          <p>Base type: {resourceBaseType}</p>
         </div>
+        <Loader
+          inline
+          active={queriesComplete ? false : true}
+          content={this.props.loadingMessage}
+        />
         {queriesComplete && attributes.length === 0 ? (
-          <h3>No statistics to display.</h3>
+          <h4>No statistics to display.</h4>
         ) : null}
-        <div className="resource-details__queries">
-          {Object.keys(charts).map(chartType => (
-            <div key={chartType} className="resource-details__queries-section">
-              {charts[chartType].map((attribute, i) => {
-                if (queriesComplete) {
-                  return (
-                    <div
-                      className={'resource-details__query'
-                        .concat(chartType === 'count' ? ' clickable' : '')
-                        .concat(chartType === 'bar' ? ' expand' : '')}
-                      key={`${attribute}-${i}`}
-                      onClick={
-                        chartType === 'count'
-                          ? () =>
-                              this.getAttributeTableResults(
-                                attribute,
-                                chartType,
-                              )
-                          : () => {}
-                      }
-                    >
-                      <h3>{attribute.name}</h3>
-                      {chartType === 'count' ? (
-                        <div className="resource-details__query-count">
-                          {attribute.queryParams.map((param, i) => (
-                            <p
-                              key={`${param}-${i}`}
-                              className="resource-details__count"
+        {queriesComplete && attributes.length > 0 ? (
+          <div>
+            <div
+              className={`resource-details__count-section${
+                charts.pie.length === 0 || charts.bar.length === 0
+                  ? ' no-height'
+                  : ''
+              }`}
+            >
+              <div
+                className="resource-details__count card"
+                onClick={() =>
+                  this.getAttributeDetails({name: 'total'}, 'count', {
+                    name: 'all',
+                    value: total,
+                  })
+                }
+              >
+                <p className="resource-details__number">
+                  {getHumanReadableNumber(total)}
+                </p>
+                <p>total</p>
+              </div>
+              {charts.count.map((attribute, i) => (
+                <div
+                  className="resource-details__count card"
+                  key={`${attribute}-${i}`}
+                  onClick={() =>
+                    this.getAttributeDetails(attribute, 'count', {
+                      value: attribute.queryParams[0]
+                        ? attribute.queryParams[0].count
+                        : 0,
+                    })
+                  }
+                >
+                  {attribute.queryParams.map((param, i) => (
+                    <React.Fragment key={`${param}-${i}`}>
+                      <p className="resource-details__number">
+                        {getHumanReadableNumber(param.count)}
+                      </p>
+                      <p>have {attribute.name}</p>
+                    </React.Fragment>
+                  ))}
+                </div>
+              ))}
+            </div>
+            <div className="resource-details__bottom-section">
+              {charts.pie.length > 0 ? (
+                <div
+                  className={`resource-details__pie-section${
+                    charts.bar.length === 0 ? ' expand no-height' : ''
+                  }`}
+                >
+                  {charts.pie.map((attribute, i) => {
+                    const pieResults = this.formatResults(
+                      attribute.queryParams,
+                    );
+                    return (
+                      <div
+                        key={attribute.name}
+                        className="resource-details__pie card"
+                      >
+                        <h4>{capitalize(attribute.name)}</h4>
+                        <div className="resource-details__pie-values">
+                          {pieResults.map(result => (
+                            <div
+                              key={result.name}
+                              className="resource-details__pie-value"
+                              onClick={() =>
+                                this.getAttributeDetails(
+                                  attribute,
+                                  'pie',
+                                  result,
+                                )
+                              }
                             >
-                              {getHumanReadableNumber(param.count)}
-                            </p>
+                              <p className="resource-details__number">
+                                {getHumanReadableNumber(result.value)}
+                              </p>
+                              <p>{result.name}</p>
+                            </div>
                           ))}
                         </div>
-                      ) : null}
-                      {chartType === 'pie' ? (
-                        <div className="resource-details__query-pie">
-                          <DataPieChart
-                            data={this.formatResults(attribute.queryParams)}
-                            handleClick={payload =>
-                              this.getAttributeTableResults(
-                                attribute,
-                                chartType,
-                                payload,
-                              )
-                            }
-                          />
-                        </div>
-                      ) : null}
-                      {chartType === 'bar' ? (
-                        <div className="resource-details__query-bar">
-                          <DataBarChart
-                            data={this.formatResults(attribute.queryParams)}
-                            handleClick={payload =>
-                              this.getAttributeTableResults(
-                                attribute,
-                                chartType,
-                                payload,
-                              )
-                            }
-                          />
-                        </div>
-                      ) : null}
-                    </div>
-                  );
-                }
-                return null;
-              })}
-            </div>
-          ))}
-        </div>
-        <Modal
-          open={this.state.showModal}
-          onClose={() => this.closeModal()}
-          dimmer="inverted"
-        >
-          <Modal.Header>{this.state.resourceType}</Modal.Header>
-          <Modal.Content>
-            <Modal.Description>
-              <Header>
-                {getHumanReadableNumber(
-                  this.state.totalResults ? this.state.totalResults : 0,
-                )}{' '}
-                results for{' '}
-                {selectedAttribute
-                  ? selectedAttribute.concat(
-                      selectedParam ? ` = ${selectedParam}` : '',
-                    )
-                  : null}
-              </Header>
-              {this.state.tableLoaded ? (
-                <ResultsTable
-                  closeModal={this.closeModal}
-                  history={this.props.history}
-                  baseUrl={this.props.baseUrl}
-                  fetchResource={this.fetchNextPage}
-                  results={this.state.tableResults}
-                  nextPageUrl={this.state.nextPageUrl}
-                  totalResults={this.state.totalResults}
-                  tableColumns={this.state.tableColumns}
-                  loadingMessage={this.props.loadingMessage}
-                  setLoadingMessage={this.props.setLoadingMessage}
-                  searchCriteria={
-                    selectedAttribute && selectedParam
-                      ? `${selectedAttribute}=${selectedParam}`
-                      : null
-                  }
-                />
-              ) : (
-                <div className="ui active loader">
-                  <p>{this.props.loadingMessage}</p>
+                      </div>
+                    );
+                  })}
                 </div>
-              )}
-            </Modal.Description>
-          </Modal.Content>
-        </Modal>
+              ) : null}
+              {charts.bar.length > 0 ? (
+                <div className="resource-details__bar-section">
+                  {charts.bar.map((attribute, i) => (
+                    <div
+                      key={attribute.name}
+                      className={`resource-details__bar card expand${
+                        charts.pie.length === 0 ? ' no-height' : ''
+                      }`}
+                    >
+                      <h4>{capitalize(attribute.name)}</h4>
+                      <DataBarChart
+                        data={this.formatResults(attribute.queryParams)}
+                        handleClick={payload =>
+                          this.getAttributeDetails(attribute, 'bar', payload)
+                        }
+                      />
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+          </div>
+        ) : null}
       </div>
     );
   }

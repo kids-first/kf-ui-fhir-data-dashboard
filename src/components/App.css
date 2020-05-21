@@ -1,85 +1,62 @@
-.app {
+.header h2,
+.header h3 {
+  margin: 5px 0;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.header__text {
   display: flex;
   flex-flow: column;
 }
 
-.app img {
-  height: 100px;
-  margin: 0 20px;
-}
-
-.app__header {
-  display: flex;
-  width: 100%;
-  background-color: var(--d3b-gray);
-  align-items: center;
-  padding: 10px 10px;
-}
-
-@media screen and (max-width: 768px) {
-  .app__header {
-    flex-flow: column;
-  }
-}
-
-.app__header-banner {
-  display: flex;
-  align-items: center;
-}
-
-.app__header-banner h1 {
-  color: #fff;
-  margin: 0;
-}
-
-.app__header-info {
+.header__controls {
   display: flex;
   flex-flow: column;
   align-items: flex-end;
-  flex: 1;
-}
-
-.app__header-user {
-  display: flex;
-  color: #fff;
-  margin-bottom: 10px;
-  align-items: center;
-}
-
-.app__header-user > * {
-  margin: 0 20px;
-}
-
-.app__header-nav {
-  display: flex;
-  align-items: center;
+  justify-content: space-evenly;
 }
 
 @media screen and (max-width: 768px) {
-  .app__header-nav {
+  .header__controls {
     flex-flow: column;
+  }
+
+  .header__controls > * {
+    width: 100%;
   }
 }
 
-.app__header-nav-item {
-  margin: 0 20px;
-  font-size: 24px;
-  color: #fff;
+.header__searchbar {
+  margin: 0 0;
 }
 
-.app__header-nav-item:hover {
-  color: var(--d3b-brightblue);
-  cursor: pointer;
+i.icon.header__controls-view-icon {
+  margin: 0 0 !important;
 }
 
-/* Semantic UI overrides */
-
-.app__header-nav i.icon {
-  height: unset;
-  color: var(--d3b-lightgray);
-  margin: 0 20px;
+i.inverted.bordered.icon.header__controls-view-icon,
+i.inverted.circular.icon.header__controls-view-icon {
+  background-color: var(--d3b-mediumgray) !important;
+  margin: 0 0 !important;
 }
 
-.app__header-nav i.icon:hover {
-  color: var(--d3b-brightblue);
+i.inverted.bordered.icon.header__controls-view-icon:hover,
+i.inverted.circular.icon.header__controls-view-icon:hover {
+  background-color: var(--d3b-brightblue) !important;
+  margin: 0 0 !important;
+}
+
+i.inverted.bordered.icon.header__controls-view-icon--selected,
+i.inverted.circular.icon.header__controls-view-icon--selected {
+  background-color: var(--d3b-blue) !important;
+  margin: 0 0 !important;
+}
+
+.ui.inline.loader.active,
+.ui.inline.loader.visible {
+  display: flex !important;
 }

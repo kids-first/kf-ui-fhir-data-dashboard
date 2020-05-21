@@ -8,13 +8,13 @@ import {
 } from '../actions';
 import {defaultFhirServers, getBaseUrl} from '../config';
 
-const initialServer = defaultFhirServers.find(
-  server => server.url === getBaseUrl(),
-);
+const initialServer = () => {
+  const server = defaultFhirServers.find(server => server.url === getBaseUrl());
+  return server ? {...server} : null;
+};
+
 const initialState = {
-  selectedServer: {
-    ...initialServer,
-  },
+  selectedServer: initialServer(),
   serverOptions: defaultFhirServers,
 };
 
@@ -74,9 +74,9 @@ const app = (state = initialState, action) => {
             : action.url.concat('/'),
         authType: action.authType,
       };
-      const currentServer = newServerOptions.find(
-        x => x.id === state.selectedServer.id,
-      );
+      const currentServer = state.selectedServer
+        ? newServerOptions.find(x => x.id === state.selectedServer.id)
+        : null;
       return {
         ...state,
         serverOptions: newServerOptions,

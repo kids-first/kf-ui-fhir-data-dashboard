@@ -4,13 +4,6 @@ import store from '../store';
 export const getHumanReadableNumber = value =>
   value.toLocaleString(navigator.language, {minimumFractionDigits: 0});
 
-export const getDropdownOptions = servers =>
-  servers.map(server => ({
-    key: server.name,
-    text: server.name,
-    value: server.url,
-  }));
-
 export const getBaseResourceCount = async (
   baseUrl,
   baseType,
@@ -83,4 +76,24 @@ export const replaceLocalhost = url => {
     splitUrl = splitUrl[0];
   }
   return url.replace('localhost', splitUrl);
+};
+
+export const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1);
+
+export const getMonth = index => {
+  const months = [
+    'Jan',
+    'Feb',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'Aug',
+    'Sept',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+  return index < months.length ? months[index] : null;
 };

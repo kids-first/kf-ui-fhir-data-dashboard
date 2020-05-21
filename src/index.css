@@ -14,6 +14,7 @@ body {
   line-height: 1.5;
   -ms-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
+  background-color: var(--d3b-lightgray);
 }
 
 code {
@@ -31,32 +32,34 @@ h5 {
 }
 
 h1 {
-  font-size: 32px;
-  color: var(--d3b-gray);
-}
-
-h2 {
   font-size: 24px;
   color: var(--d3b-gray);
 }
 
-h3 {
+h2 {
   font-size: 18px;
-  color: var(--d3b-gray);
+  color: var(--d3b-blue);
+  font-weight: bold;
 }
 
-h4 {
+h3 {
   font-size: 16px;
   color: var(--d3b-blue);
 }
 
-h5 {
+h4 {
   font-size: 14px;
+  color: var(--d3b-blue);
+  font-weight: bold;
+}
+
+h5 {
+  font-size: 12px;
   color: var(--d3b-blue);
 }
 
 a {
-  color: var(--d3b-brightblue) !important;
+  color: var(--d3b-brightblue);
 }
 
 pre {
@@ -69,7 +72,7 @@ pre {
 .ui.loader.active {
   display: flex;
   flex-flow: column;
-  width: 200px;
+  width: 100%;
 }
 
 .ui.inverted.dimmer .ui.loader.active p,

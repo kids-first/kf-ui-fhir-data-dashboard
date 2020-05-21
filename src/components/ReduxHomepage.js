@@ -1,14 +1,11 @@
 import {connect} from 'react-redux';
-import {
-  setResources,
-  setApi,
-  setHomepageView,
-  setLoadingMessage,
-} from '../actions';
+import {setResources, setHomepageView, setLoadingMessage} from '../actions';
 import {fetchAllResources, getResourceCount} from '../utils/api';
 import {getBaseResourceCount} from '../utils/common';
-import {acceptedResourceTypes} from '../config';
+import {acceptedResourceTypes, resourceCategories} from '../config';
 import Homepage from './Homepage';
+
+let sortedResources = [];
 
 const getAllResources = async (
   baseUrl,
@@ -40,6 +37,7 @@ const getAllResources = async (
         }),
       )
         .then(allResources => {
+          sortedResources = sortResources(allResources);
           allResources = formatResources(allResources);
           return allResources;
         })
@@ -78,20 +76,28 @@ const setResourceCounts = async (baseUrl, items, abortController) =>
     }),
   );
 
-const showResourceType = resourceType =>
-  acceptedResourceTypes.has(resourceType);
+const sortResources = resources =>
+  resources.sort((a, b) => (a.count > b.count ? -1 : 1)).filter(x => x);
 
 const formatResources = items => {
   let newItems = {};
   items.forEach(item => {
     if (item) {
+      const baseType = item.baseType;
+      const module = resourceCategories[baseType][0];
+      const category = resourceCategories[baseType][1];
       newItems[item.id] = {
         ...item,
+        module,
+        category,
       };
     }
   });
   return newItems;
 };
+
+const showResourceType = resourceType =>
+  acceptedResourceTypes.has(resourceType);
 
 const mapStateToProps = (state, ownProps) => ({
   allResources: state && state.resources ? state.resources.allResources : {},
@@ -101,7 +107,7 @@ const mapStateToProps = (state, ownProps) => ({
     state.app && state.app.selectedServer ? state.app.selectedServer.url : '',
   cardView: state.resources.cardView,
   loadingMessage: state.app.loadingMessage,
-  serverOptions: state.app ? state.app.serverOptions : [],
+  sortedResources: sortedResources,
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => {
@@ -116,8 +122,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
           throw err;
         });
     },
-    setBaseUrl: url => dispatch(setApi(url)),
     setHomepageView: cardView => dispatch(setHomepageView(cardView)),
+    setLoadingMessage: message => dispatch(setLoadingMessage(message)),
   };
 };
 

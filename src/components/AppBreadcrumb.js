@@ -1,37 +1,43 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Breadcrumb} from 'semantic-ui-react';
+import {withRouter} from 'react-router';
+import {capitalize} from '../utils/common';
 import './AppBreadcrumb.css';
 
 class AppBreadcrumb extends React.Component {
-  goHome = () => {
-    this.props.history.replace('/');
+  getLink = (linkNames, i) => {
+    const path = linkNames.slice(0, i + 1).join('/');
+    return path;
   };
-
   render() {
-    const {history} = this.props;
-    const linkNames = history.location.pathname.split('/');
+    const linkNames = this.props.location.pathname.split('/');
     return (
-      <React.Fragment>
-        {linkNames.length > 1 && !!linkNames[1] ? (
-          <Breadcrumb>
-            <Breadcrumb.Divider icon="left chevron" />
-            <Breadcrumb.Section link onClick={() => this.goHome()}>
-              Back
-            </Breadcrumb.Section>
-          </Breadcrumb>
-        ) : null}
-      </React.Fragment>
+      <div className="app-breadcrumb">
+        {linkNames.map((link, i) => {
+          const name = capitalize(link);
+          return i > 0 && i < linkNames.length - 1 ? (
+            <Breadcrumb key={link}>
+              <Breadcrumb.Divider icon="left chevron" />
+              <Breadcrumb.Section
+                link
+                onClick={() =>
+                  this.props.history.push(this.getLink(linkNames, i))
+                }
+              >
+                {name}
+              </Breadcrumb.Section>
+            </Breadcrumb>
+          ) : null;
+        })}
+      </div>
     );
   }
 }
 
 AppBreadcrumb.propTypes = {
-  history: PropTypes.shape({
-    location: PropTypes.shape({
-      pathname: PropTypes.string.isRequired,
-    }).isRequired,
-  }).isRequired,
+  location: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired,
 };
 
-export default AppBreadcrumb;
+export default withRouter(AppBreadcrumb);

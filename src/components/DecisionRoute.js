@@ -29,7 +29,7 @@ class DecisionRoute extends React.Component {
 
 DecisionRoute.propTypes = {
   renderComponent: PropTypes.bool.isRequired,
-  component: PropTypes.elementType.isRequired,
+  component: PropTypes.elementType,
   redirectPath: PropTypes.string.isRequired,
 };
 

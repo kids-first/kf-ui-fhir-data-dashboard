@@ -1,0 +1,8 @@
+.app-breadcrumb {
+  display: flex;
+}
+
+/* Semantic UI Overrides */
+.ui.breadcrumb a {
+  color: var(--d3b-brightblue) !important;
+}

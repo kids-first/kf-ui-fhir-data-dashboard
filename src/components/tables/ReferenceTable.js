@@ -1,7 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Modal} from 'semantic-ui-react';
-import ReactJson from 'react-json-view';
 import {getReferencedBy, getReferences} from '../../utils/api';
 import {logErrors} from '../../utils/common';
 import SortableTable from './SortableTable';
@@ -16,7 +14,6 @@ class ReferenceTable extends React.Component {
       referencedByData: [],
       filteredReferencingData: [],
       filteredReferencedByData: [],
-      showChildModal: null,
       referencingChildRowOpen: -1,
       referencedByChildRowOpen: -1,
       abortController: new AbortController(),
@@ -35,6 +32,7 @@ class ReferenceTable extends React.Component {
 
   componentWillUnmount() {
     this.state.abortController.abort();
+    this.props.setLoadingMessage('');
   }
 
   fetchAllReferences = async () => {
@@ -115,11 +113,7 @@ class ReferenceTable extends React.Component {
   };
 
   onChildRowClick = child => {
-    this.setState({showChildModal: child});
-  };
-
-  closeModal = () => {
-    this.setState({showChildModal: null});
+    this.props.history.push(`/resources/${child.name}/id=${child.id}`);
   };
 
   handleResultSelect = (searchResults, referenceType) => {
@@ -207,22 +201,6 @@ class ReferenceTable extends React.Component {
               }
               activeIndex={this.state.referencingChildRowOpen}
             />
-            <Modal
-              open={!!this.state.showChildModal}
-              onClose={() => this.closeModal()}
-              dimmer="inverted"
-            >
-              <Modal.Header>
-                {this.state.showChildModal
-                  ? this.state.showChildModal.id
-                  : null}
-              </Modal.Header>
-              <Modal.Content>
-                <Modal.Description>
-                  <ReactJson src={this.state.showChildModal} />
-                </Modal.Description>
-              </Modal.Content>
-            </Modal>
           </div>
         ) : null}
       </div>
@@ -231,6 +209,7 @@ class ReferenceTable extends React.Component {
 }
 
 ReferenceTable.propTypes = {
+  history: PropTypes.object.isRequired,
   resource: PropTypes.shape({
     id: PropTypes.string.isRequired,
     resourceType: PropTypes.string.isRequired,

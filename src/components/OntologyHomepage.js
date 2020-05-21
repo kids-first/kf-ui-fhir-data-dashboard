@@ -1,12 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import ReactJson from 'react-json-view';
-import {Dropdown, Modal} from 'semantic-ui-react';
-import {
-  getHumanReadableNumber,
-  getDropdownOptions,
-  logErrors,
-} from '../utils/common';
+import {Loader} from 'semantic-ui-react';
+import {getHumanReadableNumber, logErrors} from '../utils/common';
 import SearchBar from './SearchBar';
 import SortableTable from './tables/SortableTable';
 import './OntologyHomepage.css';
@@ -18,18 +13,9 @@ class OntologyHomepage extends React.Component {
       filteredOntologies: props.ontologies,
       listOntologies: this.mapToArray(props.ontologies),
       ontologiesFetched: props.ontologiesFetched,
-      selectedOntology: null,
-      fetchingOntologyDetails: false,
-      showModal: false,
       abortController: new AbortController(),
     };
   }
-
-  selectApi = (e, {value}) => {
-    this.setState({ontologiesFetched: false, filteredOntologies: []}, () => {
-      this.props.setBaseUrl(value);
-    });
-  };
 
   componentDidMount() {
     if (!this.props.ontologiesFetched) {
@@ -45,13 +31,14 @@ class OntologyHomepage extends React.Component {
 
   componentWillUnmount() {
     this.state.abortController.abort();
+    this.props.setLoadingMessage('');
   }
 
   mapToArray = map =>
     Object.keys(map).map((key, i) => ({
-      id: i,
-      name: key,
-      url: map[key],
+      id: key,
+      name: map[key].name,
+      url: map[key].url,
     }));
 
   getOntologies = async () => {
@@ -82,79 +69,39 @@ class OntologyHomepage extends React.Component {
     });
   };
 
-  getOntologyDetails = async item => {
-    if (item && item.url) {
-      this.setState(
-        {
-          showModal: true,
-          fetchingOntologyDetails: true,
-          selectedOntology: {name: item.name},
-        },
-        async () => {
-          await this.props
-            .getOntologyDetails(
-              `${this.props.baseUrl}CodeSystem?url=${item.url[0]}`,
-              this.state.abortController,
-            )
-            .then(details => {
-              this.setState({
-                fetchingOntologyDetails: false,
-                selectedOntology: {name: item.name, payload: details},
-              });
-            })
-            .catch(err =>
-              logErrors(
-                'Error  getting details for CodeSystem',
-                item.name,
-                ': ',
-                err,
-              ),
-            );
-        },
-      );
-    }
-  };
-
-  closeModal = () => {
-    this.setState({selectedOntology: null, showModal: false});
+  getOntologyDetails = item => {
+    this.props.history.push(`/ontologies/${item.id}`);
   };
 
   render() {
     const {filteredOntologies, listOntologies, ontologiesFetched} = this.state;
     const {ontologies} = this.props;
-
     const tableHeaders = [
-      {display: 'Name', sortId: 'name'},
-      {display: 'URL', sortId: 'url'},
+      {display: 'ID', sortId: 'id', sort: true},
+      {display: 'Name', sortId: 'name', sort: true},
+      {display: 'URL', sortId: 'url', sort: true},
     ];
 
     return (
       <div className="ontology-homepage">
-        <div className="ontology-homepage__header">
-          <div className="ontology-homepage__header-title">
-            <h2>Ontologies:</h2>
-            <h2 className="ontology-homepage__count">
-              {getHumanReadableNumber(Object.keys(filteredOntologies).length)}
-            </h2>
-            <h2>total</h2>
+        <div className="header">
+          <div className="header__text">
+            <h2>Ontologies</h2>
+            <h3>
+              {getHumanReadableNumber(Object.keys(filteredOntologies).length)}{' '}
+              total
+            </h3>
           </div>
-          <Dropdown
-            className="ontology-homepage__dropdown"
-            defaultValue={this.props.baseUrl}
-            selection
-            options={getDropdownOptions(this.props.serverOptions)}
-            onChange={this.selectApi}
-            disabled={!ontologiesFetched}
-          />
-        </div>
-        <div className="ontology-homepage__search">
-          <SearchBar
-            data={Object.keys(ontologies).map(key => ({
-              title: key,
-            }))}
-            handleResultSelect={this.handleResultSelect}
-            placeholder="Search for an ontology"
-          />
+          <div className="header__controls">
+            <SearchBar
+              className="header__searchbar"
+              data={Object.keys(ontologies).map(key => ({
+                title: key,
+              }))}
+              handleResultSelect={this.handleResultSelect}
+              placeholder="Search for an ontology"
+            />
+          </div>
         </div>
         {ontologiesFetched ? (
           <SortableTable
@@ -163,31 +110,8 @@ class OntologyHomepage extends React.Component {
             onRowClick={this.getOntologyDetails}
           />
         ) : (
-          <div className="ui active loader">
-            <p>{this.props.loadingMessage}</p>
-          </div>
+          <Loader inline active content={this.props.loadingMessage} />
         )}
-        <Modal
-          open={this.state.showModal}
-          onClose={() => this.closeModal()}
-          dimmer="inverted"
-        >
-          <Modal.Header>
-            {this.state.selectedOntology
-              ? this.state.selectedOntology.name
-              : ''}
-          </Modal.Header>
-          <Modal.Content>
-            {!this.state.fetchingOntologyDetails &&
-            this.state.selectedOntology ? (
-              <ReactJson src={this.state.selectedOntology.payload} />
-            ) : (
-              <div className="ui active loader">
-                <p>{this.props.loadingMessage}</p>
-              </div>
-            )}
-          </Modal.Content>
-        </Modal>
       </div>
     );
   }
@@ -196,11 +120,9 @@ class OntologyHomepage extends React.Component {
 OntologyHomepage.propTypes = {
   ontologies: PropTypes.object,
   baseUrl: PropTypes.string.isRequired,
-  setBaseUrl: PropTypes.func.isRequired,
   ontologiesFetched: PropTypes.bool,
   getOntologies: PropTypes.func.isRequired,
   loadingMessage: PropTypes.string,
-  serverOptions: PropTypes.array,
   getOntologyDetails: PropTypes.func.isRequired,
 };
 
@@ -208,7 +130,6 @@ OntologyHomepage.defaultProps = {
   ontologies: {},
   ontologiesFetched: false,
   loadingMessage: '',
-  serverOptions: [],
 };
 
 export default OntologyHomepage;

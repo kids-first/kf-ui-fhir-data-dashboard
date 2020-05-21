@@ -1,94 +1,131 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {BrowserRouter as Router, Switch, Link} from 'react-router-dom';
-import {Button, Icon} from 'semantic-ui-react';
+import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
+import {Container, Segment} from 'semantic-ui-react';
+import Header from './Header';
+import AppBreadcrumb from './AppBreadcrumb';
 import DecisionRoute from './DecisionRoute';
 import ReduxHomepage from './ReduxHomepage';
 import ReduxResourceDetails from './ReduxResourceDetails';
+import ReduxAttributeDetails from './ReduxAttributeDetails';
+import ReduxIdDetails from './ReduxIdDetails';
 import ReduxOntologyHomepage from './ReduxOntologyHomepage';
 import ReduxLogin from './ReduxLogin';
 import ReduxServerConfiguration from './ReduxServerConfiguration';
 import {NO_AUTH, BASIC_AUTH} from '../config';
-import logo from '../img/d3b-cube.svg';
 import './App.css';
 
 class App extends React.Component {
   isAuthorized = () => {
-    switch (this.props.selectedServer.authType) {
-      case NO_AUTH:
-        return true;
-      case BASIC_AUTH:
-        return !!this.props.token;
-      default:
-        return true;
+    if (this.props.selectedServer) {
+      switch (this.props.selectedServer.authType) {
+        case NO_AUTH:
+          return true;
+        case BASIC_AUTH:
+          return !!this.props.token;
+        default:
+          return false;
+      }
     }
+    return false;
   };
 
-  authRequired = () => this.props.selectedServer.authType !== NO_AUTH;
+  authRequired = () =>
+    this.props.selectedServer
+      ? this.props.selectedServer.authType !== NO_AUTH
+      : false;
+
+  serverSelected = () => !!this.props.selectedServer;
+
+  getRedirectPath = () => {
+    if (this.serverSelected() && !this.isAuthorized()) {
+      return '/login';
+    } else if (this.serverSelected()) {
+      return '/resources';
+    } else {
+      return '/servers';
+    }
+  };
 
   render() {
     return (
       <Router>
         <div className="app">
-          <div className="app__header">
-            <Link className="app__header-banner" to="/">
-              <img src={logo} alt="D3b" />
-              <h1>FHIR Data Dashboard</h1>
-            </Link>
-            {this.isAuthorized() ? (
-              <div className="app__header-info">
-                {this.authRequired() ? (
-                  <div className="app__header-user">
-                    <p>Welcome, {this.props.username}</p>
-                    <Button onClick={() => this.props.logout()}>Logout</Button>
-                  </div>
-                ) : null}
-                <div className="app__header-nav">
-                  <Link to="/">
-                    <div className="app__header-nav-item">Resources</div>
-                  </Link>
-                  <Link to="/ontologies">
-                    <div className="app__header-nav-item">Ontologies</div>
-                  </Link>
-                  <Link to="/settings">
-                    <Icon name="setting" size="large" />
-                  </Link>
-                </div>
-              </div>
-            ) : null}
-          </div>
-          <Switch>
-            <DecisionRoute
-              path="/login"
-              renderComponent={!this.isAuthorized()}
-              component={ReduxLogin}
-              redirectPath="/"
-            />
-            <DecisionRoute
-              path="/ontologies"
-              renderComponent={!!this.isAuthorized()}
-              component={ReduxOntologyHomepage}
-              redirectPath="/login"
-            />
-            <DecisionRoute
-              path="/settings"
-              renderComponent={!!this.isAuthorized()}
-              component={ReduxServerConfiguration}
-              redirectPath="/login"
-            />
-            <DecisionRoute
-              path="/:resourceId"
-              renderComponent={!!this.isAuthorized()}
-              component={ReduxResourceDetails}
-              redirectPath="/login"
-            />
-            <DecisionRoute
-              path="/"
-              renderComponent={!!this.isAuthorized()}
-              component={ReduxHomepage}
-              redirectPath="/login"
-            />
-          </Switch>
+          <Header
+            isAuthRequired={!!this.authRequired()}
+            selectedServer={this.props.selectedServer}
+            userIsAuthorized={!!this.isAuthorized()}
+            username={this.props.username}
+            logout={this.props.logout}
+          />
+          <Container as={Segment} basic>
+            <AppBreadcrumb />
+            <Switch>
+              <Route path="/servers" component={ReduxServerConfiguration} />
+              <DecisionRoute
+                path="/login"
+                renderComponent={
+                  !!this.serverSelected() && !this.isAuthorized()
+                }
+                component={ReduxLogin}
+                redirectPath={this.getRedirectPath()}
+              />
+              <DecisionRoute
+                path="/ontologies/:id"
+                renderComponent={
+                  !!this.serverSelected() && !!this.isAuthorized()
+                }
+                component={ReduxIdDetails}
+                redirectPath={this.getRedirectPath()}
+              />
+              <DecisionRoute
+                path="/ontologies"
+                renderComponent={
+                  !!this.serverSelected() && !!this.isAuthorized()
+                }
+                component={ReduxOntologyHomepage}
+                redirectPath={this.getRedirectPath()}
+              />
+              <DecisionRoute
+                path="/resources/:resourceId/id=:id"
+                renderComponent={
+                  !!this.serverSelected() && !!this.isAuthorized()
+                }
+                component={ReduxIdDetails}
+                redirectPath={this.getRedirectPath()}
+              />
+              <DecisionRoute
+                path="/resources/:resourceId/:query"
+                renderComponent={
+                  !!this.serverSelected() && !!this.isAuthorized()
+                }
+                component={ReduxAttributeDetails}
+                redirectPath={this.getRedirectPath()}
+              />
+              <DecisionRoute
+                path="/resources/:resourceId"
+                renderComponent={
+                  !!this.serverSelected() && !!this.isAuthorized()
+                }
+                component={ReduxResourceDetails}
+                redirectPath={this.getRedirectPath()}
+              />
+              <DecisionRoute
+                path="/resources"
+                renderComponent={
+                  !!this.serverSelected() && !!this.isAuthorized()
+                }
+                component={ReduxHomepage}
+                redirectPath={this.getRedirectPath()}
+              />
+              <DecisionRoute
+                path="/"
+                renderComponent={false}
+                component={null}
+                redirectPath={this.getRedirectPath()}
+              />
+            </Switch>
+          </Container>
         </div>
       </Router>
     );
@@ -97,7 +134,7 @@ class App extends React.Component {
 
 App.propTypes = {
   baseUrl: PropTypes.string.isRequired,
-  selectedServer: PropTypes.object.isRequired,
+  selectedServer: PropTypes.object,
   token: PropTypes.string,
   username: PropTypes.string,
   logout: PropTypes.func.isRequired,

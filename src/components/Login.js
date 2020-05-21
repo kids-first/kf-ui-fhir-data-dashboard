@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Input, Button} from 'semantic-ui-react';
+import {Input, Button, Breadcrumb} from 'semantic-ui-react';
 import './Login.css';
 
 class Login extends React.Component {
@@ -42,6 +42,15 @@ class Login extends React.Component {
   render() {
     return (
       <div className="login">
+        <Breadcrumb>
+          <Breadcrumb.Divider icon="left chevron" />
+          <Breadcrumb.Section
+            link
+            onClick={() => this.props.history.push('/servers')}
+          >
+            Servers
+          </Breadcrumb.Section>
+        </Breadcrumb>
         <div className="login__content">
           <h2>Login</h2>
           <h3>
@@ -84,6 +93,11 @@ Login.propTypes = {
   setUser: PropTypes.func.isRequired,
   baseUrl: PropTypes.string.isRequired,
   checkUser: PropTypes.func.isRequired,
+  history: PropTypes.shape({
+    location: PropTypes.shape({
+      pathname: PropTypes.string.isRequired,
+    }).isRequired,
+  }).isRequired,
 };
 
 export default Login;
