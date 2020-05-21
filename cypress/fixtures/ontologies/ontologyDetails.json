@@ -1,0 +1,30 @@
+{
+  "fullUrl": "http://hapi.fhir.org/baseR4/CodeSystem/Code1",
+  "resource": {
+    "url": "http://hl7.org/fhir/ValueSet/Code1",
+    "resourceType": "CodeSystem",
+    "id": "Code1",
+    "meta": {
+      "versionId": "1",
+      "lastUpdated": "2020-02-18T06:37:32.034+00:00",
+      "source": "#3JuT2UFvAX9FQgnY",
+      "profile": ["http://hl7.org/fhir/StructureDefinition/Code1"]
+    },
+    "version": "4.0.4",
+    "name": "Code1",
+    "title": "Code1",
+    "status": "active",
+    "experimental": false,
+    "valueSet": "http://hl7.org/fhir/ValueSet/Code1",
+    "content": "complete",
+    "concept": [
+      {
+        "code": "test",
+        "display": "Test"
+      }
+    ]
+  },
+  "search": {
+    "mode": "match"
+  }
+}
