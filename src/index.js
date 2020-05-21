@@ -5,6 +5,7 @@ import store from './store';
 import ReduxApp from './components/ReduxApp';
 import 'semantic-ui-css/semantic.min.css';
 import 'react-virtualized/styles.css';
+import 'whatwg-fetch';
 import './index.css';
 
 ReactDOM.render(

@@ -23,16 +23,18 @@
     "redux": "^4.0.5",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.88.2",
-    "stylelint": "^13.0.0"
+    "stylelint": "^13.0.0",
+    "whatwg-fetch": "^3.0.0"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "./node_modules/.bin/mocha",
     "eject": "react-scripts eject",
     "eslint": "./node_modules/.bin/eslint './src/**/*.js'",
     "prettier": "./node_modules/.bin/prettier './src/**/*.js'",
-    "stylelint": "./node_modules/.bin/stylelint './src/**/*.css'"
+    "stylelint": "./node_modules/.bin/stylelint './src/**/*.css'",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run"
   },
   "browserslist": {
     "production": [
@@ -53,6 +55,7 @@
     "bracketSpacing": false
   },
   "devDependencies": {
+    "cypress": "^4.5.0",
     "eslint": "^6.8.0",
     "eslint-config-airbnb": "^18.0.1",
     "eslint-plugin-import": "^2.20.0",

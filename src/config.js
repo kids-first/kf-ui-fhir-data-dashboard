@@ -5,7 +5,9 @@ export const NO_AUTH = 'NO_AUTH';
 export const BASIC_AUTH = 'BASIC_AUTH';
 
 export const getBaseUrl = () => {
-  let envVar = process.env.REACT_APP_FHIR_API;
+  let envVar = window.Cypress
+    ? 'http://hapi.fhir.org/baseR4/'
+    : process.env.REACT_APP_FHIR_API;
   if (envVar) {
     if (envVar.substring(envVar.length - 1, envVar.length) !== '/') {
       envVar = envVar.concat('/');
