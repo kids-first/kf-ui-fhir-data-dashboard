@@ -1,0 +1,59 @@
+{
+  "resourceType": "Bundle",
+  "id": "987",
+  "meta": {
+    "lastUpdated": "2020-05-18T15:33:59.235+00:00"
+  },
+  "type": "searchset",
+  "total": 1,
+  "link": [
+    {
+      "relation": "self",
+      "url": "http://localhost:8000/StructureDefinition?url=http%3A%2F%2Ffhir.kids-first.io%2FStructureDefinition%2FObservation"
+    }
+  ],
+  "entry": [
+    {
+      "fullUrl": "http://localhost:8000/StructureDefinition/Observation",
+      "resource": {
+        "resourceType": "StructureDefinition",
+        "id": "Observation",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2020-04-16T06:39:35.464+00:00"
+        },
+        "url": "http://fhir.kids-first.io/StructureDefinition/Observation",
+        "version": "0.1.0",
+        "name": "TestObservation",
+        "title": "TestObservation",
+        "status": "draft",
+        "fhirVersion": "4.0.0",
+        "kind": "resource",
+        "abstract": false,
+        "type": "Observation",
+        "baseDefinition": "http://hl7.org/fhir/StructureDefinition/Observation",
+        "derivation": "constraint",
+        "differential": {
+          "element": [
+            {
+              "id": "Observation",
+              "path": "Observation"
+            },
+            {
+              "id": "Observation.extension",
+              "path": "Observation.extension"
+            },
+            {
+              "id": "Observation.identifier",
+              "path": "Observation.identifier",
+              "mustSupport": true
+            }
+          ]
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    }
+  ]
+}

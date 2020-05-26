@@ -1,0 +1,97 @@
+{
+  "resourceType": "Bundle",
+  "id": "456",
+  "meta": {
+    "lastUpdated": "2020-05-18T15:33:58.157+00:00"
+  },
+  "type": "searchset",
+  "total": 2,
+  "link": [
+    {
+      "relation": "self",
+      "url": "http://localhost:8000/Condition?patient=Patient%2F123"
+    }
+  ],
+  "entry": [
+    {
+      "fullUrl": "http://localhost:8000/Condition/Condition.456",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "456",
+        "meta": {
+          "profile": ["http://fhir.kids-first.io/StructureDefinition/Condition"]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "condition1",
+                "display": "Condition 1"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://purl.obolibrary.org/obo/mondo.owl",
+              "code": "MONDO:456"
+            },
+            {
+              "system": "http://ncit.nci.nih.gov",
+              "code": "NCIT:456"
+            }
+          ],
+          "text": "Condition 1"
+        },
+        "subject": {
+          "reference": "Patient/123"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://localhost:8000/Condition/Condition.789",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "789",
+        "meta": {
+          "profile": ["http://fhir.kids-first.io/StructureDefinition/Condition"]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "condition2",
+                "display": "Condition 2"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://purl.obolibrary.org/obo/mondo.owl",
+              "code": "MONDO:789"
+            },
+            {
+              "system": "http://ncit.nci.nih.gov",
+              "code": "NCIT:789"
+            }
+          ],
+          "text": "Condition 2"
+        },
+        "subject": {
+          "reference": "Patient/123"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    }
+  ]
+}
