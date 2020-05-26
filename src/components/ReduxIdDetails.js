@@ -37,10 +37,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       }),
     fetchAllResources: (url, abortController) =>
       fetchAllResources(url, [], abortController)
-        .then(data => {
-          console.log(data);
-          return data;
-        })
+        .then(data => data)
         .catch(err => {
           throw err;
         }),

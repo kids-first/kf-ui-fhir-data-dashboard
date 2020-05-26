@@ -53,7 +53,9 @@ class IdDetails extends React.Component {
                 if (history.location.pathname.includes('/ontologies')) {
                   this.getOntologyResources()
                     .then(resources => {
-                      console.log('resources', resources);
+                      resources = resources.map(resource =>
+                        this.getFields(resource, this.state.payload.valueSet),
+                      );
                       this.setState({
                         ontologyResources: resources,
                         loading: false,
@@ -83,13 +85,46 @@ class IdDetails extends React.Component {
     const {payload} = this.state;
     setLoadingMessage(`Fetching resources for ${id}...`);
     return fetchAllResources(
-      `${baseUrl}StructureDefinition?valueset=${payload.valueSet}`,
+      `${baseUrl}StructureDefinition?valueset=${payload.valueSet.concat(
+        payload.version ? `|${payload.version}` : '',
+      )}`,
       this.state.abortController,
     )
       .then(data => (data ? data.map(x => x.resource) : []))
+      .then(async resources => {
+        const newData = await fetchAllResources(
+          `${baseUrl}StructureDefinition?valueset=${payload.valueSet}`,
+          this.state.abortController,
+        );
+        return resources.concat(newData ? newData.map(x => x.resource) : []);
+      })
       .catch(err => {
         throw err;
       });
+  };
+
+  getFields = (resource, valueSet) => {
+    let fields = [];
+    if (resource.snapshot && resource.snapshot.element) {
+      resource.snapshot.element.forEach(elt => {
+        if (
+          elt.binding &&
+          elt.binding.valueSet &&
+          elt.binding.valueSet.includes(valueSet)
+        ) {
+          fields.push(elt.id);
+        }
+      });
+      return {
+        fields,
+        ...resource,
+      };
+    } else {
+      return {
+        fields: ['Unknown'],
+        ...resource,
+      };
+    }
   };
 
   onOntologyRowClick = row => {
@@ -99,7 +134,6 @@ class IdDetails extends React.Component {
   render() {
     const {id, history} = this.props;
     const {payload, ontologyResources} = this.state;
-    console.log('ontologyResources', ontologyResources);
     const referenceTableHeaders = [
       {display: 'Resource Type', sortId: 'resourceType', sort: true},
       {display: 'Resource Name', sortId: 'name', sort: true},
@@ -110,6 +144,12 @@ class IdDetails extends React.Component {
       {display: 'Resource ID', sortId: 'id', sort: true},
       {display: 'Resource Name', sortId: 'name', sort: true},
       {display: 'URL', sortId: 'url', sort: true},
+      {
+        display: 'Fields',
+        sortId: 'fields',
+        func: arr => arr.join(', '),
+        sort: false,
+      },
     ];
     const secondTab = history.location.pathname.includes('/resources')
       ? {
