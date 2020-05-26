@@ -60,7 +60,10 @@ class AttributeDetails extends React.Component {
                 .map(x => x.resource)
                 .map(x => ({
                   id: x.id,
-                  lastUpdated: x.meta ? x.meta.lastUpdated : 'Unknown',
+                  lastUpdated:
+                    !!x.meta && !!x.meta.lastUpdated
+                      ? x.meta.lastUpdated
+                      : 'Unknown',
                 }));
               this.setState({
                 data: mappedData,
@@ -103,7 +106,7 @@ class AttributeDetails extends React.Component {
         display: 'Last Updated',
         sortId: 'lastUpdated',
         sort: true,
-        func: str => this.formatDate(str),
+        func: str => (str !== 'Unknown' ? this.formatDate(str) : str),
       },
     ];
     return (
