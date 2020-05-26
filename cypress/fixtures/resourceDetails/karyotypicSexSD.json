@@ -1,0 +1,86 @@
+{
+  "resourceType": "Bundle",
+  "id": "678",
+  "type": "searchset",
+  "total": 1,
+  "link": [
+    {
+      "relation": "self",
+      "url": "http://localhost:8000/StructureDefinition?url=http%3A%2F%2Ffhir.kids-first.io%2FStructureDefinition%2Fkaryotypic-sex"
+    }
+  ],
+  "entry": [
+    {
+      "fullUrl": "http://localhost:8000/StructureDefinition/karyotypic-sex",
+      "resource": {
+        "resourceType": "StructureDefinition",
+        "id": "karyotypic-sex",
+        "url": "http://fhir.kids-first.io/StructureDefinition/karyotypic-sex",
+        "name": "KaryotypicSex",
+        "title": "Karyotypic Sex",
+        "context": [
+          {
+            "type": "element",
+            "expression": "Patient"
+          }
+        ],
+        "type": "Extension",
+        "baseDefinition": "http://hl7.org/fhir/StructureDefinition/Extension",
+        "snapshot": {
+          "element": []
+        },
+        "differential": {
+          "element": [
+            {
+              "id": "Extension",
+              "path": "Extension",
+              "short": "The chromosomal sex of an individual.",
+              "definition": "The chromosomal sex of an individual.",
+              "min": 0,
+              "max": "1",
+              "mustSupport": true,
+              "isModifier": false
+            },
+            {
+              "id": "Extension.extension",
+              "path": "Extension.extension",
+              "max": "0"
+            },
+            {
+              "id": "Extension.url",
+              "path": "Extension.url",
+              "type": [
+                {
+                  "code": "uri"
+                }
+              ],
+              "fixedUri": "http://fhir.kids-first.io/StructureDefinition/karyotypic-sex"
+            },
+            {
+              "id": "Extension.valueCodeableConcept",
+              "path": "Extension.valueCodeableConcept",
+              "type": [
+                {
+                  "code": "CodeableConcept"
+                }
+              ],
+              "binding": {
+                "extension": [
+                  {
+                    "url": "http://hl7.org/fhir/StructureDefinition/elementdefinition-bindingName",
+                    "valueString": "Karyotypic Sex"
+                  }
+                ],
+                "strength": "required",
+                "valueSet": "http://fhir.kids-first.io/ValueSet/karyotypic-sex"
+              }
+            }
+          ]
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    }
+  ]
+}

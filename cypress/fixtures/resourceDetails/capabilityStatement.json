@@ -1,0 +1,38 @@
+{
+  "rest": [
+    {
+      "resource": [
+        {
+          "type": "Patient",
+          "profile": "http://hl7.org/fhir/StructureDefinition/Patient",
+          "searchParam": [
+            {
+              "name": "address",
+              "type": "string",
+              "documentation": "A server defined search that may match any of the string fields in the Address, including line, city, district, state, country, postalCode, and/or text"
+            },
+            {
+              "name": "deceased",
+              "type": "token",
+              "documentation": "This patient has been marked as deceased, or as a death date entered"
+            },
+            {
+              "name": "email",
+              "type": "token",
+              "documentation": "A value in an email contact"
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "documentation": "A server defined search that may match any of the string fields in the HumanName, including family, give, prefix, suffix, suffix, and/or text"
+            },
+            {
+              "name": "karyotypic-sex",
+              "type": "token"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "resourceType": "Bundle",
+  "id": "123",
+  "type": "searchset",
+  "total": 3,
+  "link": [
+    {
+      "relation": "self",
+      "url": "http://localhost:8000/SearchParameter?base=Patient"
+    }
+  ],
+  "entry": [
+    {
+      "fullUrl": "http://localhost:8000/SearchParameter/1",
+      "resource": {
+        "resourceType": "SearchParameter",
+        "id": "address",
+        "code": "address",
+        "base": ["Patient"],
+        "expression": "Patient.address"
+      }
+    },
+    {
+      "fullUrl": "http://localhost:8000/SearchParameter/2",
+      "resource": {
+        "resourceType": "SearchParameter",
+        "id": "name",
+        "code": "name",
+        "base": ["Patient"],
+        "expression": "Patient.name"
+      }
+    },
+    {
+      "fullUrl": "http://localhost:8000/SearchParameter/3",
+      "resource": {
+        "resourceType": "SearchParameter",
+        "id": "email",
+        "code": "email",
+        "base": ["Patient"],
+        "expression": "Patient.email"
+      }
+    }
+  ]
+}

@@ -521,36 +521,6 @@ class ResourceDetails extends React.Component {
     }
   };
 
-  closeModal = () => {
-    this.setState({
-      showModal: false,
-    });
-  };
-
-  transformResults = (data, attribute) => {
-    let results =
-      data && data.entry ? data.entry.map(item => item.resource) : [];
-    if (attribute.extensionInfo && attribute.extensionInfo.url) {
-      results.map(result => {
-        const extensionIndex = result.extension.findIndex(
-          ext => ext.url === attribute.extensionInfo.url,
-        );
-        const extension =
-          extensionIndex > -1
-            ? result.extension[extensionIndex].valueCodeableConcept
-            : null;
-        result[attribute.name] = extension;
-        return result;
-      });
-    }
-    return {results, link: data.link};
-  };
-
-  fetchNextPage = async url =>
-    await this.props
-      .fetchResource(url, this.state.abortController)
-      .then(data => this.transformResults(data, this.state.modalAttribute));
-
   render() {
     const {
       total,
