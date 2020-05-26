@@ -38,7 +38,7 @@ class OntologyHomepage extends React.Component {
     Object.keys(map).map((key, i) => ({
       id: key,
       name: map[key].name,
-      url: map[key].url,
+      valueSet: map[key].valueSet,
     }));
 
   getOntologies = async () => {
@@ -79,7 +79,7 @@ class OntologyHomepage extends React.Component {
     const tableHeaders = [
       {display: 'ID', sortId: 'id', sort: true},
       {display: 'Name', sortId: 'name', sort: true},
-      {display: 'URL', sortId: 'url', sort: true},
+      {display: 'URL', sortId: 'valueSet', sort: true},
     ];
 
     return (

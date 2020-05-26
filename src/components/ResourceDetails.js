@@ -16,6 +16,7 @@ class ResourceDetails extends React.Component {
     this.state = {
       schema: null,
       resourceType: props.resourceId,
+      resourceName: null,
       resourceBaseType: null,
       resourceUrl: null,
       total: props.total,
@@ -55,7 +56,8 @@ class ResourceDetails extends React.Component {
         .then(async schema => {
           this.setState({
             schema,
-            resourceType: schema.name,
+            resourceType: schema.id,
+            resourceName: schema.name,
             resourceBaseType: schema.type,
             resourceUrl: schema.url,
           });
@@ -528,6 +530,7 @@ class ResourceDetails extends React.Component {
       queriesComplete,
       resourceBaseType,
       resourceType,
+      resourceName,
     } = this.state;
     const charts = this.getCharts(attributes);
     return (
@@ -535,6 +538,9 @@ class ResourceDetails extends React.Component {
         <div className="header">
           <div className="header__text">
             <h2>{resourceType}</h2>
+            {resourceType !== resourceName ? (
+              <h3>Name: {resourceName}</h3>
+            ) : null}
             <h3>Base type: {resourceBaseType}</h3>
           </div>
         </div>
