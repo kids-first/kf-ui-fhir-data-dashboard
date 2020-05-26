@@ -53,6 +53,7 @@
 .app .ui.menu .link.item:hover,
 .app .ui.menu a:hover,
 .app .ui.menu .active.item,
+.app .ui.menu .active.item > a,
 .app .ui.menu .ui.dropdown .menu > .item:hover {
   color: var(--d3b-brightblue) !important;
 }

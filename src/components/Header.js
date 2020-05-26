@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Menu, Container, Image, Dropdown} from 'semantic-ui-react';
-import {Link} from 'react-router-dom';
+import {Link, withRouter} from 'react-router-dom';
 import logo from '../img/ncpi-logo.png';
 import './Header.css';
 
@@ -13,6 +13,7 @@ class Header extends React.Component {
       selectedServer,
       username,
       logout,
+      location,
     } = this.props;
     return (
       <Menu>
@@ -27,10 +28,10 @@ class Header extends React.Component {
           </Menu.Item>
           {userIsAuthorized ? (
             <React.Fragment>
-              <Menu.Item>
+              <Menu.Item active={location.pathname.includes('/resources')}>
                 <Link to="/resources">Resources</Link>
               </Menu.Item>
-              <Menu.Item>
+              <Menu.Item active={location.pathname.includes('/ontologies')}>
                 <Link to="/ontologies">Ontologies</Link>
               </Menu.Item>
               <Menu.Menu position="right">
@@ -66,7 +67,7 @@ class Header extends React.Component {
   }
 }
 
-export default Header;
+export default withRouter(Header);
 
 Header.propTypes = {
   userIsAuthorized: PropTypes.bool,

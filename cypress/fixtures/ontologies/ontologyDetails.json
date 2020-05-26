@@ -1,5 +1,6 @@
 {
   "fullUrl": "http://hapi.fhir.org/baseR4/CodeSystem/Code1",
+  "valueSet": "http://hl7.org/fhir/ValueSet/Code1",
   "resource": {
     "url": "http://hl7.org/fhir/ValueSet/Code1",
     "resourceType": "CodeSystem",

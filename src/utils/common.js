@@ -97,3 +97,23 @@ export const getMonth = index => {
   ];
   return index < months.length ? months[index] : null;
 };
+
+export const groupOntologies = ontologies => {
+  const groupedOntologies = {};
+  ontologies.forEach(item => {
+    if (!!item.id && !!item.valueSet) {
+      if (groupedOntologies[item.id]) {
+        groupedOntologies[item.id] = {
+          valueSet: groupedOntologies[item.id].concat(item.valueSet),
+          ...groupedOntologies[item.id],
+        };
+      } else {
+        groupedOntologies[item.id] = {
+          valueSet: [item.valueSet],
+          name: item.name,
+        };
+      }
+    }
+  });
+  return groupedOntologies;
+};

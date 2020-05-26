@@ -1,27 +1,8 @@
 import {connect} from 'react-redux';
 import {setOntologies, setLoadingMessage} from '../actions';
 import {getOntologies, fetchResource} from '../utils/api';
+import {groupOntologies} from '../utils/common';
 import OntologyHomepage from './OntologyHomepage';
-
-const groupOntologies = ontologies => {
-  const groupedOntologies = {};
-  ontologies.forEach(item => {
-    if (!!item.id && !!item.url) {
-      if (groupedOntologies[item.id]) {
-        groupedOntologies[item.id] = {
-          url: groupedOntologies[item.id].concat(item.url),
-          ...groupedOntologies[item.id],
-        };
-      } else {
-        groupedOntologies[item.id] = {
-          url: [item.url],
-          name: item.name,
-        };
-      }
-    }
-  });
-  return groupedOntologies;
-};
 
 const mapStateToProps = (state, ownProps) => ({
   ontologies: state && state.ontologies ? state.ontologies.ontologies : [],
