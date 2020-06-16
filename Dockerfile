@@ -20,4 +20,7 @@ EXPOSE 80
 RUN rm /etc/nginx/conf.d/default.conf
 COPY bin/nginx.conf /etc/nginx/nginx.conf
 COPY --from=base /app/build /usr/share/nginx/html
-CMD ["nginx"]
+COPY ./bin/env.sh .
+RUN chmod +x env.sh
+COPY ./src/.env.example .env
+CMD ["/bin/bash", "-c", "/usr/share/nginx/html/env.sh && nginx"]
