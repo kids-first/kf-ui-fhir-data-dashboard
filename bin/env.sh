@@ -28,7 +28,8 @@ do
   value=$(printf '%s\n' "${!varname}")
   # Otherwise use value from .env file
   [[ -z $value ]] && [[ -n ${varvalue} ]] && value=${varvalue}
-
+  # Remove quotes
+  value=$(sed -e 's/^"//' -e 's/"$//' <<< "$value")
   # Append configuration property to JS file
   echo "  $varname: \"$value\"," >> ./env-config.js
 done < .env
