@@ -49,7 +49,7 @@
 .app .ui.menu a:hover,
 .app .ui.menu .active.item,
 .app .ui.menu .ui.dropdown .menu > .item:hover {
-  color: var(--kf-lightblue) !important;
+  color: var(--kf-pink) !important;
   background-color: #fff !important;
 }
 

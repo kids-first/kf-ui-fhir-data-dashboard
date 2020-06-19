@@ -70,7 +70,7 @@
 
 #homepage__card-description > i.inverted.bordered.icon,
 #homepage__card-description > i.inverted.circular.icon {
-  background-color: var(--kf-pink) !important;
+  background-color: var(--kf-teal) !important;
   width: 90px !important;
   height: 90px !important;
   display: flex;
@@ -112,5 +112,5 @@ i.icon.chevron.down {
 }
 
 .sb-avatar__text {
-  background-color: var(--kf-pink) !important;
+  background-color: var(--kf-teal) !important;
 }

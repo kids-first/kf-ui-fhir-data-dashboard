@@ -9,6 +9,7 @@
   --kf-pink: #e83a9c;
   --kf-lightblue: #01aeed;
   --kf-teal: #009cb8;
+  --kf-hoverblue: rgba(0, 156, 184, 0.4);
 }
 
 body {
