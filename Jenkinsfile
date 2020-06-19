@@ -6,7 +6,7 @@ ecs_service_type_1_standard {
     environments               = "dev,qa,prd"
     docker_image_type          = "debian"
     create_default_iam_role    = "1"
-    entrypoint_command         = "nginx"
+    entrypoint_command         = "/start_up.sh"
     quick_deploy               = "true"
     container_port             = "80"
     health_check_path          = "/"
