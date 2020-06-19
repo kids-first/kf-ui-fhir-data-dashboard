@@ -68,14 +68,10 @@ export const logErrors = (msg, error) => {
 };
 
 export const replaceLocalhost = url => {
+  const delimiter = '?_getpages';
   const baseUrl = store.getState().app.selectedServer.url;
-  let splitUrl = baseUrl.split(':');
-  if (splitUrl.length > 1) {
-    splitUrl = splitUrl[1];
-  } else {
-    splitUrl = splitUrl[0];
-  }
-  return url.replace('localhost', splitUrl);
+  let splitUrl = url.split(delimiter);
+  return `${baseUrl}${delimiter}${splitUrl[1]}`;
 };
 
 export const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1);
