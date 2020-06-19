@@ -100,7 +100,6 @@ class IdDetails extends React.Component {
                         const valueAge = resource.extension
                           .map(x => x.valueAge)
                           .filter(x => x);
-                        console.log('valueAge', valueAge);
                         if (valueAge && valueAge.length > 0) {
                           return valueAge[0].value;
                         }
