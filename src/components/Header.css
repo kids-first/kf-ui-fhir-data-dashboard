@@ -1,11 +1,10 @@
 /* Semantic UI Overrides */
 .app .ui.menu {
-  background-color: var(--d3b-gray);
   border-radius: 0;
 }
 
 .app .ui.menu .item {
-  color: var(--d3b-lightgray);
+  color: var(--kf-blue);
   font-size: 18px;
 }
 
@@ -18,12 +17,12 @@
 }
 
 .app .ui.menu a {
-  color: var(--d3b-lightgray);
+  color: var(--kf-blue);
   font-size: 18px;
 }
 
 .app .ui.menu i.icon {
-  color: var(--d3b-lightgray);
+  color: var(--kf-blue);
   margin: 0 5px;
 }
 
@@ -33,10 +32,6 @@
 
 .app .ui.dropdown .menu {
   font-size: 14px;
-}
-
-.ui.menu .dropdown.item .menu {
-  background-color: var(--d3b-gray) !important;
 }
 
 .app .ui.menu .ui.dropdown .menu > .item {
@@ -54,15 +49,16 @@
 .app .ui.menu a:hover,
 .app .ui.menu .active.item,
 .app .ui.menu .ui.dropdown .menu > .item:hover {
-  color: var(--d3b-brightblue) !important;
+  color: var(--kf-lightblue) !important;
+  background-color: #fff !important;
 }
 
 .app .ui.dropdown .menu > .header {
   text-transform: none;
   font-size: 14px;
-  color: var(--d3b-lightgray);
+  color: var(--kf-blue);
 }
 
 .app .ui.menu .ui.dropdown .menu > .item {
-  color: var(--d3b-lightgray) !important;
+  color: var(--kf-blue) !important;
 }

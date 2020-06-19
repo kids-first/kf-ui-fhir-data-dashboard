@@ -46,13 +46,13 @@ i.inverted.circular.icon.header__controls-view-icon {
 
 i.inverted.bordered.icon.header__controls-view-icon:hover,
 i.inverted.circular.icon.header__controls-view-icon:hover {
-  background-color: var(--d3b-brightblue) !important;
+  background-color: var(--kf-blue) !important;
   margin: 0 0 !important;
 }
 
 i.inverted.bordered.icon.header__controls-view-icon--selected,
 i.inverted.circular.icon.header__controls-view-icon--selected {
-  background-color: var(--d3b-blue) !important;
+  background-color: var(--kf-purple) !important;
   margin: 0 0 !important;
 }
 
