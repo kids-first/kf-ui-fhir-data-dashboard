@@ -4,6 +4,7 @@ import {Loader, Tab} from 'semantic-ui-react';
 import ReactJson from 'react-json-view';
 import {logErrors} from '../utils/common';
 import ReferenceTable from './tables/ReferenceTable';
+import Timeline from './tables/Timeline';
 import './IdDetails.css';
 
 class IdDetails extends React.Component {
@@ -65,23 +66,52 @@ class IdDetails extends React.Component {
       {display: 'Profile', sortId: 'profile', sort: true},
       {display: 'Total References', sortId: 'total', sort: true},
     ];
-    const secondTab = history.location.pathname.includes('/resources')
-      ? {
-          menuItem: 'References',
-          render: () => (
-            <Tab.Pane>
-              <ReferenceTable
-                resource={payload}
-                tableHeaders={tableHeaders}
-                baseUrl={this.props.baseUrl}
-                setLoadingMessage={this.props.setLoadingMessage}
-                loadingMessage={this.props.loadingMessage}
-                history={this.props.history}
-              />
-            </Tab.Pane>
-          ),
-        }
-      : null;
+    let secondTab = null;
+    if (history.location.pathname.includes('/resources')) {
+      secondTab =
+        payload.resourceType !== 'Patient'
+          ? {
+              menuItem: 'References',
+              render: () => (
+                <Tab.Pane>
+                  <ReferenceTable
+                    resource={payload}
+                    tableHeaders={tableHeaders}
+                    baseUrl={this.props.baseUrl}
+                    setLoadingMessage={this.props.setLoadingMessage}
+                    loadingMessage={this.props.loadingMessage}
+                    history={this.props.history}
+                  />
+                </Tab.Pane>
+              ),
+            }
+          : {
+              menuItem: 'Timeline',
+              render: () => (
+                <Tab.Pane>
+                  <Timeline
+                    resource={payload}
+                    baseUrl={this.props.baseUrl}
+                    setLoadingMessage={this.props.setLoadingMessage}
+                    loadingMessage={this.props.loadingMessage}
+                    history={this.props.history}
+                    dateFieldPath={resource => {
+                      if (resource && resource.extension) {
+                        const valueAge = resource.extension
+                          .map(x => x.valueAge)
+                          .filter(x => x);
+                        console.log('valueAge', valueAge);
+                        if (valueAge && valueAge.length > 0) {
+                          return valueAge[0].value;
+                        }
+                      }
+                      return null;
+                    }}
+                  />
+                </Tab.Pane>
+              ),
+            };
+    }
     const panes = [
       {
         menuItem: 'Payload',
