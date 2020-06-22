@@ -14,5 +14,5 @@
 
 .sortable-table tr:hover,
 .sortable-table td:hover {
-  background-color: var(--d3b-hoverblue);
+  background-color: var(--kf-hoverblue);
 }

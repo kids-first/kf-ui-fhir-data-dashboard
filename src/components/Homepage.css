@@ -18,7 +18,7 @@
 
 .homepage__card-description-count {
   align-self: flex-end;
-  color: var(--d3b-brightblue);
+  color: var(--kf-blue);
   font-weight: bold;
   font-size: 16px;
 }
@@ -37,9 +37,11 @@
 }
 
 .ui.card > .content > .header,
-.ui.cards > .card > .content > .header {
+.ui.cards > .card > .content > .header,
+.ui.card .meta,
+.ui.cards > .card .meta {
   overflow-wrap: break-word;
-  color: var(--d3b-blue) !important;
+  color: var(--kf-blue) !important;
 }
 
 .ui.card > .content > .description,
@@ -59,7 +61,7 @@
 
 .ui.input.focus > input,
 .ui.input > input:focus {
-  border-color: var(--d3b-brightblue) !important;
+  border-color: var(--kf-blue) !important;
 }
 
 .ui.search > .results {
@@ -68,7 +70,7 @@
 
 #homepage__card-description > i.inverted.bordered.icon,
 #homepage__card-description > i.inverted.circular.icon {
-  background-color: var(--d3b-blue) !important;
+  background-color: var(--kf-teal) !important;
   width: 90px !important;
   height: 90px !important;
   display: flex;
@@ -79,7 +81,7 @@
 
 i.icon {
   cursor: pointer;
-  color: var(--d3b-brightblue);
+  color: var(--kf-blue);
 }
 
 i.icon.chevron.up,
@@ -100,11 +102,15 @@ i.icon.chevron.down {
 .ui.selection.dropdown:focus,
 .ui.selection.active.dropdown,
 .ui.selection.active.dropdown .menu {
-  border-color: var(--d3b-brightblue) !important;
+  border-color: var(--kf-blue) !important;
 }
 
 @media screen and (max-width: 768px) {
   .ui.selection.dropdown {
     width: 100%;
   }
+}
+
+.sb-avatar__text {
+  background-color: var(--kf-teal) !important;
 }

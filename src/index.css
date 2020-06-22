@@ -3,9 +3,13 @@
   --d3b-gray: #393939;
   --d3b-mediumgray: #d1d1d1;
   --d3b-lightgray: #f3f3f3;
-  --d3b-blue: #005788;
-  --d3b-brightblue: #41b6e6;
   --d3b-hoverblue: rgba(65, 182, 230, 0.4);
+  --kf-purple: #90278e;
+  --kf-blue: #2b388f;
+  --kf-pink: #e83a9c;
+  --kf-lightblue: #01aeed;
+  --kf-teal: #009cb8;
+  --kf-hoverblue: rgba(0, 156, 184, 0.4);
 }
 
 body {
@@ -33,33 +37,33 @@ h5 {
 
 h1 {
   font-size: 24px;
-  color: var(--d3b-gray);
+  color: var(--kf-purple);
 }
 
 h2 {
   font-size: 18px;
-  color: var(--d3b-blue);
+  color: var(--kf-blue);
   font-weight: bold;
 }
 
 h3 {
   font-size: 16px;
-  color: var(--d3b-blue);
+  color: var(--kf-blue);
 }
 
 h4 {
   font-size: 14px;
-  color: var(--d3b-blue);
+  color: var(--kf-blue);
   font-weight: bold;
 }
 
 h5 {
   font-size: 12px;
-  color: var(--d3b-blue);
+  color: var(--kf-purple);
 }
 
 a {
-  color: var(--d3b-brightblue);
+  color: var(--kf-blue);
 }
 
 pre {
