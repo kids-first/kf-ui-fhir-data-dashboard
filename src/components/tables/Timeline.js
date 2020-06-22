@@ -41,6 +41,7 @@ class Timeline extends React.Component {
       );
       await this.fetchReferencedBy()
         .then(async referencedByData => {
+          console.log('referencedByData', referencedByData);
           this.getDataByDate(referencedByData);
           this.setState({
             referencedByData,

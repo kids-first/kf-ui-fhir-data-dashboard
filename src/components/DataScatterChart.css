@@ -4,3 +4,15 @@
   padding: 10px 10px;
   background-color: #fff;
 }
+
+.scatter-chart__modal-details {
+  margin: 10px 0;
+}
+
+.scatter-chart__modal-details h4 {
+  margin: 0;
+}
+
+.scatter-chart__modal-details h4 {
+  margin: 5px 0;
+}

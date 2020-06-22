@@ -199,12 +199,52 @@ class DataScatterChart extends React.Component {
   };
 
   render() {
-    // data = this.props.data;
-    // categories = this.props.categories;
-    // dates = this.props.dates;
+    data = this.props.data;
+    categories = this.props.categories;
+    dates = this.props.dates;
     const referenceLine = this.props.referenceLine;
     const domain = this.getDomain(dates);
     const {showModal, modalContent} = this.state;
+
+    const resourceMapping = {
+      Observation: [
+        x => (x.code && x.code.text ? x.code.text : null),
+        x => {
+          if (x.interpretation) {
+            return x.interpretation
+              .map(elt => elt.text)
+              .filter(x => x)
+              .join(', ');
+          } else {
+            return null;
+          }
+        },
+      ],
+      Condition: [
+        x => {
+          if (x.extension) {
+            return x.extension
+              .map(ext =>
+                ext.valuableCodeableConcept && ext.valuableCodeableConcept.text
+                  ? ext.valuableCodeableConcept.text
+                  : null,
+              )
+              .filter(x => x)
+              .join(', ');
+          } else {
+            return null;
+          }
+        },
+      ],
+      Specimen: [
+        x =>
+          x.collection && x.collection.quantity
+            ? x.collection.quantity.value
+            : null,
+        x => (x.type && x.type.text ? x.type.text : null),
+      ],
+    };
+
     return (
       <div>
         <ScatterChart
@@ -258,11 +298,16 @@ class DataScatterChart extends React.Component {
               {categories[modalContent.category]} at {modalContent.date}
             </Modal.Header>
             <Modal.Content>
-              <ul>
-                {modalContent.ids.map(x => (
-                  <li key={x.id}>{x.id}</li>
-                ))}
-              </ul>
+              {modalContent.ids.map(x => {
+                const funcs =
+                  resourceMapping[categories[modalContent.category]];
+                return (
+                  <div key={x.id} className="scatter-chart__modal-details">
+                    <h4>{x.id}</h4>
+                    <p>{funcs.map(func => func(x)).join(' | ')}</p>
+                  </div>
+                );
+              })}
             </Modal.Content>
           </Modal>
         ) : null}
