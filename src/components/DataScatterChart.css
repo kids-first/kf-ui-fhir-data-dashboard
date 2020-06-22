@@ -16,3 +16,9 @@
 .scatter-chart__modal-details h4 {
   margin: 5px 0;
 }
+
+circle:hover {
+  stroke: var(--d3b-brightblue);
+  fill: var(--d3b-brightblue);
+  stroke-width: 2px;
+}

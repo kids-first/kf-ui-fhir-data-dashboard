@@ -129,6 +129,7 @@ class Timeline extends React.Component {
               data={this.state.flatData}
               dates={this.state.dates}
               referenceLine={{x: 3294, label: 'COVID-19 Diagnosis'}}
+              history={this.props.history}
             />
           </div>
         ) : null}

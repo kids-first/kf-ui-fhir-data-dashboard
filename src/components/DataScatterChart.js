@@ -11,6 +11,7 @@ import {
   ReferenceLine,
 } from 'recharts';
 import {Modal} from 'semantic-ui-react';
+import SortableTable from './tables/SortableTable';
 import './DataScatterChart.css';
 
 let data = [
@@ -118,6 +119,61 @@ let data = [
 let dates = [3291, 3294, 3299, 3300, 3289, 3302, 3301];
 let categories = ['', 'Condition', 'Observation', 'Specimen'];
 
+const resourceMapping = {
+  Observation: [
+    x => (x.code && x.code.text ? x.code.text : null),
+    x => {
+      if (x.interpretation) {
+        return x.interpretation
+          .map(elt => elt.text)
+          .filter(x => x)
+          .join(', ');
+      } else {
+        return null;
+      }
+    },
+  ],
+  Condition: [
+    x => {
+      if (x.extension) {
+        return x.extension
+          .map(ext =>
+            ext.valuableCodeableConcept && ext.valuableCodeableConcept.text
+              ? ext.valuableCodeableConcept.text
+              : null,
+          )
+          .filter(x => x)
+          .join(', ');
+      } else {
+        return null;
+      }
+    },
+  ],
+  Specimen: [
+    x => (x.type && x.type.text ? x.type.text : null),
+    x =>
+      x.collection && x.collection.quantity
+        ? x.collection.quantity.value
+        : null,
+  ],
+};
+
+const resourceTableHeaders = {
+  Observation: [
+    {
+      display: 'Code',
+      sortId: 'Code',
+      sort: true,
+    },
+    {display: 'Interpretation', sortId: 'Interpretation', sort: true},
+  ],
+  Condition: [{display: 'Code', sortId: 'Code', sort: true}],
+  Specimen: [
+    {display: 'Type', sortId: 'Type', sort: true},
+    {display: 'Quantity', sortId: 'Quantity', sort: true},
+  ],
+};
+
 const CustomizedDot = props => {
   const colors = ['#90278e', '#009cb8', '#e83a9c', '#2b388f', '#01aeed'];
   const scaleFactor = 1.5;
@@ -126,6 +182,7 @@ const CustomizedDot = props => {
     .length;
   const radius = 10 + totalIds * scaleFactor;
   const diameter = 2 * radius;
+
   return (
     <svg width={diameter} height={diameter} style={{overflow: 'visible'}}>
       <circle
@@ -134,6 +191,7 @@ const CustomizedDot = props => {
         r={radius}
         strokeWidth="0"
         fill={colors[category]}
+        shapeRendering="geometricPrecision"
       />
     </svg>
   );
@@ -187,7 +245,16 @@ class DataScatterChart extends React.Component {
     this.setState({
       showModal: true,
       modalContent: {
-        ids,
+        ids: ids.map(id => {
+          let newId = {};
+          const funcs = resourceMapping[categories[category]];
+          const cols = funcs.map(func => func(id));
+          resourceTableHeaders[categories[category]].forEach((header, i) => {
+            newId[header.sortId] = cols[i];
+          });
+          newId.id = id.id;
+          return newId;
+        }),
         date,
         category,
       },
@@ -198,6 +265,12 @@ class DataScatterChart extends React.Component {
     this.setState({showModal: false, modalContent: null});
   };
 
+  onRowClick = row => {
+    this.props.history.push(
+      `/resources/${categories[this.state.modalContent.category]}/id=${row.id}`,
+    );
+  };
+
   render() {
     data = this.props.data;
     categories = this.props.categories;
@@ -205,45 +278,6 @@ class DataScatterChart extends React.Component {
     const referenceLine = this.props.referenceLine;
     const domain = this.getDomain(dates);
     const {showModal, modalContent} = this.state;
-
-    const resourceMapping = {
-      Observation: [
-        x => (x.code && x.code.text ? x.code.text : null),
-        x => {
-          if (x.interpretation) {
-            return x.interpretation
-              .map(elt => elt.text)
-              .filter(x => x)
-              .join(', ');
-          } else {
-            return null;
-          }
-        },
-      ],
-      Condition: [
-        x => {
-          if (x.extension) {
-            return x.extension
-              .map(ext =>
-                ext.valuableCodeableConcept && ext.valuableCodeableConcept.text
-                  ? ext.valuableCodeableConcept.text
-                  : null,
-              )
-              .filter(x => x)
-              .join(', ');
-          } else {
-            return null;
-          }
-        },
-      ],
-      Specimen: [
-        x =>
-          x.collection && x.collection.quantity
-            ? x.collection.quantity.value
-            : null,
-        x => (x.type && x.type.text ? x.type.text : null),
-      ],
-    };
 
     return (
       <div>
@@ -298,16 +332,18 @@ class DataScatterChart extends React.Component {
               {categories[modalContent.category]} at {modalContent.date}
             </Modal.Header>
             <Modal.Content>
-              {modalContent.ids.map(x => {
-                const funcs =
-                  resourceMapping[categories[modalContent.category]];
-                return (
-                  <div key={x.id} className="scatter-chart__modal-details">
-                    <h4>{x.id}</h4>
-                    <p>{funcs.map(func => func(x)).join(' | ')}</p>
-                  </div>
-                );
-              })}
+              <SortableTable
+                headerCells={[
+                  {
+                    display: 'ID',
+                    sortId: 'id',
+                    sort: true,
+                  },
+                  ...resourceTableHeaders[categories[modalContent.category]],
+                ]}
+                data={modalContent.ids}
+                onRowClick={this.onRowClick}
+              />
             </Modal.Content>
           </Modal>
         ) : null}
@@ -330,6 +366,7 @@ DataScatterChart.propTypes = {
     x: PropTypes.number.isRequired,
     label: PropTypes.string.isRequired,
   }),
+  history: PropTypes.object.isRequired,
 };
 
 DataScatterChart.defaultProps = {
