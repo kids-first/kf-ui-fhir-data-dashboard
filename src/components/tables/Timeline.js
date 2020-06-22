@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {getReferencedBy, getReferences} from '../../utils/api';
+import {getReferencedBy} from '../../utils/api';
 import {logErrors} from '../../utils/common';
 import DataScatterChart from '../DataScatterChart';
 
@@ -13,7 +13,8 @@ class Timeline extends React.Component {
       referencedByData: null,
       filteredReferencedByData: null,
       dates: [],
-      dataByDate: {},
+      flatData: [],
+      categories: [],
       abortController: new AbortController(),
     };
   }
@@ -91,23 +92,21 @@ class Timeline extends React.Component {
   };
 
   getDataByDate = data => {
-    let dataByDate = {};
+    let flatData = [];
+    let categories = [''];
     let dates = new Set();
-    data.forEach(resource => {
-      dataByDate[resource.name] = [];
+    data.forEach((resource, i) => {
+      categories.push(resource.resourceType);
       resource.children.forEach(child => {
         const date = this.props.dateFieldPath(child);
         if (date) {
-          dataByDate[resource.name].push({id: child.id, date});
+          flatData.push({category: i + 1, date, ...child});
           dates.add(date);
         }
       });
-      dataByDate[resource.name] = dataByDate[resource.name].sort((a, b) =>
-        a.date > b.date ? 1 : -1,
-      );
     });
-    dates = [...dates].sort();
-    this.setState({dates, dataByDate, loadingDates: false});
+    dates = [...dates];
+    this.setState({dates, categories, flatData, loadingDates: false});
   };
 
   render() {
@@ -124,14 +123,12 @@ class Timeline extends React.Component {
         !this.state.loadingReferences &&
         !this.state.loadingDates ? (
           <div>
-            {Object.keys(this.state.dataByDate).map(resource => (
-              <DataScatterChart
-                key={resource}
-                data={this.state.dataByDate[resource]}
-                dates={this.state.dates}
-                label={resource}
-              />
-            ))}
+            <DataScatterChart
+              categories={this.state.categories}
+              data={this.state.flatData}
+              dates={this.state.dates}
+              referenceLine={{x: 3294, label: 'COVID-19 Diagnosis'}}
+            />
           </div>
         ) : null}
       </div>

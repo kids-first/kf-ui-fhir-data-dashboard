@@ -1,0 +1,6 @@
+.scatter-chart__tooltip {
+  border: 2px solid var(--d3b-blue);
+  border-radius: 5px;
+  padding: 10px 10px;
+  background-color: #fff;
+}

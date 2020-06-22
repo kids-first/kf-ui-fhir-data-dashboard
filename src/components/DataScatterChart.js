@@ -1,126 +1,297 @@
 import React from 'react';
-import {ScatterChart, Scatter, XAxis, YAxis, Tooltip} from 'recharts';
+import PropTypes from 'prop-types';
+import {
+  ScatterChart,
+  Scatter,
+  XAxis,
+  YAxis,
+  ZAxis,
+  CartesianGrid,
+  Tooltip,
+  ReferenceLine,
+} from 'recharts';
+import {Modal} from 'semantic-ui-react';
+import './DataScatterChart.css';
 
-const SmallDot = props => {
-  const radius = 10;
-  const diameter = radius * 2;
+let data = [
+  {
+    category: 1,
+    id: '123',
+    date: 3291,
+    name: 'PhenotypicFeature',
+    profile: [
+      'http://ga4gh.org/fhir/phenopackets/StructureDefinition/PhenotypicFeature',
+    ],
+    resourceType: 'Observation',
+    status: 'registered',
+  },
+  {
+    category: 1,
+    id: '456',
+    date: 3294,
+    name: 'PhenotypicFeature',
+    profile: [
+      'http://ga4gh.org/fhir/phenopackets/StructureDefinition/PhenotypicFeature',
+    ],
+    resourceType: 'Observation',
+    status: 'registered',
+  },
+  {
+    category: 1,
+    id: '789',
+    date: 3300,
+    name: 'PhenotypicFeature',
+    profile: [
+      'http://ga4gh.org/fhir/phenopackets/StructureDefinition/PhenotypicFeature',
+    ],
+    resourceType: 'Observation',
+    status: 'registered',
+  },
+  {
+    category: 1,
+    id: '1011',
+    date: 3299,
+    name: 'PhenotypicFeature',
+    profile: [
+      'http://ga4gh.org/fhir/phenopackets/StructureDefinition/PhenotypicFeature',
+    ],
+    resourceType: 'Observation',
+    status: 'registered',
+  },
+  {
+    category: 1,
+    id: '1213',
+    date: 3300,
+    name: 'PhenotypicFeature',
+    profile: [
+      'http://ga4gh.org/fhir/phenopackets/StructureDefinition/PhenotypicFeature',
+    ],
+    resourceType: 'Observation',
+    status: 'registered',
+  },
+  {
+    category: 3,
+    id: '1314',
+    date: 3289,
+    name: 'PhenotypicFeature',
+    profile: [
+      'http://ga4gh.org/fhir/phenopackets/StructureDefinition/PhenotypicFeature',
+    ],
+    resourceType: 'Observation',
+    status: 'registered',
+  },
+  {
+    category: 2,
+    id: '1415',
+    date: 3302,
+    name: 'PhenotypicFeature',
+    profile: [
+      'http://ga4gh.org/fhir/phenopackets/StructureDefinition/PhenotypicFeature',
+    ],
+    resourceType: 'Observation',
+    status: 'registered',
+  },
+  {
+    category: 3,
+    id: '1516',
+    date: 3302,
+    name: 'PhenotypicFeature',
+    profile: [
+      'http://ga4gh.org/fhir/phenopackets/StructureDefinition/PhenotypicFeature',
+    ],
+    resourceType: 'Observation',
+    status: 'registered',
+  },
+  {
+    category: 2,
+    id: '1617',
+    date: 3301,
+    name: 'PhenotypicFeature',
+    profile: [
+      'http://ga4gh.org/fhir/phenopackets/StructureDefinition/PhenotypicFeature',
+    ],
+    resourceType: 'Observation',
+    status: 'registered',
+  },
+];
+
+let dates = [3291, 3294, 3299, 3300, 3289, 3302, 3301];
+let categories = ['', 'Condition', 'Observation', 'Specimen'];
+
+const CustomizedDot = props => {
+  const colors = ['#90278e', '#009cb8', '#e83a9c', '#2b388f', '#01aeed'];
+  const scaleFactor = 1.5;
+  const {date, category, data, cx, cy} = props;
+  const totalIds = data.filter(x => x.category === category && x.date === date)
+    .length;
+  const radius = 10 + totalIds * scaleFactor;
+  const diameter = 2 * radius;
   return (
     <svg width={diameter} height={diameter} style={{overflow: 'visible'}}>
       <circle
-        cx={props.cx}
-        cy={props.cy}
-        r={3}
-        stroke="green"
+        cx={cx}
+        cy={cy}
+        r={radius}
         strokeWidth="0"
-        fill={props.color}
+        fill={colors[category]}
       />
     </svg>
   );
 };
 
-class CustomizedLabel extends React.Component {
-  render() {
-    const {x, y, stroke, value, id, data} = this.props;
-    const date = data.filter(x => x.id === id).map(x => x.date);
-    const total =
-      date.length > 0 ? data.filter(x => x.date === date[0]).length : 0;
-    return (
-      <text x={x} y={y} dy={-4} fill={stroke} fontSize={10} textAnchor="middle">
-        {total}
-      </text>
-    );
-  }
-}
-
 class DataScatterChart extends React.Component {
-  renderTooltip = props => {
-    const {active, payload} = props;
+  constructor(props) {
+    super(props);
+    this.state = {
+      showModal: false,
+      modalContent: null,
+    };
+  }
 
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      const ids = this.props.data
-        .filter(x => x.date === data.date)
+  getDomain = dates => {
+    const min = Math.min(...dates);
+    const max = Math.max(...dates);
+    const domain = [Math.floor(min / 5) * 5, Math.ceil(max / 5) * 5];
+    return domain;
+  };
+
+  formatYAxis = number => categories[number];
+
+  renderTooltip = props => {
+    const {payload} = props;
+    if (payload && payload.length > 0) {
+      const date = payload[0].payload.date;
+      const category = payload[0].payload.category;
+      const ids = data
+        .filter(x => x.category === category && x.date === date)
         .map(x => x.id);
       return (
-        <div
-          style={{
-            backgroundColor: '#fff',
-            border: '1px solid #999',
-            margin: 0,
-            padding: 10,
-          }}
-        >
-          <p>
-            Events on {data.date} ({ids.length} total):
-          </p>
-          <ul>
-            {ids.map(id => (
-              <li key={id}>{id}</li>
-            ))}
-          </ul>
+        <div className="scatter-chart__tooltip">
+          <p>Category: {categories[category]}</p>
+          <p>Date: {date}</p>
+          <p>Total events: {ids.length}</p>
         </div>
       );
     }
-
     return null;
   };
 
-  getDomain = dates => {
-    const min = Math.round(Math.min(...dates) / 10) * 10;
-    const max = Math.round(Math.max(...dates) / 10) * 10;
-    return [min, max];
+  onDotClick = props => {
+    const {category, date} = props;
+    const ids = data.filter(x => x.category === category && x.date === date);
+    this.showModal(ids, category, date);
+  };
+
+  showModal = (ids, category, date) => {
+    console.log('ids', ids);
+    this.setState({
+      showModal: true,
+      modalContent: {
+        ids,
+        date,
+        category,
+      },
+    });
+  };
+
+  closeModal = () => {
+    this.setState({showModal: false, modalContent: null});
   };
 
   render() {
-    const {label, dates} = this.props;
-    let dateSet = {};
-    dates.forEach(date => {
-      dateSet[date] = 1;
-    });
-    const data = this.props.data.map(x => {
-      const index = dateSet[x.date];
-      dateSet[x.date] = index + 1;
-      return {...x, index};
-    });
+    // data = this.props.data;
+    // categories = this.props.categories;
+    // dates = this.props.dates;
+    const referenceLine = this.props.referenceLine;
     const domain = this.getDomain(dates);
+    const {showModal, modalContent} = this.state;
     return (
       <div>
         <ScatterChart
           width={1000}
-          height={200}
-          margin={{top: 15, right: 50, bottom: 0, left: 50}}
+          height={categories.length * 100}
+          margin={{top: 20, right: 80, bottom: 10, left: 80}}
         >
-          <XAxis
-            type="number"
-            dataKey="date"
-            name="hour"
-            domain={domain}
-            tickLine={{transform: 'translate(0, -6)'}}
-          />
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis type="number" dataKey="date" domain={domain} name="days" />
           <YAxis
+            domain={[0, categories.length - 1]}
+            allowDecimals={false}
+            interval={0}
             type="number"
-            dataKey="index"
-            height={10}
-            width={80}
-            tick={false}
-            tickLine={false}
-            axisLine={false}
-            label={{value: `${label}`, position: 'insideRight'}}
+            dataKey="category"
+            tickFormatter={this.formatYAxis}
+            width={100}
+            tickMargin={20}
           />
+          <ZAxis type="category" dataKey="id" name="ID" />
           <Tooltip
             cursor={{strokeDasharray: '3 3'}}
-            wrapperStyle={{zIndex: 100}}
             content={this.renderTooltip}
           />
+          {referenceLine ? (
+            <ReferenceLine
+              x={referenceLine.x}
+              stroke="red"
+              label={{
+                position: 'top',
+                value: `${referenceLine.label}`,
+                fill: 'red',
+                fontSize: 14,
+              }}
+            />
+          ) : null}
           <Scatter
             data={data}
             fill="#8884d8"
-            shape={<SmallDot color="#8884d8" />}
+            shape={<CustomizedDot data={data} />}
+            onClick={this.onDotClick}
           />
         </ScatterChart>
+        {showModal ? (
+          <Modal
+            open={showModal}
+            onClose={() => this.closeModal()}
+            dimmer="inverted"
+          >
+            <Modal.Header>
+              {categories[modalContent.category]} at {modalContent.date}
+            </Modal.Header>
+            <Modal.Content>
+              <ul>
+                {modalContent.ids.map(x => (
+                  <li key={x.id}>{x.id}</li>
+                ))}
+              </ul>
+            </Modal.Content>
+          </Modal>
+        ) : null}
       </div>
     );
   }
 }
+
+DataScatterChart.propTypes = {
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      category: PropTypes.number.isRequired,
+      date: PropTypes.number.isRequired,
+      id: PropTypes.string.isRequired,
+    }),
+  ),
+  categories: PropTypes.array,
+  dates: PropTypes.array,
+  referenceLine: PropTypes.shape({
+    x: PropTypes.number.isRequired,
+    label: PropTypes.string.isRequired,
+  }),
+};
+
+DataScatterChart.defaultProps = {
+  data: [],
+  categories: [],
+  dates: [],
+  referenceLine: {},
+};
 
 export default DataScatterChart;
