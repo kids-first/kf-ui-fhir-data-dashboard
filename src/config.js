@@ -7,7 +7,7 @@ export const BASIC_AUTH = 'BASIC_AUTH';
 export const getBaseUrl = () => {
   let envVar = window.Cypress
     ? 'http://hapi.fhir.org/baseR4/'
-    : process.env.REACT_APP_FHIR_API;
+    : window._env_.REACT_APP_FHIR_API;
   if (envVar) {
     if (envVar.substring(envVar.length - 1, envVar.length) !== '/') {
       envVar = envVar.concat('/');
@@ -42,9 +42,9 @@ const getDefaultFhirServers = () => {
   if (envVar && servers.findIndex(x => x.url === envVar) < 0) {
     servers.push({
       id: servers.length,
-      name: process.env.REACT_APP_FHIR_API_NAME || envVar,
+      name: window._env_.REACT_APP_FHIR_API_NAME || envVar,
       url: envVar,
-      authType: process.env.REACT_APP_FHIR_API_AUTH_TYPE || NO_AUTH,
+      authType: window._env_.REACT_APP_FHIR_API_AUTH_TYPE || NO_AUTH,
     });
   }
   return servers;

@@ -16,8 +16,13 @@ COPY . .
 RUN npm run build
 
 FROM nginx:1.17
+WORKDIR /usr/share/nginx/html
 EXPOSE 80
 RUN rm /etc/nginx/conf.d/default.conf
 COPY bin/nginx.conf /etc/nginx/nginx.conf
-COPY --from=base /app/build /usr/share/nginx/html
-CMD ["nginx", "-g", "daemon off;"]
+COPY --from=base /app/build .
+COPY ./bin/env.sh .
+RUN chmod +x env.sh
+COPY ./src/.env.example /usr/share/nginx/html/.env
+COPY ./bin/start_up.sh /start_up.sh
+CMD ["/bin/bash", "-c", "/usr/share/nginx/html/env.sh && nginx"]

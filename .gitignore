@@ -108,3 +108,5 @@ dist
 
 # Build
 build
+
+env-config.js
