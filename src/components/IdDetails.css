@@ -44,3 +44,7 @@
 .id-details .ui.button > .icon:not(.button) {
   color: #fff !important;
 }
+
+.id-details .ui.message {
+  margin: 20px 0 !important;
+}
