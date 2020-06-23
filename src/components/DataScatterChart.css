@@ -1,5 +1,5 @@
 .scatter-chart__tooltip {
-  border: 2px solid var(--d3b-blue);
+  border: 2px solid var(--kf-blue);
   border-radius: 5px;
   padding: 10px 10px;
   background-color: #fff;
@@ -18,7 +18,7 @@
 }
 
 circle:hover {
-  stroke: var(--d3b-brightblue);
-  fill: var(--d3b-brightblue);
+  stroke: var(--kf-teal);
+  fill: var(--kf-teal);
   stroke-width: 2px;
 }

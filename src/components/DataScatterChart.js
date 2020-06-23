@@ -180,7 +180,7 @@ const CustomizedDot = props => {
   const {date, category, data, cx, cy} = props;
   const totalIds = data.filter(x => x.category === category && x.date === date)
     .length;
-  const radius = 10 + totalIds * scaleFactor;
+  const radius = Math.min(8 + totalIds * scaleFactor, 20);
   const diameter = 2 * radius;
 
   return (
