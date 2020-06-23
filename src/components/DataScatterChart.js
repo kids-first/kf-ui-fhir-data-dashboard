@@ -98,6 +98,7 @@ class DataScatterChart extends React.Component {
     this.state = {
       showModal: false,
       modalContent: null,
+      uniqueDataPoints: this.getUniqueDataPoints(props.data),
     };
   }
 
@@ -171,8 +172,21 @@ class DataScatterChart extends React.Component {
     );
   };
 
+  getUniqueDataPoints = data => {
+    let map = new Map();
+    data.forEach(point => {
+      map.set(point.date, point.category);
+    });
+    let points = [];
+    map.forEach((key, value) => {
+      points.push({category: key, date: value});
+    });
+    return points;
+  };
+
   render() {
     const {data, categories, dates, referenceLine} = this.props;
+    const {uniqueDataPoints} = this.state;
     const domain = this.getDomain(dates);
     const {showModal, modalContent} = this.state;
 
@@ -213,7 +227,7 @@ class DataScatterChart extends React.Component {
             />
           ) : null}
           <Scatter
-            data={data}
+            data={uniqueDataPoints}
             fill="#8884d8"
             shape={<CustomizedDot data={data} />}
             onClick={this.onDotClick}
