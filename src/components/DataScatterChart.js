@@ -14,111 +14,6 @@ import {Modal} from 'semantic-ui-react';
 import SortableTable from './tables/SortableTable';
 import './DataScatterChart.css';
 
-let data = [
-  {
-    category: 1,
-    id: '123',
-    date: 3291,
-    name: 'PhenotypicFeature',
-    profile: [
-      'http://ga4gh.org/fhir/phenopackets/StructureDefinition/PhenotypicFeature',
-    ],
-    resourceType: 'Observation',
-    status: 'registered',
-  },
-  {
-    category: 1,
-    id: '456',
-    date: 3294,
-    name: 'PhenotypicFeature',
-    profile: [
-      'http://ga4gh.org/fhir/phenopackets/StructureDefinition/PhenotypicFeature',
-    ],
-    resourceType: 'Observation',
-    status: 'registered',
-  },
-  {
-    category: 1,
-    id: '789',
-    date: 3300,
-    name: 'PhenotypicFeature',
-    profile: [
-      'http://ga4gh.org/fhir/phenopackets/StructureDefinition/PhenotypicFeature',
-    ],
-    resourceType: 'Observation',
-    status: 'registered',
-  },
-  {
-    category: 1,
-    id: '1011',
-    date: 3299,
-    name: 'PhenotypicFeature',
-    profile: [
-      'http://ga4gh.org/fhir/phenopackets/StructureDefinition/PhenotypicFeature',
-    ],
-    resourceType: 'Observation',
-    status: 'registered',
-  },
-  {
-    category: 1,
-    id: '1213',
-    date: 3300,
-    name: 'PhenotypicFeature',
-    profile: [
-      'http://ga4gh.org/fhir/phenopackets/StructureDefinition/PhenotypicFeature',
-    ],
-    resourceType: 'Observation',
-    status: 'registered',
-  },
-  {
-    category: 3,
-    id: '1314',
-    date: 3289,
-    name: 'PhenotypicFeature',
-    profile: [
-      'http://ga4gh.org/fhir/phenopackets/StructureDefinition/PhenotypicFeature',
-    ],
-    resourceType: 'Observation',
-    status: 'registered',
-  },
-  {
-    category: 2,
-    id: '1415',
-    date: 3302,
-    name: 'PhenotypicFeature',
-    profile: [
-      'http://ga4gh.org/fhir/phenopackets/StructureDefinition/PhenotypicFeature',
-    ],
-    resourceType: 'Observation',
-    status: 'registered',
-  },
-  {
-    category: 3,
-    id: '1516',
-    date: 3302,
-    name: 'PhenotypicFeature',
-    profile: [
-      'http://ga4gh.org/fhir/phenopackets/StructureDefinition/PhenotypicFeature',
-    ],
-    resourceType: 'Observation',
-    status: 'registered',
-  },
-  {
-    category: 2,
-    id: '1617',
-    date: 3301,
-    name: 'PhenotypicFeature',
-    profile: [
-      'http://ga4gh.org/fhir/phenopackets/StructureDefinition/PhenotypicFeature',
-    ],
-    resourceType: 'Observation',
-    status: 'registered',
-  },
-];
-
-let dates = [3291, 3294, 3299, 3300, 3289, 3302, 3301];
-let categories = ['', 'Condition', 'Observation', 'Specimen'];
-
 const resourceMapping = {
   Observation: [
     x => (x.code && x.code.text ? x.code.text : null),
@@ -213,19 +108,19 @@ class DataScatterChart extends React.Component {
     return domain;
   };
 
-  formatYAxis = number => categories[number];
+  formatYAxis = number => this.props.categories[number];
 
   renderTooltip = props => {
     const {payload} = props;
     if (payload && payload.length > 0) {
       const date = payload[0].payload.date;
       const category = payload[0].payload.category;
-      const ids = data
+      const ids = this.props.data
         .filter(x => x.category === category && x.date === date)
         .map(x => x.id);
       return (
         <div className="scatter-chart__tooltip">
-          <p>Category: {categories[category]}</p>
+          <p>Category: {this.props.categories[category]}</p>
           <p>Date: {date}</p>
           <p>Total events: {ids.length}</p>
         </div>
@@ -236,22 +131,25 @@ class DataScatterChart extends React.Component {
 
   onDotClick = props => {
     const {category, date} = props;
-    const ids = data.filter(x => x.category === category && x.date === date);
+    const ids = this.props.data.filter(
+      x => x.category === category && x.date === date,
+    );
     this.showModal(ids, category, date);
   };
 
   showModal = (ids, category, date) => {
-    console.log('ids', ids);
     this.setState({
       showModal: true,
       modalContent: {
         ids: ids.map(id => {
           let newId = {};
-          const funcs = resourceMapping[categories[category]];
+          const funcs = resourceMapping[this.props.categories[category]];
           const cols = funcs.map(func => func(id));
-          resourceTableHeaders[categories[category]].forEach((header, i) => {
-            newId[header.sortId] = cols[i];
-          });
+          resourceTableHeaders[this.props.categories[category]].forEach(
+            (header, i) => {
+              newId[header.sortId] = cols[i];
+            },
+          );
           newId.id = id.id;
           return newId;
         }),
@@ -267,15 +165,14 @@ class DataScatterChart extends React.Component {
 
   onRowClick = row => {
     this.props.history.push(
-      `/resources/${categories[this.state.modalContent.category]}/id=${row.id}`,
+      `/resources/${
+        this.props.categories[this.state.modalContent.category]
+      }/id=${row.id}`,
     );
   };
 
   render() {
-    data = this.props.data;
-    categories = this.props.categories;
-    dates = this.props.dates;
-    const referenceLine = this.props.referenceLine;
+    const {data, categories, dates, referenceLine} = this.props;
     const domain = this.getDomain(dates);
     const {showModal, modalContent} = this.state;
 
