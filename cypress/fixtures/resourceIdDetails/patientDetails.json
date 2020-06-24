@@ -1,0 +1,49 @@
+{
+  "resourceType": "Bundle",
+  "id": "456",
+  "meta": {
+    "lastUpdated": "2020-05-18T15:33:58.157+00:00"
+  },
+  "type": "searchset",
+  "total": 2,
+  "link": [
+    {
+      "relation": "self",
+      "url": "http://localhost:8000/Patient?observation=Observation%2F123"
+    }
+  ],
+  "entry": [
+    {
+      "fullUrl": "http://localhost:8000/Patient/Patient.456",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "456",
+        "meta": {
+          "profile": ["http://fhir.kids-first.io/StructureDefinition/Patient"]
+        },
+        "subject": {
+          "reference": "Observation/123"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://localhost:8000/Patient/Patient.789",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "789",
+        "meta": {
+          "profile": ["http://fhir.kids-first.io/StructureDefinition/Patient"]
+        },
+        "subject": {
+          "reference": "Observation/123"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    }
+  ]
+}
