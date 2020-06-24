@@ -1,37 +1,145 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Icon, Button, Form, Message, Loader} from 'semantic-ui-react';
+import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import {logErrors} from '../utils/common';
 import {postWithHeaders} from '../utils/api';
 
+const formOptions = [
+  {key: 'Temperature', text: 'Temperature', value: 'Temperature'},
+  {key: 'Heart rate', text: 'Heart rate', value: 'Heart rate'},
+  {key: 'Fever', text: 'Fever', value: 'Fever'},
+  // *{key: 'Abdominal pain', text: 'Abdominal pain', value: 'Abdominal pain'},
+  // *{key: 'Vomiting', text: 'Vomiting', value: 'Vomiting'},
+  // *{key: 'Diarrhea', text: 'Diarrhea', value: 'Diarrhea'},
+  // *{key: 'Rash', text: 'Rash', value: 'Rash'},
+  // *{key: 'Bloodshot eyes', text: 'Bloodshot eyes', value: 'Bloodshot eyes'},
+  // *{
+  //   key: 'Feeling extra tired',
+  //   text: 'Feeling extra tired',
+  //   value: 'Feeling extra tired',
+  // },
+  // *{
+  //   key: 'Trouble breathing',
+  //   text: 'Trouble breathing',
+  //   value: 'Trouble breathing',
+  // },
+  // {
+  //   key: 'Pain/pressure in the chest',
+  //   text: 'Pain/pressure in the chest',
+  //   value: 'Pain/pressure in the chest',
+  // },
+  // {key: 'New confusion', text: 'New confusion', value: 'New confusion'},
+  // {
+  //   key: 'Inability to wake or stay awake',
+  //   text: 'Inability to wake or stay awake',
+  //   value: 'Inability to wake or stay awake',
+  // },
+  // {
+  //   key: 'Blush lips or face',
+  //   text: 'Blush lips or face',
+  //   value: 'Blush lips or face',
+  // },
+  // {
+  //   key: 'Severe abdominal pain',
+  //   text: 'Severe abdominal pain',
+  //   value: 'Severe abdominal pain',
+  // },
+];
+const submissionMapping = {
+  Temperature: {
+    text: 'Temperature (degrees Farenheit)',
+    type: 'input',
+    resourceType: 'Observation',
+  },
+  'Heart rate': {
+    text: 'BPM',
+    type: 'input',
+    resourceType: 'Observation',
+  },
+  Fever: {
+    text: 'Present?',
+    type: 'radio',
+    labels: ['Yes', 'No'],
+    resourceType: 'Condition',
+  },
+  // 'Abdominal pain': {
+  //   text: 'Present?',
+  //   type: 'radio',
+  //   labels: ['Yes', 'No'],
+  // },
+  // Vomiting: {text: 'Present?', type: 'radio', labels: ['Yes', 'No']},
+  // Diarrhea: {text: 'Present?', type: 'radio', labels: ['Yes', 'No']},
+  // Rash: {text: 'Present?', type: 'radio', labels: ['Yes', 'No']},
+  // 'Bloodshot eyes': {
+  //   text: 'Present?',
+  //   type: 'radio',
+  //   labels: ['Yes', 'No'],
+  // },
+  // 'Feeling extra tired': {
+  //   text: 'Present?',
+  //   type: 'radio',
+  //   labels: ['Yes', 'No'],
+  // },
+  // 'Trouble breathing': {
+  //   text: 'Present?',
+  //   type: 'radio',
+  //   labels: ['Yes', 'No'],
+  // },
+  // 'Pain/pressure in the chest': {
+  //   text: 'Present?',
+  //   type: 'radio',
+  //   labels: ['Yes', 'No'],
+  // },
+  // 'New confusion': {text: 'Present?', type: 'radio', labels: ['Yes', 'No']},
+  // 'Inability to wake or stay awake': {
+  //   text: 'Present?',
+  //   type: 'radio',
+  //   labels: ['Yes', 'No'],
+  // },
+  // 'Blush lips or face': {
+  //   text: 'Present?',
+  //   type: 'radio',
+  //   labels: ['Yes', 'No'],
+  // },
+  // 'Severe abdominal pain': {
+  //   text: 'Present?',
+  //   type: 'radio',
+  //   labels: ['Yes', 'No'],
+  // },
+};
+
 class SubmitPatientData extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      observations: [],
+      submissions: [],
       messageContent: null,
       submitting: false,
       abortController: new AbortController(),
     };
   }
 
-  addObservation = () => {
-    const newObservation = {type: 'Select a type...'};
-    const observations = [...this.state.observations].concat(newObservation);
-    this.setState({observations});
+  addSubmission = () => {
+    const newDataPoint = {type: 'Select a type...'};
+    const submissions = [...this.state.submissions].concat(newDataPoint);
+    this.setState({submissions});
   };
 
-  updateObservation = (index, field, value) => {
-    let observations = [...this.state.observations];
-    if (field === 'type' && value !== observations[index].type) {
+  updateSubmission = (index, field, inputVal) => {
+    let submissions = [...this.state.submissions];
+    if (field === 'type' && inputVal !== submissions[index].type) {
       // remove value from object
-      const {value, ...noVal} = observations[index];
-      observations[index] = {...noVal};
+      const {value, ...noVal} = submissions[index];
+      submissions[index] = {
+        ...noVal,
+        resourceType: submissionMapping[inputVal].resourceType,
+      };
     }
-    observations[index] = {...observations[index], [field]: value};
-    this.setState({observations});
+    submissions[index] = {...submissions[index], [field]: inputVal};
+    this.setState({submissions});
   };
 
   getInputType = (event, index) => {
@@ -40,9 +148,9 @@ class SubmitPatientData extends React.Component {
         return (
           <Form.Input
             placeholder="Please enter a value"
-            value={this.state.observations[index].value || ''}
+            value={this.state.submissions[index].value || ''}
             onChange={e =>
-              this.updateObservation(index, 'value', e.target.value)
+              this.updateSubmission(index, 'value', e.target.value)
             }
           />
         );
@@ -55,10 +163,10 @@ class SubmitPatientData extends React.Component {
                 label={label}
                 value={label}
                 checked={
-                  this.state.observations[index].value &&
-                  this.state.observations[index].value === label
+                  this.state.submissions[index].value &&
+                  this.state.submissions[index].value === label
                 }
-                onChange={() => this.updateObservation(index, 'value', label)}
+                onChange={() => this.updateSubmission(index, 'value', label)}
               />
             ))}
           </React.Fragment>
@@ -68,29 +176,32 @@ class SubmitPatientData extends React.Component {
     }
   };
 
-  removeObservation = index => {
-    let observations = [...this.state.observations];
-    observations.splice(index, 1);
-    this.setState({observations});
+  removeSubmission = index => {
+    let submissions = [...this.state.submissions];
+    submissions.splice(index, 1);
+    this.setState({submissions});
   };
 
   submit = async () => {
     this.setState({submitting: true, messageContent: null}, async () => {
-      let json = this.state.observations.map(obs => this.generateJson(obs));
+      let json = this.state.submissions.map(event =>
+        event.resourceType === 'Observation'
+          ? this.generateObservationJson(event)
+          : this.generateConditionJson(event),
+      );
       let successNum = 0;
       await Promise.all(
-        json.map(
-          async obs =>
-            await postWithHeaders(
-              'http://localhost:8000/Observation',
-              obs,
-              this.state.abortController,
-            )
-              .then(() => (successNum += 1))
-              .catch(err => {
-                logErrors('Error submitting observation:', err);
-              }),
-        ),
+        json.map(async resource => {
+          return await postWithHeaders(
+            `http://localhost:8000/${resource.resourceType}`,
+            resource,
+            this.state.abortController,
+          )
+            .then(() => (successNum += 1))
+            .catch(err => {
+              logErrors('Error submitting data point:', err);
+            });
+        }),
       ).then(() => {
         this.setState({submitting: false}, () => {
           this.showSuccess(successNum);
@@ -99,11 +210,85 @@ class SubmitPatientData extends React.Component {
     });
   };
 
+  generateConditionJson = condition => {
+    return {
+      resourceType: 'Condition',
+      meta: {
+        profile: ['http://hl7.org/fhir/StructureDefinition/Condition'],
+      },
+      text: {
+        status: 'empty',
+        div: '<div xmlns="http://www.w3.org/1999/xhtml"/>',
+      },
+      clinicalStatus: {
+        coding: [
+          {
+            system: 'http://terminology.hl7.org/CodeSystem/condition-clinical',
+            code: 'resolved',
+          },
+        ],
+      },
+      verificationStatus: {
+        coding: [
+          {
+            system:
+              'http://terminology.hl7.org/CodeSystem/condition-ver-status',
+            code: 'unconfirmed',
+          },
+        ],
+      },
+      subject: {
+        reference: `${this.props.payload.resourceType}/${this.props.payload.id}`,
+      },
+      onsetDateTime: moment(condition.date),
+      recorder: {
+        reference: `${this.props.payload.resourceType}/${this.props.payload.id}`,
+      },
+      ...this.generateJson(condition),
+    };
+  };
+
+  generateObservationJson = observation => {
+    return {
+      resourceType: 'Observation',
+      meta: {
+        profile: ['http://hl7.org/fhir/StructureDefinition/Observation'],
+      },
+      status: 'final',
+      text: {
+        status: 'empty',
+        div: '<div xmlns="http://www.w3.org/1999/xhtml"/>',
+      },
+      subject: {
+        reference: `${this.props.payload.resourceType}/${this.props.payload.id}`,
+      },
+      effectiveDateTime: moment(observation.date),
+      performer: [
+        {
+          reference: `${this.props.payload.resourceType}/${this.props.payload.id}`,
+        },
+      ],
+      category: [
+        {
+          coding: [
+            {
+              system:
+                'http://terminology.hl7.org/CodeSystem/observation-category',
+              code: 'vital-signs',
+              display: 'vital-signs',
+            },
+          ],
+        },
+      ],
+      ...this.generateJson(observation),
+    };
+  };
+
   generateJson = event => {
-    let obsFields = {};
+    let fields = {};
     switch (event.type) {
       case 'Temperature':
-        obsFields = {
+        fields = {
           code: {
             coding: [
               {
@@ -128,7 +313,7 @@ class SubmitPatientData extends React.Component {
         };
         break;
       case 'Heart rate':
-        obsFields = {
+        fields = {
           code: {
             coding: [
               {
@@ -148,162 +333,37 @@ class SubmitPatientData extends React.Component {
         };
         break;
       case 'Fever':
-        obsFields = {
+        fields = {
           code: {
             coding: [
               {
-                system: 'http://loinc.org',
-                code: '45701-0',
-                display: 'Fever',
+                system: 'http://snomed.info/sct',
+                code: '386661006',
+                display: 'Fever (finding)',
               },
             ],
-            text: 'Fever',
+            text: 'Fever (finding)',
           },
           valueBoolean: event.value === 'Yes' ? true : false,
         };
         break;
       default:
-        obsFields = {};
+        fields = {};
         break;
     }
-    return {
-      resourceType: 'Observation',
-      meta: {
-        profile: ['http://hl7.org/fhir/StructureDefinition/Observation'],
-      },
-      status: 'final',
-      text: {
-        status: 'empty',
-        div: '<div xmlns="http://www.w3.org/1999/xhtml"/>',
-      },
-      subject: {
-        reference: `${this.props.payload.resourceType}/${this.props.payload.id}`,
-      },
-      effectiveDateTime: event.date,
-      performer: [
-        {
-          reference: `${this.props.payload.resourceType}/${this.props.payload.id}`,
-        },
-      ],
-      category: [
-        {
-          coding: [
-            {
-              system:
-                'http://terminology.hl7.org/CodeSystem/observation-category',
-              code: 'vital-signs',
-              display: 'vital-signs',
-            },
-          ],
-        },
-      ],
-      ...obsFields,
-    };
+    return fields;
   };
 
   showSuccess = num => {
     if (num > 0) {
       this.setState({
-        observations: [],
-        messageContent: `Successfully submitted ${num} Observations.`,
+        submissions: [],
+        messageContent: `Successfully submitted ${num} data points.`,
       });
     }
   };
 
   render() {
-    const formOptions = [
-      {key: 'Temperature', text: 'Temperature', value: 'Temperature'},
-      {key: 'Heart rate', text: 'Heart rate', value: 'Heart rate'},
-      {key: 'Fever', text: 'Fever', value: 'Fever'},
-      {key: 'Abdominal pain', text: 'Abdominal pain', value: 'Abdominal pain'},
-      {key: 'Vomiting', text: 'Vomiting', value: 'Vomiting'},
-      {key: 'Diarrhea', text: 'Diarrhea', value: 'Diarrhea'},
-      {key: 'Rash', text: 'Rash', value: 'Rash'},
-      {key: 'Bloodshot eyes', text: 'Bloodshot eyes', value: 'Bloodshot eyes'},
-      {
-        key: 'Feeling extra tired',
-        text: 'Feeling extra tired',
-        value: 'Feeling extra tired',
-      },
-      {
-        key: 'Trouble breathing',
-        text: 'Trouble breathing',
-        value: 'Trouble breathing',
-      },
-      {
-        key: 'Pain/pressure in the chest',
-        text: 'Pain/pressure in the chest',
-        value: 'Pain/pressure in the chest',
-      },
-      {key: 'New confusion', text: 'New confusion', value: 'New confusion'},
-      {
-        key: 'Inability to wake or stay awake',
-        text: 'Inability to wake or stay awake',
-        value: 'Inability to wake or stay awake',
-      },
-      {
-        key: 'Blush lips or face',
-        text: 'Blush lips or face',
-        value: 'Blush lips or face',
-      },
-      {
-        key: 'Severe abdominal pain',
-        text: 'Severe abdominal pain',
-        value: 'Severe abdominal pain',
-      },
-    ];
-    const observationMapping = {
-      Temperature: {text: 'Temperature (degrees Farenheit)', type: 'input'},
-      'Heart rate': {
-        text: 'BPM',
-        type: 'input',
-      },
-      Fever: {text: 'Present?', type: 'radio', labels: ['Yes', 'No']},
-      'Abdominal pain': {
-        text: 'Present?',
-        type: 'radio',
-        labels: ['Yes', 'No'],
-      },
-      Vomiting: {text: 'Present?', type: 'radio', labels: ['Yes', 'No']},
-      Diarrhea: {text: 'Present?', type: 'radio', labels: ['Yes', 'No']},
-      Rash: {text: 'Present?', type: 'radio', labels: ['Yes', 'No']},
-      'Bloodshot eyes': {
-        text: 'Present?',
-        type: 'radio',
-        labels: ['Yes', 'No'],
-      },
-      'Feeling extra tired': {
-        text: 'Present?',
-        type: 'radio',
-        labels: ['Yes', 'No'],
-      },
-      'Trouble breathing': {
-        text: 'Present?',
-        type: 'radio',
-        labels: ['Yes', 'No'],
-      },
-      'Pain/pressure in the chest': {
-        text: 'Present?',
-        type: 'radio',
-        labels: ['Yes', 'No'],
-      },
-      'New confusion': {text: 'Present?', type: 'radio', labels: ['Yes', 'No']},
-      'Inability to wake or stay awake': {
-        text: 'Present?',
-        type: 'radio',
-        labels: ['Yes', 'No'],
-      },
-      'Blush lips or face': {
-        text: 'Present?',
-        type: 'radio',
-        labels: ['Yes', 'No'],
-      },
-      'Severe abdominal pain': {
-        text: 'Present?',
-        type: 'radio',
-        labels: ['Yes', 'No'],
-      },
-    };
     return (
       <React.Fragment>
         {this.state.messageContent ? (
@@ -316,22 +376,22 @@ class SubmitPatientData extends React.Component {
           <Loader active={this.state.submitting}>Submitting...</Loader>
         ) : (
           <Form>
-            {this.state.observations.map((event, i) => {
-              const details = observationMapping[event.type];
+            {this.state.submissions.map((event, i) => {
+              const details = submissionMapping[event.type];
               return (
                 <Form.Group key={`${event.type}-${i}`}>
                   <Icon
                     name="delete"
                     size="large"
-                    onClick={() => this.removeObservation(i)}
+                    onClick={() => this.removeSubmission(i)}
                   />
                   <Form.Field inline>
                     <div className="id-details__submit-date-picker field">
                       <label>Date of Observation</label>
                       <DatePicker
-                        selected={this.state.observations[i].date}
+                        selected={this.state.submissions[i].date}
                         onChange={date =>
-                          this.updateObservation(i, 'date', date)
+                          this.updateSubmission(i, 'date', date)
                         }
                       />
                     </div>
@@ -342,7 +402,7 @@ class SubmitPatientData extends React.Component {
                       options={formOptions}
                       placeholder={event.type}
                       onChange={(e, {value}) =>
-                        this.updateObservation(i, 'type', value)
+                        this.updateSubmission(i, 'type', value)
                       }
                     />
                   </Form.Field>
@@ -356,7 +416,7 @@ class SubmitPatientData extends React.Component {
               );
             })}
             <div className="id-details__submit-buttons">
-              <Button primary onClick={this.addObservation}>
+              <Button primary onClick={this.addSubmission}>
                 <Icon name="plus" />
                 Add Observation
               </Button>
