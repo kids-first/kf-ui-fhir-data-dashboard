@@ -248,7 +248,7 @@ class SubmitPatientData extends React.Component {
       await Promise.all(
         json.map(async resource => {
           return await postWithHeaders(
-            `http://localhost:8000/${resource.resourceType}`,
+            `${this.props.baseUrl}${resource.resourceType}`,
             resource,
             this.state.abortController,
           )
@@ -666,6 +666,7 @@ SubmitPatientData.propTypes = {
     id: PropTypes.string.isRequired,
     resourceType: PropTypes.string.isRequired,
   }).isRequired,
+  baseUrl: PropTypes.string.isRequired,
 };
 
 SubmitPatientData.defaultProps = {

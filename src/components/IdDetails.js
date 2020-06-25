@@ -141,7 +141,10 @@ class IdDetails extends React.Component {
               <Tab.Pane>
                 Please add any additional observations for this Patient to
                 augment the current dataset.
-                <SubmitPatientData payload={payload} />
+                <SubmitPatientData
+                  payload={payload}
+                  baseUrl={this.props.baseUrl}
+                />
               </Tab.Pane>
             ),
           }
