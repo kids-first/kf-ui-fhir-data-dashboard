@@ -132,7 +132,7 @@ class Timeline extends React.Component {
           x.code.coding &&
           x.code.coding.filter(code => code.code === '840539006').length > 0,
       );
-    return {label: 'COVID-19 Diagnosis', x: elt.xDate};
+    return elt ? {label: 'COVID-19 Diagnosis', x: elt.xDate} : null;
   };
 
   render() {
