@@ -135,7 +135,6 @@ const CustomizedReferenceLabel = props => {
   const {value, viewBox, dy, dx} = props;
   const x = viewBox.width + viewBox.x + 20;
   const y = viewBox.y - 6;
-  console.log('this.props', props);
   return (
     <text
       x={x - 15}
@@ -328,16 +327,9 @@ class DataScatterChart extends React.Component {
             </Modal.Header>
             <Modal.Content>
               <SortableTable
-                headerCells={[
-                  {
-                    display: 'ID',
-                    sortId: 'id',
-                    sort: true,
-                  },
-                  ...resourceTableHeaders[
-                    categories[modalContent.yCategoryIndex]
-                  ],
-                ]}
+                headerCells={
+                  resourceTableHeaders[categories[modalContent.yCategoryIndex]]
+                }
                 data={modalContent.ids}
                 onRowClick={this.onRowClick}
               />

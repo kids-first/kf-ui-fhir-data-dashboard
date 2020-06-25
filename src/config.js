@@ -61,6 +61,12 @@ export const proxyUrl = 'https://damp-castle-44220.herokuapp.com/';
 export const fhirUrl = 'http://hl7.org/fhir/StructureDefinition/';
 export const defaultTableFields = ['id'];
 
+export const eventOfInterest = {
+  resourceType: window._env_.REACT_APP_EVENT_OF_INTEREST_TYPE || null,
+  code: window._env_.REACT_APP_EVENT_OF_INTEREST_CODE || null,
+  title: window._env_.REACT_APP_EVENT_OF_INTEREST_TITLE || '',
+};
+
 export const acceptedResourceTypes = new Set([
   'Account',
   'ActivityDefinition',

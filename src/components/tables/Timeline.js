@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import {getReferencedBy} from '../../utils/api';
 import {logErrors} from '../../utils/common';
+import {eventOfInterest} from '../../config';
+
 import DataScatterChart from '../DataScatterChart';
 
 class Timeline extends React.Component {
@@ -38,7 +40,11 @@ class Timeline extends React.Component {
   fetchAllReferences = async () => {
     this.setState({loadingReferences: true, loadingDates: true}, async () => {
       this.props.setLoadingMessage(
-        `Loading timeline for ${this.props.resource.id}...`,
+        `Loading timeline for ${
+          this.props.history.location.pathname.split('/').length === 4
+            ? this.props.history.location.pathname.split('/')[2]
+            : this.props.resource.resourceType
+        }...`,
       );
       await this.fetchReferencedBy()
         .then(async referencedByData => {
@@ -122,17 +128,24 @@ class Timeline extends React.Component {
     });
   };
 
-  getCovidDate = () => {
-    const {flatData, categories} = this.state;
-    const elt = flatData
-      .filter(x => categories[x.yCategoryIndex] === 'Condition')
-      .find(
-        x =>
-          x.code &&
-          x.code.coding &&
-          x.code.coding.filter(code => code.code === '840539006').length > 0,
-      );
-    return elt ? {label: 'COVID-19 Diagnosis', x: elt.xDate} : null;
+  getEventOfInterestDate = () => {
+    if (eventOfInterest.resourceType && eventOfInterest.code) {
+      const {flatData, categories} = this.state;
+      const elt = flatData
+        .filter(
+          x => categories[x.yCategoryIndex] === eventOfInterest.resourceType,
+        )
+        .find(
+          x =>
+            x.code &&
+            x.code.coding &&
+            x.code.coding.filter(code => code.code === eventOfInterest.code)
+              .length > 0,
+        );
+      return elt ? {label: eventOfInterest.title, x: elt.xDate} : null;
+    } else {
+      return null;
+    }
   };
 
   render() {
@@ -153,7 +166,7 @@ class Timeline extends React.Component {
               categories={this.state.categories}
               data={this.state.flatData}
               dates={this.state.dates}
-              referenceLine={this.getCovidDate()}
+              referenceLine={this.getEventOfInterestDate()}
               history={this.props.history}
             />
           </div>
