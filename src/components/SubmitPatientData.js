@@ -11,42 +11,30 @@ const formOptions = [
   {key: 'Temperature', text: 'Temperature', value: 'Temperature'},
   {key: 'Heart rate', text: 'Heart rate', value: 'Heart rate'},
   {key: 'Fever', text: 'Fever', value: 'Fever'},
-  // *{key: 'Abdominal pain', text: 'Abdominal pain', value: 'Abdominal pain'},
-  // *{key: 'Vomiting', text: 'Vomiting', value: 'Vomiting'},
-  // *{key: 'Diarrhea', text: 'Diarrhea', value: 'Diarrhea'},
-  // *{key: 'Rash', text: 'Rash', value: 'Rash'},
-  // *{key: 'Bloodshot eyes', text: 'Bloodshot eyes', value: 'Bloodshot eyes'},
-  // *{
-  //   key: 'Feeling extra tired',
-  //   text: 'Feeling extra tired',
-  //   value: 'Feeling extra tired',
-  // },
-  // *{
-  //   key: 'Trouble breathing',
-  //   text: 'Trouble breathing',
-  //   value: 'Trouble breathing',
-  // },
-  // {
-  //   key: 'Pain/pressure in the chest',
-  //   text: 'Pain/pressure in the chest',
-  //   value: 'Pain/pressure in the chest',
-  // },
-  // {key: 'New confusion', text: 'New confusion', value: 'New confusion'},
-  // {
-  //   key: 'Inability to wake or stay awake',
-  //   text: 'Inability to wake or stay awake',
-  //   value: 'Inability to wake or stay awake',
-  // },
-  // {
-  //   key: 'Blush lips or face',
-  //   text: 'Blush lips or face',
-  //   value: 'Blush lips or face',
-  // },
-  // {
-  //   key: 'Severe abdominal pain',
-  //   text: 'Severe abdominal pain',
-  //   value: 'Severe abdominal pain',
-  // },
+  {key: 'Abdominal pain', text: 'Abdominal pain', value: 'Abdominal pain'},
+  {key: 'Vomiting', text: 'Vomiting', value: 'Vomiting'},
+  {key: 'Diarrhea', text: 'Diarrhea', value: 'Diarrhea'},
+  {
+    key: 'Fatigue',
+    text: 'Fatigue',
+    value: 'Fatigue',
+  },
+  {
+    key: 'Difficulty breathing',
+    text: 'Difficulty breathing',
+    value: 'Difficulty breathing',
+  },
+  {
+    key: 'Chest pain',
+    text: 'Chest pain',
+    value: 'Chest pain',
+  },
+  {
+    key: 'Suspected COVID-19',
+    text: 'Suspected COVID-19',
+    value: 'Suspected COVID-19',
+  },
+  {key: 'COVID-19', text: 'COVID-19', value: 'COVID-19'},
 ];
 const submissionMapping = {
   Temperature: {
@@ -60,55 +48,122 @@ const submissionMapping = {
     resourceType: 'Observation',
   },
   Fever: {
-    text: 'Present?',
+    text: 'Status at date',
     type: 'radio',
-    labels: ['Yes', 'No'],
+    labels: [
+      'Active',
+      'Reoccurence',
+      'Relapse',
+      'Inactive',
+      'Remission',
+      'Resolved',
+    ],
     resourceType: 'Condition',
   },
-  // 'Abdominal pain': {
-  //   text: 'Present?',
-  //   type: 'radio',
-  //   labels: ['Yes', 'No'],
-  // },
-  // Vomiting: {text: 'Present?', type: 'radio', labels: ['Yes', 'No']},
-  // Diarrhea: {text: 'Present?', type: 'radio', labels: ['Yes', 'No']},
-  // Rash: {text: 'Present?', type: 'radio', labels: ['Yes', 'No']},
-  // 'Bloodshot eyes': {
-  //   text: 'Present?',
-  //   type: 'radio',
-  //   labels: ['Yes', 'No'],
-  // },
-  // 'Feeling extra tired': {
-  //   text: 'Present?',
-  //   type: 'radio',
-  //   labels: ['Yes', 'No'],
-  // },
-  // 'Trouble breathing': {
-  //   text: 'Present?',
-  //   type: 'radio',
-  //   labels: ['Yes', 'No'],
-  // },
-  // 'Pain/pressure in the chest': {
-  //   text: 'Present?',
-  //   type: 'radio',
-  //   labels: ['Yes', 'No'],
-  // },
-  // 'New confusion': {text: 'Present?', type: 'radio', labels: ['Yes', 'No']},
-  // 'Inability to wake or stay awake': {
-  //   text: 'Present?',
-  //   type: 'radio',
-  //   labels: ['Yes', 'No'],
-  // },
-  // 'Blush lips or face': {
-  //   text: 'Present?',
-  //   type: 'radio',
-  //   labels: ['Yes', 'No'],
-  // },
-  // 'Severe abdominal pain': {
-  //   text: 'Present?',
-  //   type: 'radio',
-  //   labels: ['Yes', 'No'],
-  // },
+  'Abdominal pain': {
+    text: 'Status at date',
+    type: 'radio',
+    labels: [
+      'Active',
+      'Reoccurence',
+      'Relapse',
+      'Inactive',
+      'Remission',
+      'Resolved',
+    ],
+    resourceType: 'Condition',
+  },
+  Vomiting: {
+    text: 'Status at date',
+    type: 'radio',
+    labels: [
+      'Active',
+      'Reoccurence',
+      'Relapse',
+      'Inactive',
+      'Remission',
+      'Resolved',
+    ],
+    resourceType: 'Condition',
+  },
+  Diarrhea: {
+    text: 'Status at date',
+    type: 'radio',
+    labels: [
+      'Active',
+      'Reoccurence',
+      'Relapse',
+      'Inactive',
+      'Remission',
+      'Resolved',
+    ],
+    resourceType: 'Condition',
+  },
+  Fatigue: {
+    text: 'Status at date',
+    type: 'radio',
+    labels: [
+      'Active',
+      'Reoccurence',
+      'Relapse',
+      'Inactive',
+      'Remission',
+      'Resolved',
+    ],
+    resourceType: 'Condition',
+  },
+  'Difficulty breathing': {
+    text: 'Status at date',
+    type: 'radio',
+    labels: [
+      'Active',
+      'Reoccurence',
+      'Relapse',
+      'Inactive',
+      'Remission',
+      'Resolved',
+    ],
+    resourceType: 'Condition',
+  },
+  'Chest pain': {
+    text: 'Status at date',
+    type: 'radio',
+    labels: [
+      'Active',
+      'Reoccurence',
+      'Relapse',
+      'Inactive',
+      'Remission',
+      'Resolved',
+    ],
+    resourceType: 'Condition',
+  },
+  'Suspected COVID-19': {
+    text: 'Status at date',
+    type: 'radio',
+    labels: [
+      'Active',
+      'Reoccurence',
+      'Relapse',
+      'Inactive',
+      'Remission',
+      'Resolved',
+    ],
+    resourceType: 'Condition',
+  },
+  'COVID-19': {
+    text: 'Status at date',
+    type: 'radio',
+    labels: [
+      'Active',
+      'Reoccurence',
+      'Relapse',
+      'Inactive',
+      'Remission',
+      'Resolved',
+    ],
+    resourceType: 'Condition',
+  },
 };
 
 class SubmitPatientData extends React.Component {
@@ -219,14 +274,6 @@ class SubmitPatientData extends React.Component {
       text: {
         status: 'empty',
         div: '<div xmlns="http://www.w3.org/1999/xhtml"/>',
-      },
-      clinicalStatus: {
-        coding: [
-          {
-            system: 'http://terminology.hl7.org/CodeSystem/condition-clinical',
-            code: 'resolved',
-          },
-        ],
       },
       verificationStatus: {
         coding: [
@@ -342,9 +389,192 @@ class SubmitPatientData extends React.Component {
                 display: 'Fever (finding)',
               },
             ],
-            text: 'Fever (finding)',
+            text: 'Fever',
           },
-          valueBoolean: event.value === 'Yes' ? true : false,
+        };
+        break;
+      case 'Abdominal pain':
+        fields = {
+          code: {
+            coding: [
+              {
+                system: 'http://snomed.info/sct',
+                code: '21522001',
+                display: 'Abdominal pain (finding)',
+              },
+            ],
+            text: 'Abdominal pain',
+          },
+          clinicalStatus: {
+            coding: [
+              {
+                system:
+                  'http://terminology.hl7.org/CodeSystem/condition-clinical',
+                code: event.value.toLowerCase(),
+              },
+            ],
+          },
+        };
+        break;
+      case 'Chest pain':
+        fields = {
+          code: {
+            coding: [
+              {
+                system: 'http://snomed.info/sct',
+                code: '29857009',
+                display: 'Chest pain (finding)',
+              },
+            ],
+            text: 'Chest pain',
+          },
+          clinicalStatus: {
+            coding: [
+              {
+                system:
+                  'http://terminology.hl7.org/CodeSystem/condition-clinical',
+                code: event.value.toLowerCase(),
+              },
+            ],
+          },
+        };
+        break;
+      case 'Diarrhea':
+        fields = {
+          code: {
+            coding: [
+              {
+                system: 'http://snomed.info/sct',
+                code: '62315008',
+                display: 'Diarrhea (finding)',
+              },
+            ],
+            text: 'Diarrhea',
+          },
+          clinicalStatus: {
+            coding: [
+              {
+                system:
+                  'http://terminology.hl7.org/CodeSystem/condition-clinical',
+                code: event.value.toLowerCase(),
+              },
+            ],
+          },
+        };
+        break;
+      case 'Difficulty breathing':
+        fields = {
+          code: {
+            coding: [
+              {
+                system: 'http://snomed.info/sct',
+                code: '230145002',
+                display: 'Difficulty breathing (finding)',
+              },
+            ],
+            text: 'Difficulty breathing',
+          },
+          clinicalStatus: {
+            coding: [
+              {
+                system:
+                  'http://terminology.hl7.org/CodeSystem/condition-clinical',
+                code: event.value.toLowerCase(),
+              },
+            ],
+          },
+        };
+        break;
+      case 'Fatigue':
+        fields = {
+          code: {
+            coding: [
+              {
+                system: 'http://snomed.info/sct',
+                code: '84229001',
+                display: 'Fatigue (finding)',
+              },
+            ],
+            text: 'Fatigue',
+          },
+          clinicalStatus: {
+            coding: [
+              {
+                system:
+                  'http://terminology.hl7.org/CodeSystem/condition-clinical',
+                code: event.value.toLowerCase(),
+              },
+            ],
+          },
+        };
+        break;
+      case 'Vomiting':
+        fields = {
+          code: {
+            coding: [
+              {
+                system: 'http://snomed.info/sct',
+                code: '300359004',
+                display: 'Finding of vomiting',
+              },
+            ],
+            text: 'Vomiting',
+          },
+          clinicalStatus: {
+            coding: [
+              {
+                system:
+                  'http://terminology.hl7.org/CodeSystem/condition-clinical',
+                code: event.value.toLowerCase(),
+              },
+            ],
+          },
+        };
+        break;
+      case 'Suspected COVID-19':
+        fields = {
+          code: {
+            coding: [
+              {
+                system: 'http://snomed.info/sct',
+                code: '840544004',
+                display: 'Suspected COVID-19',
+              },
+            ],
+            text: 'Suspected COVID-19',
+          },
+          clinicalStatus: {
+            coding: [
+              {
+                system:
+                  'http://terminology.hl7.org/CodeSystem/condition-clinical',
+                code: event.value.toLowerCase(),
+              },
+            ],
+          },
+        };
+        break;
+      case 'COVID-19':
+        fields = {
+          code: {
+            coding: [
+              {
+                system: 'http://snomed.info/sct',
+                code: '840539006',
+                display: 'COVID-19',
+              },
+            ],
+            text: 'COVID-19',
+          },
+          clinicalStatus: {
+            coding: [
+              {
+                system:
+                  'http://terminology.hl7.org/CodeSystem/condition-clinical',
+                code: event.value.toLowerCase(),
+              },
+            ],
+          },
         };
         break;
       default:
