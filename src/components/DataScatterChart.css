@@ -7,7 +7,7 @@
 }
 
 .scatter-chart__tooltip {
-  border: 2px solid var(--kf-blue);
+  border: 2px solid var(--d3b-blue);
   border-radius: 5px;
   padding: 10px 10px;
   background-color: #fff;
@@ -26,8 +26,8 @@
 }
 
 circle:hover {
-  stroke: var(--kf-teal);
-  fill: var(--kf-teal);
+  stroke: #009cb8;
+  fill: #009cb8;
   stroke-width: 2px;
 }
 
