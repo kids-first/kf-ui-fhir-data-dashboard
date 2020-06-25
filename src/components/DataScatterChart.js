@@ -132,7 +132,7 @@ const resourceTableHeaders = {
 };
 
 const CustomizedReferenceLabel = props => {
-  const {fill, value, textAnchor, fontSize, viewBox, dy, dx} = props;
+  const {value, viewBox, dy, dx} = props;
   const x = viewBox.width + viewBox.x + 20;
   const y = viewBox.y - 6;
   console.log('this.props', props);
@@ -273,7 +273,7 @@ class DataScatterChart extends React.Component {
     const {uniqueDataPoints} = this.state;
     const {showModal, modalContent} = this.state;
 
-    return (
+    return this.props.data.length > 0 ? (
       <div>
         <ScatterChart
           width={1000}
@@ -345,6 +345,8 @@ class DataScatterChart extends React.Component {
           </Modal>
         ) : null}
       </div>
+    ) : (
+      <p>No data to show.</p>
     );
   }
 }

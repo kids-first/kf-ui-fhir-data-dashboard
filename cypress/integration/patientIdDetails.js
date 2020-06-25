@@ -62,7 +62,6 @@ describe('Resource ID Details page - Patient resources', () => {
       '@getObservationDetails',
       '@getObservationSD',
     ]);
-    cy.contains('Observation');
-    cy.contains('Condition');
+    cy.contains('No data to show');
   });
 });
