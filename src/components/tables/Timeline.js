@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 import {getReferencedBy} from '../../utils/api';
 import {logErrors} from '../../utils/common';
 import DataScatterChart from '../DataScatterChart';
@@ -100,13 +101,38 @@ class Timeline extends React.Component {
       resource.children.forEach(child => {
         const date = this.props.dateFieldPath(child);
         if (date) {
-          flatData.push({category: i + 1, date, ...child});
+          flatData.push({
+            yCategoryIndex: i + 1,
+            xDate: date,
+            ...child,
+          });
           dates.add(date);
         }
       });
     });
     dates = [...dates];
-    this.setState({dates, categories, flatData, loadingDates: false});
+    flatData = flatData
+      .sort((a, b) => moment(a.xDate) - moment(b.xDate))
+      .map(elt => ({...elt, xDate: moment(elt.xDate).format('MMM DD, YYYY')}));
+    this.setState({
+      dates,
+      categories,
+      flatData,
+      loadingDates: false,
+    });
+  };
+
+  getCovidDate = () => {
+    const {flatData, categories} = this.state;
+    const elt = flatData
+      .filter(x => categories[x.yCategoryIndex] === 'Condition')
+      .find(
+        x =>
+          x.code &&
+          x.code.coding &&
+          x.code.coding.filter(code => code.code === '840539006').length > 0,
+      );
+    return {label: 'COVID-19 Diagnosis', x: elt.xDate};
   };
 
   render() {
@@ -127,7 +153,7 @@ class Timeline extends React.Component {
               categories={this.state.categories}
               data={this.state.flatData}
               dates={this.state.dates}
-              referenceLine={{x: 3294, label: 'COVID-19 Diagnosis'}}
+              referenceLine={this.getCovidDate()}
               history={this.props.history}
             />
           </div>

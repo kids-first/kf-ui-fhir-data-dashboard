@@ -9,6 +9,7 @@ import {
   CartesianGrid,
   Tooltip,
   ReferenceLine,
+  Label,
 } from 'recharts';
 import {Modal} from 'semantic-ui-react';
 import SortableTable from './tables/SortableTable';
@@ -16,13 +17,34 @@ import './DataScatterChart.css';
 
 const resourceMapping = {
   Observation: [
-    x => (x.code && x.code.text ? x.code.text : null),
     x => {
+      if (x.component) {
+        if (x.component.length > 1) {
+          return 'Multiple';
+        } else {
+          x = x.component[0];
+        }
+      } else return x.code && x.code.text ? x.code.text : null;
+    },
+    x => {
+      if (x.component) {
+        if (x.component.length > 1) {
+          return 'Multiple';
+        } else {
+          x = x.component[0];
+        }
+      }
       if (x.interpretation) {
         return x.interpretation
           .map(elt => elt.text)
           .filter(x => x)
           .join(', ');
+      } else if (x.valueQuantity) {
+        return x.valueQuantity.value;
+      } else if (x.valueBoolean) {
+        return x.valueBoolean.toString();
+      } else if (x.valueCodeableConcept) {
+        return x.valueCodeableConcept.text;
       } else {
         return null;
       }
@@ -33,12 +55,19 @@ const resourceMapping = {
       if (x.extension) {
         return x.extension
           .map(ext =>
-            ext.valuableCodeableConcept && ext.valuableCodeableConcept.text
-              ? ext.valuableCodeableConcept.text
+            ext.valueCodeableConcept && ext.valueCodeableConcept.text
+              ? ext.valueCodeableConcept.text
               : null,
           )
           .filter(x => x)
           .join(', ');
+      } else if (x.code && x.code.text) {
+        return x.code.text;
+      }
+    },
+    x => {
+      if (x.verificationStatus) {
+        return x.verificationStatus.coding.map(codes => codes.code).join(', ');
       } else {
         return null;
       }
@@ -51,6 +80,28 @@ const resourceMapping = {
         ? x.collection.quantity.value
         : null,
   ],
+  DiagnosticReport: [
+    x => {
+      if (x.category) {
+        return x.category
+          .map(cat =>
+            cat.coding ? cat.coding.map(code => code.display).join(', ') : '',
+          )
+          .join(', ');
+      }
+    },
+    x => (x.code ? x.code.text : null),
+  ],
+  Encounter: [
+    x => {
+      if (x.type) {
+        return x.type.map(type => type.text).join(', ');
+      } else {
+        return null;
+      }
+    },
+    x => (x.period ? `Start: ${x.period.start}; End: ${x.period.end}` : null),
+  ],
 };
 
 const resourceTableHeaders = {
@@ -60,21 +111,53 @@ const resourceTableHeaders = {
       sortId: 'Code',
       sort: true,
     },
-    {display: 'Interpretation', sortId: 'Interpretation', sort: true},
+    {display: 'Value', sortId: 'Value', sort: true},
   ],
-  Condition: [{display: 'Code', sortId: 'Code', sort: true}],
+  Condition: [
+    {display: 'Code', sortId: 'Code', sort: true},
+    {display: 'Status', sortId: 'Status', sort: true},
+  ],
   Specimen: [
     {display: 'Type', sortId: 'Type', sort: true},
     {display: 'Quantity', sortId: 'Quantity', sort: true},
   ],
+  DiagnosticReport: [
+    {display: 'Category', sortId: 'Category', sort: true},
+    {display: 'Type', sortId: 'Type', sort: true},
+  ],
+  Encounter: [
+    {display: 'Type', sortId: 'Type', sort: true},
+    {display: 'Period', sortId: 'Period', sort: true},
+  ],
+};
+
+const CustomizedReferenceLabel = props => {
+  const {fill, value, textAnchor, fontSize, viewBox, dy, dx} = props;
+  const x = viewBox.width + viewBox.x + 20;
+  const y = viewBox.y - 6;
+  console.log('this.props', props);
+  return (
+    <text
+      x={x - 15}
+      y={y - 20}
+      dy={dy}
+      dx={dx}
+      fill="red"
+      fontSize={14}
+      textAnchor="middle"
+    >
+      {value}
+    </text>
+  );
 };
 
 const CustomizedDot = props => {
   const colors = ['#90278e', '#009cb8', '#e83a9c', '#2b388f', '#01aeed'];
   const scaleFactor = 1.5;
-  const {date, category, data, cx, cy} = props;
-  const totalIds = data.filter(x => x.category === category && x.date === date)
-    .length;
+  const {xDate, yCategoryIndex, data, cx, cy} = props;
+  const totalIds = data.filter(
+    x => x.yCategoryIndex === yCategoryIndex && x.xDate === xDate,
+  ).length;
   const radius = Math.min(8 + totalIds * scaleFactor, 20);
   const diameter = 2 * radius;
 
@@ -85,7 +168,7 @@ const CustomizedDot = props => {
         cy={cy}
         r={radius}
         strokeWidth="0"
-        fill={colors[category]}
+        fill={colors[yCategoryIndex]}
         shapeRendering="geometricPrecision"
       />
     </svg>
@@ -102,27 +185,23 @@ class DataScatterChart extends React.Component {
     };
   }
 
-  getDomain = dates => {
-    const min = Math.min(...dates);
-    const max = Math.max(...dates);
-    const domain = [Math.floor(min / 5) * 5, Math.ceil(max / 5) * 5];
-    return domain;
-  };
-
-  formatYAxis = number => this.props.categories[number];
+  formatYAxis = number =>
+    number === this.props.categories.length
+      ? ''
+      : this.props.categories[number];
 
   renderTooltip = props => {
     const {payload} = props;
     if (payload && payload.length > 0) {
-      const date = payload[0].payload.date;
-      const category = payload[0].payload.category;
+      const xDate = payload[0].payload.xDate;
+      const yCategoryIndex = payload[0].payload.yCategoryIndex;
       const ids = this.props.data
-        .filter(x => x.category === category && x.date === date)
+        .filter(x => x.yCategoryIndex === yCategoryIndex && x.xDate === xDate)
         .map(x => x.id);
       return (
         <div className="scatter-chart__tooltip">
-          <p>Category: {this.props.categories[category]}</p>
-          <p>Date: {date}</p>
+          <p>Category: {this.props.categories[yCategoryIndex]}</p>
+          <p>Date: {xDate}</p>
           <p>Total events: {ids.length}</p>
         </div>
       );
@@ -131,22 +210,22 @@ class DataScatterChart extends React.Component {
   };
 
   onDotClick = props => {
-    const {category, date} = props;
+    const {yCategoryIndex, xDate} = props;
     const ids = this.props.data.filter(
-      x => x.category === category && x.date === date,
+      x => x.yCategoryIndex === yCategoryIndex && x.xDate === xDate,
     );
-    this.showModal(ids, category, date);
+    this.showModal(ids, yCategoryIndex, xDate);
   };
 
-  showModal = (ids, category, date) => {
+  showModal = (ids, yCategoryIndex, xDate) => {
     this.setState({
       showModal: true,
       modalContent: {
         ids: ids.map(id => {
           let newId = {};
-          const funcs = resourceMapping[this.props.categories[category]];
+          const funcs = resourceMapping[this.props.categories[yCategoryIndex]];
           const cols = funcs.map(func => func(id));
-          resourceTableHeaders[this.props.categories[category]].forEach(
+          resourceTableHeaders[this.props.categories[yCategoryIndex]].forEach(
             (header, i) => {
               newId[header.sortId] = cols[i];
             },
@@ -154,8 +233,8 @@ class DataScatterChart extends React.Component {
           newId.id = id.id;
           return newId;
         }),
-        date,
-        category,
+        xDate,
+        yCategoryIndex,
       },
     });
   };
@@ -167,7 +246,7 @@ class DataScatterChart extends React.Component {
   onRowClick = row => {
     this.props.history.push(
       `/resources/${
-        this.props.categories[this.state.modalContent.category]
+        this.props.categories[this.state.modalContent.yCategoryIndex]
       }/id=${row.id}`,
     );
   };
@@ -175,19 +254,23 @@ class DataScatterChart extends React.Component {
   getUniqueDataPoints = data => {
     let map = new Map();
     data.forEach(point => {
-      map.set(point.date, point.category);
+      if (!map.has(point.xDate)) {
+        map.set(point.xDate, new Set());
+      }
+      map.set(point.xDate, map.get(point.xDate).add(point.yCategoryIndex));
     });
     let points = [];
-    map.forEach((key, value) => {
-      points.push({category: key, date: value});
+    map.forEach((value, key) => {
+      [...value].forEach(val => {
+        points.push({xDate: key, yCategoryIndex: val});
+      });
     });
     return points;
   };
 
   render() {
-    const {data, categories, dates, referenceLine} = this.props;
+    const {data, categories, referenceLine} = this.props;
     const {uniqueDataPoints} = this.state;
-    const domain = this.getDomain(dates);
     const {showModal, modalContent} = this.state;
 
     return (
@@ -195,16 +278,22 @@ class DataScatterChart extends React.Component {
         <ScatterChart
           width={1000}
           height={categories.length * 100}
-          margin={{top: 20, right: 80, bottom: 10, left: 80}}
+          margin={{top: 50, right: 80, bottom: 50, left: 80}}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis type="number" dataKey="date" domain={domain} name="days" />
+          <XAxis
+            type="category"
+            dataKey="xDate"
+            allowDuplicatedCategory={false}
+          >
+            <Label value="Date" offset={0} position="bottom" />
+          </XAxis>
           <YAxis
             domain={[0, categories.length - 1]}
             allowDecimals={false}
             interval={0}
             type="number"
-            dataKey="category"
+            dataKey="yCategoryIndex"
             tickFormatter={this.formatYAxis}
             width={100}
             tickMargin={20}
@@ -218,12 +307,7 @@ class DataScatterChart extends React.Component {
             <ReferenceLine
               x={referenceLine.x}
               stroke="red"
-              label={{
-                position: 'top',
-                value: `${referenceLine.label}`,
-                fill: 'red',
-                fontSize: 14,
-              }}
+              label={<CustomizedReferenceLabel value={referenceLine.label} />}
             />
           ) : null}
           <Scatter
@@ -240,7 +324,7 @@ class DataScatterChart extends React.Component {
             dimmer="inverted"
           >
             <Modal.Header>
-              {categories[modalContent.category]} at {modalContent.date}
+              {categories[modalContent.yCategoryIndex]} at {modalContent.xDate}
             </Modal.Header>
             <Modal.Content>
               <SortableTable
@@ -250,7 +334,9 @@ class DataScatterChart extends React.Component {
                     sortId: 'id',
                     sort: true,
                   },
-                  ...resourceTableHeaders[categories[modalContent.category]],
+                  ...resourceTableHeaders[
+                    categories[modalContent.yCategoryIndex]
+                  ],
                 ]}
                 data={modalContent.ids}
                 onRowClick={this.onRowClick}
@@ -266,16 +352,16 @@ class DataScatterChart extends React.Component {
 DataScatterChart.propTypes = {
   data: PropTypes.arrayOf(
     PropTypes.shape({
-      category: PropTypes.number.isRequired,
-      date: PropTypes.number.isRequired,
+      yCategoryIndex: PropTypes.number.isRequired,
+      xDate: PropTypes.string.isRequired,
       id: PropTypes.string.isRequired,
     }),
   ),
   categories: PropTypes.array,
   dates: PropTypes.array,
   referenceLine: PropTypes.shape({
-    x: PropTypes.number.isRequired,
-    label: PropTypes.string.isRequired,
+    x: PropTypes.string.isRequired,
+    label: PropTypes.string,
   }),
   history: PropTypes.object.isRequired,
 };

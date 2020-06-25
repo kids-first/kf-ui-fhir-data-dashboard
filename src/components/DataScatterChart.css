@@ -1,3 +1,11 @@
+.scatter-chart__square {
+  background-color: red;
+  width: 15px;
+  height: 15px;
+  display: inline-block;
+  margin: 0 10px;
+}
+
 .scatter-chart__tooltip {
   border: 2px solid var(--kf-blue);
   border-radius: 5px;
@@ -21,4 +29,10 @@ circle:hover {
   stroke: var(--kf-teal);
   fill: var(--kf-teal);
   stroke-width: 2px;
+}
+
+.recharts-legend-wrapper {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
 }

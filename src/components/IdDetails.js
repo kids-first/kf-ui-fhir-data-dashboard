@@ -96,15 +96,15 @@ class IdDetails extends React.Component {
                     loadingMessage={this.props.loadingMessage}
                     history={this.props.history}
                     dateFieldPath={resource => {
-                      if (resource && resource.extension) {
-                        const valueAge = resource.extension
-                          .map(x => x.valueAge)
-                          .filter(x => x);
-                        if (valueAge && valueAge.length > 0) {
-                          return valueAge[0].value;
-                        }
+                      if (resource.effectiveDateTime) {
+                        return resource.effectiveDateTime;
+                      } else if (resource.onsetDateTime) {
+                        return resource.onsetDateTime;
+                      } else if (resource.period && resource.period.start) {
+                        return resource.period.start;
+                      } else {
+                        return null;
                       }
-                      return null;
                     }}
                   />
                 </Tab.Pane>
