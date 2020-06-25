@@ -287,9 +287,6 @@ class DataScatterChart extends React.Component {
           >
             <Label value="Date" offset={0} position="bottom" />
           </XAxis>
-          <XAxis type="category" dataKey="xDate">
-            <Label value="Date" offset={0} position="bottom" />
-          </XAxis>
           <YAxis
             domain={[0, categories.length - 1]}
             allowDecimals={false}
