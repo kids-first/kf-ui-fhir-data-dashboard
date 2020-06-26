@@ -173,6 +173,7 @@ class SubmitPatientData extends React.Component {
       submissions: [],
       messageContent: null,
       submitting: false,
+      messageContainsError: false,
       abortController: new AbortController(),
     };
   }
@@ -254,12 +255,13 @@ class SubmitPatientData extends React.Component {
           )
             .then(() => (successNum += 1))
             .catch(err => {
+              this.showMessage(0, err);
               logErrors('Error submitting data point:', err);
             });
         }),
       ).then(() => {
         this.setState({submitting: false}, () => {
-          this.showSuccess(successNum);
+          this.showMessage(successNum);
         });
       });
     });
@@ -584,10 +586,16 @@ class SubmitPatientData extends React.Component {
     return fields;
   };
 
-  showSuccess = num => {
-    if (num > 0) {
+  showMessage = (num, err = null) => {
+    if (err) {
+      this.setState({
+        messageContainsError: true,
+        messageContent: `Error with submission: ${err.statusText} ${err.status}`,
+      });
+    } else if (num > 0) {
       this.setState({
         submissions: [],
+        messageContainsError: false,
         messageContent: `Successfully submitted ${num} data points.`,
       });
     }
@@ -597,8 +605,15 @@ class SubmitPatientData extends React.Component {
     return (
       <React.Fragment>
         {this.state.messageContent ? (
-          <Message positive>
-            <Message.Header>Submission complete</Message.Header>
+          <Message
+            positive={!this.state.messageContainsError}
+            negative={this.state.messageContainsError}
+          >
+            <Message.Header>
+              {this.state.messageContainsError
+                ? 'Submission incomplete'
+                : 'Submission complete'}
+            </Message.Header>
             <p>{this.state.messageContent}</p>
           </Message>
         ) : null}
