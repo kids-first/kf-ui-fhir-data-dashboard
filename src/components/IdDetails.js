@@ -121,17 +121,6 @@ class IdDetails extends React.Component {
             ),
           }
         : null;
-    const formOptions = [
-      {key: 'Temperature', text: 'Temperature', value: 'Temperature'},
-      {key: 'Heart Rate', text: 'Heart Rate', value: 'Heart Rate'},
-    ];
-    const observationMapping = {
-      Temperature: {text: 'Temperature (degrees Farenheit)', type: 'input'},
-      'Heart Rate': {
-        text: 'BPM',
-        type: 'input',
-      },
-    };
 
     const fourthTab =
       payload.resourceType === 'Patient'
