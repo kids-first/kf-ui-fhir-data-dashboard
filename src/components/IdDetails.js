@@ -75,51 +75,51 @@ class IdDetails extends React.Component {
       {display: 'Profile', sortId: 'profile', sort: true},
       {display: 'Total References', sortId: 'total', sort: true},
     ];
-    let secondTab = null;
-    if (history.location.pathname.includes('/resources')) {
-      secondTab =
-        payload.resourceType !== 'Patient'
-          ? {
-              menuItem: 'References',
-              render: () => (
-                <Tab.Pane>
-                  <ReferenceTable
-                    resource={payload}
-                    tableHeaders={tableHeaders}
-                    baseUrl={this.props.baseUrl}
-                    setLoadingMessage={this.props.setLoadingMessage}
-                    loadingMessage={this.props.loadingMessage}
-                    history={this.props.history}
-                  />
-                </Tab.Pane>
-              ),
-            }
-          : {
-              menuItem: 'Timeline',
-              render: () => (
-                <Tab.Pane>
-                  <Timeline
-                    resource={payload}
-                    baseUrl={this.props.baseUrl}
-                    setLoadingMessage={this.props.setLoadingMessage}
-                    loadingMessage={this.props.loadingMessage}
-                    history={this.props.history}
-                    dateFieldPath={resource => {
-                      if (resource.effectiveDateTime) {
-                        return resource.effectiveDateTime;
-                      } else if (resource.onsetDateTime) {
-                        return resource.onsetDateTime;
-                      } else if (resource.period && resource.period.start) {
-                        return resource.period.start;
-                      } else {
-                        return null;
-                      }
-                    }}
-                  />
-                </Tab.Pane>
-              ),
-            };
-    }
+    const secondTab = history.location.pathname.includes('/resources')
+      ? {
+          menuItem: 'References',
+          render: () => (
+            <Tab.Pane>
+              <ReferenceTable
+                resource={payload}
+                tableHeaders={tableHeaders}
+                baseUrl={this.props.baseUrl}
+                setLoadingMessage={this.props.setLoadingMessage}
+                loadingMessage={this.props.loadingMessage}
+                history={this.props.history}
+              />
+            </Tab.Pane>
+          ),
+        }
+      : null;
+    const thirdTab =
+      payload.resourceType === 'Patient'
+        ? {
+            menuItem: 'Timeline',
+            render: () => (
+              <Tab.Pane>
+                <Timeline
+                  resource={payload}
+                  baseUrl={this.props.baseUrl}
+                  setLoadingMessage={this.props.setLoadingMessage}
+                  loadingMessage={this.props.loadingMessage}
+                  history={this.props.history}
+                  dateFieldPath={resource => {
+                    if (resource.effectiveDateTime) {
+                      return resource.effectiveDateTime;
+                    } else if (resource.onsetDateTime) {
+                      return resource.onsetDateTime;
+                    } else if (resource.period && resource.period.start) {
+                      return resource.period.start;
+                    } else {
+                      return null;
+                    }
+                  }}
+                />
+              </Tab.Pane>
+            ),
+          }
+        : null;
     const panes = [
       {
         menuItem: 'Payload',
@@ -130,6 +130,7 @@ class IdDetails extends React.Component {
         ),
       },
       {...secondTab},
+      {...thirdTab},
     ];
     return (
       <div className="id-details">
