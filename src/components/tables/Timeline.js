@@ -136,11 +136,7 @@ class Timeline extends React.Component {
           x => categories[x.yCategoryIndex] === eventOfInterest.resourceType,
         )
         .find(
-          x =>
-            x.code &&
-            x.code.coding &&
-            x.code.coding.filter(code => code.code === eventOfInterest.code)
-              .length > 0,
+          x => x.code && x.code.text && x.code.text === eventOfInterest.code,
         );
       return elt ? {label: eventOfInterest.title, x: elt.xDate} : null;
     } else {

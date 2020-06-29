@@ -48,7 +48,7 @@ const submissionMapping = {
     resourceType: 'Observation',
   },
   Fever: {
-    text: 'Status at date',
+    text: 'Status at Date',
     type: 'radio',
     labels: [
       'Active',
@@ -61,7 +61,7 @@ const submissionMapping = {
     resourceType: 'Condition',
   },
   'Abdominal pain': {
-    text: 'Status at date',
+    text: 'Status at Date',
     type: 'radio',
     labels: [
       'Active',
@@ -74,7 +74,7 @@ const submissionMapping = {
     resourceType: 'Condition',
   },
   Vomiting: {
-    text: 'Status at date',
+    text: 'Status at Date',
     type: 'radio',
     labels: [
       'Active',
@@ -87,7 +87,7 @@ const submissionMapping = {
     resourceType: 'Condition',
   },
   Diarrhea: {
-    text: 'Status at date',
+    text: 'Status at Date',
     type: 'radio',
     labels: [
       'Active',
@@ -100,7 +100,7 @@ const submissionMapping = {
     resourceType: 'Condition',
   },
   Fatigue: {
-    text: 'Status at date',
+    text: 'Status at Date',
     type: 'radio',
     labels: [
       'Active',
@@ -113,7 +113,7 @@ const submissionMapping = {
     resourceType: 'Condition',
   },
   'Difficulty breathing': {
-    text: 'Status at date',
+    text: 'Status at Date',
     type: 'radio',
     labels: [
       'Active',
@@ -126,7 +126,7 @@ const submissionMapping = {
     resourceType: 'Condition',
   },
   'Chest pain': {
-    text: 'Status at date',
+    text: 'Status at Date',
     type: 'radio',
     labels: [
       'Active',
@@ -139,7 +139,7 @@ const submissionMapping = {
     resourceType: 'Condition',
   },
   'Suspected COVID-19': {
-    text: 'Status at date',
+    text: 'Status at Date',
     type: 'radio',
     labels: [
       'Active',
@@ -152,7 +152,7 @@ const submissionMapping = {
     resourceType: 'Condition',
   },
   'COVID-19': {
-    text: 'Status at date',
+    text: 'Status at Date',
     type: 'radio',
     labels: [
       'Active',
@@ -339,18 +339,6 @@ class SubmitPatientData extends React.Component {
       case 'Temperature':
         fields = {
           code: {
-            coding: [
-              {
-                system: 'http://loinc.org',
-                code: '8310-5',
-                display: 'Body temperature',
-              },
-              {
-                system: 'http://loinc.org',
-                code: '8331-1',
-                display: 'Oral temperature',
-              },
-            ],
             text: 'Body temperature',
           },
           valueQuantity: {
@@ -364,13 +352,6 @@ class SubmitPatientData extends React.Component {
       case 'Heart rate':
         fields = {
           code: {
-            coding: [
-              {
-                system: 'http://loinc.org',
-                code: '8867-4',
-                display: 'Heart rate',
-              },
-            ],
             text: 'Heart rate',
           },
           valueQuantity: {
@@ -384,27 +365,22 @@ class SubmitPatientData extends React.Component {
       case 'Fever':
         fields = {
           code: {
+            text: 'Fever',
+          },
+          clinicalStatus: {
             coding: [
               {
-                system: 'http://snomed.info/sct',
-                code: '386661006',
-                display: 'Fever (finding)',
+                system:
+                  'http://terminology.hl7.org/CodeSystem/condition-clinical',
+                code: event.value.toLowerCase(),
               },
             ],
-            text: 'Fever',
           },
         };
         break;
       case 'Abdominal pain':
         fields = {
           code: {
-            coding: [
-              {
-                system: 'http://snomed.info/sct',
-                code: '21522001',
-                display: 'Abdominal pain (finding)',
-              },
-            ],
             text: 'Abdominal pain',
           },
           clinicalStatus: {
@@ -421,13 +397,6 @@ class SubmitPatientData extends React.Component {
       case 'Chest pain':
         fields = {
           code: {
-            coding: [
-              {
-                system: 'http://snomed.info/sct',
-                code: '29857009',
-                display: 'Chest pain (finding)',
-              },
-            ],
             text: 'Chest pain',
           },
           clinicalStatus: {
@@ -444,13 +413,6 @@ class SubmitPatientData extends React.Component {
       case 'Diarrhea':
         fields = {
           code: {
-            coding: [
-              {
-                system: 'http://snomed.info/sct',
-                code: '62315008',
-                display: 'Diarrhea (finding)',
-              },
-            ],
             text: 'Diarrhea',
           },
           clinicalStatus: {
@@ -467,13 +429,6 @@ class SubmitPatientData extends React.Component {
       case 'Difficulty breathing':
         fields = {
           code: {
-            coding: [
-              {
-                system: 'http://snomed.info/sct',
-                code: '230145002',
-                display: 'Difficulty breathing (finding)',
-              },
-            ],
             text: 'Difficulty breathing',
           },
           clinicalStatus: {
@@ -490,13 +445,6 @@ class SubmitPatientData extends React.Component {
       case 'Fatigue':
         fields = {
           code: {
-            coding: [
-              {
-                system: 'http://snomed.info/sct',
-                code: '84229001',
-                display: 'Fatigue (finding)',
-              },
-            ],
             text: 'Fatigue',
           },
           clinicalStatus: {
@@ -513,13 +461,6 @@ class SubmitPatientData extends React.Component {
       case 'Vomiting':
         fields = {
           code: {
-            coding: [
-              {
-                system: 'http://snomed.info/sct',
-                code: '300359004',
-                display: 'Finding of vomiting',
-              },
-            ],
             text: 'Vomiting',
           },
           clinicalStatus: {
@@ -536,13 +477,6 @@ class SubmitPatientData extends React.Component {
       case 'Suspected COVID-19':
         fields = {
           code: {
-            coding: [
-              {
-                system: 'http://snomed.info/sct',
-                code: '840544004',
-                display: 'Suspected COVID-19',
-              },
-            ],
             text: 'Suspected COVID-19',
           },
           clinicalStatus: {
@@ -559,13 +493,6 @@ class SubmitPatientData extends React.Component {
       case 'COVID-19':
         fields = {
           code: {
-            coding: [
-              {
-                system: 'http://snomed.info/sct',
-                code: '840539006',
-                display: 'COVID-19',
-              },
-            ],
             text: 'COVID-19',
           },
           clinicalStatus: {
@@ -631,19 +558,8 @@ class SubmitPatientData extends React.Component {
                     onClick={() => this.removeSubmission(i)}
                   />
                   <Form.Field inline>
-                    <div className="id-details__submit-date-picker field">
-                      <label>Date of Observation</label>
-                      <DatePicker
-                        selected={this.state.submissions[i].date}
-                        onChange={date =>
-                          this.updateSubmission(i, 'date', date)
-                        }
-                      />
-                    </div>
-                  </Form.Field>
-                  <Form.Field inline>
                     <Form.Select
-                      label="Observation Type"
+                      label="Type"
                       options={formOptions}
                       placeholder={event.type}
                       onChange={(e, {value}) =>
@@ -652,10 +568,23 @@ class SubmitPatientData extends React.Component {
                     />
                   </Form.Field>
                   {!!details ? (
-                    <Form.Field inline>
-                      <label>{details.text}</label>
-                      {this.getInputType(details, i)}
-                    </Form.Field>
+                    <React.Fragment>
+                      <Form.Field inline>
+                        <div className="id-details__submit-date-picker field">
+                          <label>Date of {event.resourceType}</label>
+                          <DatePicker
+                            selected={this.state.submissions[i].date}
+                            onChange={date =>
+                              this.updateSubmission(i, 'date', date)
+                            }
+                          />
+                        </div>
+                      </Form.Field>
+                      <Form.Field inline>
+                        <label>{details.text}</label>
+                        {this.getInputType(details, i)}
+                      </Form.Field>
+                    </React.Fragment>
                   ) : null}
                 </Form.Group>
               );
@@ -663,7 +592,7 @@ class SubmitPatientData extends React.Component {
             <div className="id-details__submit-buttons">
               <Button primary onClick={this.addSubmission}>
                 <Icon name="plus" />
-                Add Observation
+                Add Data Point
               </Button>
               <Button primary onClick={this.submit}>
                 Submit

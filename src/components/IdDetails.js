@@ -128,7 +128,7 @@ class IdDetails extends React.Component {
             menuItem: 'Submit Data',
             render: () => (
               <Tab.Pane>
-                Please add any additional observations for this Patient to
+                Please add any additional data points for this Patient to
                 augment the current dataset.
                 <SubmitPatientData
                   payload={payload}
