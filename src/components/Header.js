@@ -15,7 +15,7 @@ class Header extends React.Component {
       logout,
     } = this.props;
     return (
-      <Menu>
+      <Menu className="app-header">
         <Container>
           <Menu.Item>
             <Link to="/resources">
