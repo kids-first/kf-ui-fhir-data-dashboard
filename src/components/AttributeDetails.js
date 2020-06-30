@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Loader} from 'semantic-ui-react';
+import {Loader, Tab} from 'semantic-ui-react';
 import {logErrors, getMonth} from '../utils/common';
 import SortableTable from './tables/SortableTable';
 import SearchBar from './SearchBar';
@@ -16,6 +16,8 @@ class AttributeDetails extends React.Component {
       data: [],
       filteredData: [],
       loading: false,
+      patients: null,
+      shouldGetPatients: false,
       abortController: new AbortController(),
     };
   }
@@ -29,7 +31,14 @@ class AttributeDetails extends React.Component {
   }
 
   getResource = () => {
-    const {fetchResource, schemaUrl, baseUrl, resourceId, query} = this.props;
+    const {
+      fetchResource,
+      getCapabilityStatementReferences,
+      schemaUrl,
+      baseUrl,
+      resourceId,
+      query,
+    } = this.props;
     this.setState({loading: true}, () => {
       this.props.setLoadingMessage(
         query === 'all'
@@ -65,16 +74,72 @@ class AttributeDetails extends React.Component {
                       ? x.meta.lastUpdated
                       : 'Unknown',
                 }));
-              this.setState({
-                data: mappedData,
-                filteredData: mappedData,
-                loading: false,
-              });
+              this.setState(
+                {
+                  data: mappedData,
+                  filteredData: mappedData,
+                },
+                async () => {
+                  const shouldGetPatients = await this.shouldGetPatients();
+                  let patients = null;
+                  if (shouldGetPatients) {
+                    patients = await this.getPatients();
+                  }
+                  this.setState({
+                    loading: false,
+                    shouldGetPatients,
+                    patients,
+                  });
+                },
+              );
             })
             .catch(err => logErrors('Error fetching IDs:', err));
         })
         .catch(err => logErrors('Error fetching resource:', err));
     });
+  };
+
+  shouldGetPatients = async () => {
+    const {getCapabilityStatementReferences, baseUrl, query} = this.props;
+    if (query === 'all') {
+      return false;
+    }
+    this.props.setLoadingMessage('Fetching Patients...');
+    return getCapabilityStatementReferences(
+      `${baseUrl}metadata`,
+      'Patient',
+      this.state.abortController,
+    )
+      .then(async references => {
+        return (
+          references.filter(x => x.type === this.state.resourceBaseType)
+            .length > 0
+        );
+      })
+      .catch(err => {
+        logErrors('Error fetching Patients:', err);
+      });
+  };
+
+  getPatients = async () => {
+    const {fetchAllResources, baseUrl, query} = this.props;
+    return fetchAllResources(
+      `${baseUrl}Patient?_has:${this.state.resourceBaseType}:patient:${query}`,
+      this.state.abortController,
+    )
+      .then(data =>
+        data
+          .map(x => x.resource)
+          .map(x => ({
+            id: x.id,
+            resourceType: x.resourceType,
+            lastUpdated:
+              !!x.meta && !!x.meta.lastUpdated ? x.meta.lastUpdated : 'Unknown',
+          })),
+      )
+      .catch(err => {
+        logErrors('Error fetching all Patients:', err);
+      });
   };
 
   handleResultSelect = searchResults => {
@@ -95,11 +160,31 @@ class AttributeDetails extends React.Component {
     return `${month} ${day}, ${year}`;
   };
 
-  onRowClick = row => {
-    this.props.history.push(`/resources/${this.props.resourceId}/id=${row.id}`);
+  onRowClick = (row, resourceType) => {
+    this.props.history.push(
+      `/resources/${resourceType ? resourceType : this.props.resourceId}/id=${
+        row.id
+      }`,
+    );
   };
 
   render() {
+    const secondTab =
+      this.props.query !== 'all' && this.state.shouldGetPatients
+        ? {
+            menuItem: `Patients (${this.state.patients.length})`,
+            render: () => (
+              <Tab.Pane>
+                <SortableTable
+                  headerCells={tableHeaders}
+                  data={this.state.patients}
+                  onRowClick={row => this.onRowClick(row, 'Patient')}
+                />
+              </Tab.Pane>
+            ),
+          }
+        : {};
+
     const tableHeaders = [
       {display: 'ID', sortId: 'id', sort: true},
       {
@@ -114,30 +199,41 @@ class AttributeDetails extends React.Component {
         <div className="header">
           <div className="header__text">
             <h2>{this.props.query}</h2>
-            <h3>{this.state.filteredData.length} total</h3>
           </div>
-          <SearchBar
-            className="header__searchbar"
-            data={this.state.data.map(resource => ({
-              key: resource.id,
-              title: resource.id,
-            }))}
-            placeholder="Search for an ID..."
-            handleResultSelect={this.handleResultSelect}
-          />
         </div>
         <Loader
           inline
           active={!!this.state.loading}
           content={this.props.loadingMessage}
         />
-        {!this.state.loading ? (
-          <SortableTable
-            headerCells={tableHeaders}
-            data={this.state.filteredData}
-            onRowClick={this.onRowClick}
+        {this.state.loading ? null : (
+          <Tab
+            panes={[
+              {
+                menuItem: `${this.props.resourceId} (${this.state.filteredData.length})`,
+                render: () => (
+                  <Tab.Pane>
+                    <SearchBar
+                      className="header__searchbar"
+                      data={this.state.data.map(resource => ({
+                        key: resource.id,
+                        title: resource.id,
+                      }))}
+                      placeholder="Search for an ID..."
+                      handleResultSelect={this.handleResultSelect}
+                    />
+                    <SortableTable
+                      headerCells={tableHeaders}
+                      data={this.state.filteredData}
+                      onRowClick={this.onRowClick}
+                    />
+                  </Tab.Pane>
+                ),
+              },
+              {...secondTab},
+            ]}
           />
-        ) : null}
+        )}
       </div>
     );
   }
@@ -160,6 +256,7 @@ AttributeDetails.propTypes = {
   query: PropTypes.string,
   setLoadingMessage: PropTypes.func.isRequired,
   loadingMessage: PropTypes.string,
+  getCapabilityStatementReferences: PropTypes.func.isRequired,
 };
 
 AttributeDetails.defaultProps = {
