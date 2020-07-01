@@ -99,12 +99,21 @@ class Timeline extends React.Component {
   };
 
   getDataByDate = data => {
+    let mapData = {};
+    data.forEach(resource => {
+      if (!mapData[resource.resourceType]) {
+        mapData[resource.resourceType] = [];
+      }
+      mapData[resource.resourceType] = mapData[resource.resourceType].concat(
+        resource.children,
+      );
+    });
     let flatData = [];
     let categories = [''];
     let dates = new Set();
-    data.forEach((resource, i) => {
-      categories.push(resource.resourceType);
-      resource.children.forEach(child => {
+    Object.keys(mapData).forEach((resourceType, i) => {
+      categories.push(resourceType);
+      mapData[resourceType].forEach(child => {
         const date = this.props.dateFieldPath(child);
         if (date) {
           flatData.push({
@@ -136,11 +145,7 @@ class Timeline extends React.Component {
           x => categories[x.yCategoryIndex] === eventOfInterest.resourceType,
         )
         .find(
-          x =>
-            x.code &&
-            x.code.coding &&
-            x.code.coding.filter(code => code.code === eventOfInterest.code)
-              .length > 0,
+          x => x.code && x.code.text && x.code.text === eventOfInterest.code,
         );
       return elt ? {label: eventOfInterest.title, x: elt.xDate} : null;
     } else {

@@ -66,6 +66,13 @@ const resourceMapping = {
       }
     },
     x => {
+      if (x.clinicalStatus) {
+        return x.clinicalStatus.coding.map(codes => codes.code).join(', ');
+      } else {
+        return null;
+      }
+    },
+    x => {
       if (x.verificationStatus) {
         return x.verificationStatus.coding.map(codes => codes.code).join(', ');
       } else {
@@ -115,7 +122,8 @@ const resourceTableHeaders = {
   ],
   Condition: [
     {display: 'Code', sortId: 'Code', sort: true},
-    {display: 'Status', sortId: 'Status', sort: true},
+    {display: 'Clinical Status', sortId: 'Clinical Status', sort: true},
+    {display: 'Verification Status', sortId: 'Verification Status', sort: true},
   ],
   Specimen: [
     {display: 'Type', sortId: 'Type', sort: true},

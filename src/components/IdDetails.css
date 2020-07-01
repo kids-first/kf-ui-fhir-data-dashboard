@@ -2,6 +2,16 @@
   margin: 20px 0;
 }
 
+.id-details__submit-date-picker {
+  display: flex;
+  flex-flow: column;
+}
+
+.id-details__submit-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
 /* Semantic UI Overrides */
 .id-details .ui.menu .item {
   font-size: 14px;
@@ -9,4 +19,32 @@
 
 .id-details .ui.tabular.menu .active.item {
   color: var(--d3b-blue) !important;
+}
+
+.id-details .ui.form .field > .selection.dropdown,
+.ui.input,
+.react-datepicker-wrapper {
+  margin: 5px 0;
+}
+
+.id-details label {
+  margin: 5px 0 !important;
+}
+
+.id-details .form {
+  margin: 20px 10px;
+}
+
+.id-details .fields {
+  margin: 10px 0 !important;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--d3b-lightgray);
+}
+
+.id-details .ui.button > .icon:not(.button) {
+  color: #fff !important;
+}
+
+.id-details .ui.message {
+  margin: 20px 0 !important;
 }

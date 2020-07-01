@@ -5,6 +5,7 @@ import ReactJson from 'react-json-view';
 import {logErrors} from '../utils/common';
 import ReferenceTable from './tables/ReferenceTable';
 import Timeline from './tables/Timeline';
+import SubmitPatientData from './SubmitPatientData';
 import './IdDetails.css';
 
 class IdDetails extends React.Component {
@@ -120,6 +121,23 @@ class IdDetails extends React.Component {
             ),
           }
         : null;
+
+    const fourthTab =
+      payload.resourceType === 'Patient'
+        ? {
+            menuItem: 'Submit Data',
+            render: () => (
+              <Tab.Pane>
+                Please add any additional data points for this Patient to
+                augment the current dataset.
+                <SubmitPatientData
+                  payload={payload}
+                  baseUrl={this.props.baseUrl}
+                />
+              </Tab.Pane>
+            ),
+          }
+        : null;
     const panes = [
       {
         menuItem: 'Payload',
@@ -131,6 +149,7 @@ class IdDetails extends React.Component {
       },
       {...secondTab},
       {...thirdTab},
+      {...fourthTab},
     ];
     return (
       <div className="id-details">

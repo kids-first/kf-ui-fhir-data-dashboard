@@ -2,6 +2,39 @@ import {shouldUseProxyUrl, proxyUrl, fhirUrl} from '../config';
 import {logErrors, replaceLocalhost} from '../utils/common';
 import store from '../store';
 
+export const postWithHeaders = async (
+  url,
+  body,
+  abortController,
+  headers = [],
+) => {
+  let fullUrl = shouldUseProxyUrl(url) ? `${proxyUrl}${url}` : `${url}`;
+  const token = store.getState().app.token;
+  return fetch(`${fullUrl}`, {
+    signal: abortController ? abortController.signal : null,
+    method: 'POST',
+    headers: {
+      ...headers,
+      Authorization: `Basic ${token}`,
+      'Cache-Control': 'max-age=3600',
+      Accept: 'application/fhir+json;charset=utf-8',
+      'Content-Type': 'application/fhir+json;charset=utf-8',
+    },
+    body: JSON.stringify(body),
+  })
+    .then(res => {
+      if (res.status !== 201) {
+        throw res;
+      }
+      return res.json();
+    })
+    .then(data => data)
+    .catch(err => {
+      logErrors('Error:', err);
+      throw err;
+    });
+};
+
 const fetchWithHeaders = async (
   url,
   headers,
