@@ -163,7 +163,9 @@ class AttributeDetails extends React.Component {
 
   render() {
     const secondTab =
-      this.props.query !== 'all' && this.state.shouldGetPatients
+      this.props.query !== 'all' &&
+      this.state.shouldGetPatients &&
+      this.state.patients
         ? {
             menuItem: `Patients (${this.state.patients.length})`,
             render: () => (
