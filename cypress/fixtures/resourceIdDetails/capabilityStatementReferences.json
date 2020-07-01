@@ -4,11 +4,15 @@
       "resource": [
         {
           "type": "Condition",
-          "searchInclude": ["*", "Condition:patient"]
+          "searchInclude": ["*", "Condition:observation", "Condition:patient"]
         },
         {
           "type": "Observation",
           "searchInclude": ["*", "Observation:patient"]
+        },
+        {
+          "type": "Patient",
+          "searchInclude": ["*", "Patient:observation"]
         }
       ]
     }

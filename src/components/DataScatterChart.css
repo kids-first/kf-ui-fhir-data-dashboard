@@ -1,0 +1,38 @@
+.scatter-chart__square {
+  background-color: red;
+  width: 15px;
+  height: 15px;
+  display: inline-block;
+  margin: 0 10px;
+}
+
+.scatter-chart__tooltip {
+  border: 2px solid var(--d3b-blue);
+  border-radius: 5px;
+  padding: 10px 10px;
+  background-color: #fff;
+}
+
+.scatter-chart__modal-details {
+  margin: 10px 0;
+}
+
+.scatter-chart__modal-details h4 {
+  margin: 0;
+}
+
+.scatter-chart__modal-details h4 {
+  margin: 5px 0;
+}
+
+circle:hover {
+  stroke: #009cb8;
+  fill: #009cb8;
+  stroke-width: 2px;
+}
+
+.recharts-legend-wrapper {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+}

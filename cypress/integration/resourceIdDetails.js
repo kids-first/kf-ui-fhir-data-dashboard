@@ -5,20 +5,20 @@ describe('Resource ID Details page', () => {
       method: 'GET',
       url:
         'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/StructureDefinition/**',
-      response: {type: 'Patient'},
+      response: {type: 'Observation'},
     }).as('getStructureDefinition');
     cy.route({
       method: 'GET',
       url:
-        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/Patient/123',
+        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/Observation/123',
       response: 'fixture:resourceIdDetails/resourceDetails.json',
     }).as('getResource');
-    cy.visit('/resources/Patient/id=123');
+    cy.visit('/resources/Observation/id=123');
     cy.wait(['@getStructureDefinition', '@getResource']);
   });
 
   it('loads the resource details', () => {
-    cy.url().should('include', '/resources/Patient/id=123');
+    cy.url().should('include', '/resources/Observation/id=123');
     cy.contains('Payload');
   });
 
@@ -33,7 +33,19 @@ describe('Resource ID Details page', () => {
     cy.route({
       method: 'GET',
       url:
-        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/Condition?patient=Patient/123',
+        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/Patient?observation=Observation/123',
+      response: 'fixture:resourceIdDetails/patientDetails.json',
+    }).as('getPatientDetails');
+    cy.route({
+      method: 'GET',
+      url:
+        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/StructureDefinition?url=http://fhir.kids-first.io/StructureDefinition/Patient',
+      response: 'fixture:resourceIdDetails/patientStructureDefinition.json',
+    }).as('getPatientSD');
+    cy.route({
+      method: 'GET',
+      url:
+        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/Condition?observation=Observation/123',
       response: 'fixture:resourceIdDetails/conditionDetails.json',
     }).as('getConditionDetails');
     cy.route({
@@ -42,24 +54,13 @@ describe('Resource ID Details page', () => {
         'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/StructureDefinition?url=http://fhir.kids-first.io/StructureDefinition/Condition',
       response: 'fixture:resourceIdDetails/conditionStructureDefinition.json',
     }).as('getConditionSD');
-    cy.route({
-      method: 'GET',
-      url:
-        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/Observation?patient=Patient/123',
-      response: 'fixture:resourceIdDetails/observationDetails.json',
-    }).as('getObservationDetails');
-    cy.route({
-      method: 'GET',
-      url:
-        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/StructureDefinition?url=http://fhir.kids-first.io/StructureDefinition/Observation',
-      response: 'fixture:resourceIdDetails/observationStructureDefinition.json',
-    }).as('getObservationSD');
     cy.contains('References').click();
     cy.wait([
       '@getCapabilityStatementReferences',
+      '@getPatientDetails',
+      '@getPatientSD',
       '@getConditionDetails',
       '@getConditionSD',
-      '@getObservationSD',
     ]);
     cy.get('.sortable-table')
       .eq(0)
@@ -77,7 +78,7 @@ describe('Resource ID Details page', () => {
       .children('tbody')
       .children('tr')
       .should($x => {
-        expect($x).to.have.length(4);
+        expect($x).to.have.length(3);
       });
     cy.get('.sortable-table')
       .eq(1)
@@ -106,25 +107,11 @@ describe('Resource ID Details page', () => {
       .children('tr')
       .eq(0)
       .contains('Condition');
-    cy.get('.sortable-table')
-      .eq(0)
-      .children('table')
-      .children('tbody')
-      .children('tr')
-      .eq(1)
-      .contains('Observation');
 
     cy.get('th')
       .eq(0)
       .click();
 
-    cy.get('.sortable-table')
-      .eq(0)
-      .children('table')
-      .children('tbody')
-      .children('tr')
-      .eq(0)
-      .contains('Observation');
     cy.get('.sortable-table')
       .eq(0)
       .children('table')
@@ -150,6 +137,6 @@ describe('Resource ID Details page', () => {
       .eq(1)
       .click();
 
-    cy.url().should('include', '/resources/TestObservation/id=321');
+    cy.url().should('include', '/resources/Patient/id=456');
   });
 });

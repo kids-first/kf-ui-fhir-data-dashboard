@@ -4,6 +4,7 @@ import {Loader, Tab} from 'semantic-ui-react';
 import ReactJson from 'react-json-view';
 import {logErrors} from '../utils/common';
 import ReferenceTable from './tables/ReferenceTable';
+import Timeline from './tables/Timeline';
 import './IdDetails.css';
 
 class IdDetails extends React.Component {
@@ -30,6 +31,11 @@ class IdDetails extends React.Component {
     this.props.setLoadingMessage('');
   }
 
+  getResourceTitle = resource =>
+    this.props.history.location.pathname.split('/').length === 4
+      ? this.props.history.location.pathname.split('/')[2]
+      : resource.resourceType || '';
+
   getDetails = () => {
     const {
       fetchResource,
@@ -40,7 +46,11 @@ class IdDetails extends React.Component {
       baseUrl,
     } = this.props;
     this.setState({loading: true}, () => {
-      setLoadingMessage(`Fetching information for ${id}...`);
+      setLoadingMessage(
+        `Fetching information for ${this.getResourceTitle({
+          resourceType: id,
+        })}...`,
+      );
       fetchResource(`${schemaUrl}/${resourceId}`, this.state.abortController)
         .then(data => {
           const type = data.type;
@@ -57,7 +67,7 @@ class IdDetails extends React.Component {
   };
 
   render() {
-    const {id, history} = this.props;
+    const {history} = this.props;
     const {payload} = this.state;
     const tableHeaders = [
       {display: 'Resource Type', sortId: 'resourceType', sort: true},
@@ -82,6 +92,34 @@ class IdDetails extends React.Component {
           ),
         }
       : null;
+    const thirdTab =
+      payload.resourceType === 'Patient'
+        ? {
+            menuItem: 'Timeline',
+            render: () => (
+              <Tab.Pane>
+                <Timeline
+                  resource={payload}
+                  baseUrl={this.props.baseUrl}
+                  setLoadingMessage={this.props.setLoadingMessage}
+                  loadingMessage={this.props.loadingMessage}
+                  history={this.props.history}
+                  dateFieldPath={resource => {
+                    if (resource.effectiveDateTime) {
+                      return resource.effectiveDateTime;
+                    } else if (resource.onsetDateTime) {
+                      return resource.onsetDateTime;
+                    } else if (resource.period && resource.period.start) {
+                      return resource.period.start;
+                    } else {
+                      return null;
+                    }
+                  }}
+                />
+              </Tab.Pane>
+            ),
+          }
+        : null;
     const panes = [
       {
         menuItem: 'Payload',
@@ -92,14 +130,10 @@ class IdDetails extends React.Component {
         ),
       },
       {...secondTab},
+      {...thirdTab},
     ];
     return (
       <div className="id-details">
-        <div className="header">
-          <div className="header__text">
-            <h2>{id}</h2>
-          </div>
-        </div>
         {this.state.loading ? (
           <Loader
             inline
@@ -107,7 +141,14 @@ class IdDetails extends React.Component {
             content={this.props.loadingMessage}
           />
         ) : (
-          <Tab panes={panes} />
+          <React.Fragment>
+            <div className="header">
+              <div className="header__text">
+                <h2>{this.getResourceTitle(payload)} Details</h2>
+              </div>
+            </div>
+            <Tab panes={panes} />
+          </React.Fragment>
         )}
       </div>
     );
