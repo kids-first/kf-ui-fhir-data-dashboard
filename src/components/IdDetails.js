@@ -76,24 +76,43 @@ class IdDetails extends React.Component {
       {display: 'Profile', sortId: 'profile', sort: true},
       {display: 'Total References', sortId: 'total', sort: true},
     ];
-    const secondTab = history.location.pathname.includes('/resources')
-      ? {
-          menuItem: 'References',
-          render: () => (
-            <Tab.Pane>
-              <ReferenceTable
-                resource={payload}
-                tableHeaders={tableHeaders}
-                baseUrl={this.props.baseUrl}
-                setLoadingMessage={this.props.setLoadingMessage}
-                loadingMessage={this.props.loadingMessage}
-                history={this.props.history}
-              />
-            </Tab.Pane>
-          ),
-        }
-      : null;
-    const thirdTab =
+    const firstTabs = history.location.pathname.includes('/resources')
+      ? [
+          {
+            menuItem: 'References',
+            render: () => (
+              <Tab.Pane>
+                <ReferenceTable
+                  resource={payload}
+                  tableHeaders={tableHeaders}
+                  baseUrl={this.props.baseUrl}
+                  setLoadingMessage={this.props.setLoadingMessage}
+                  loadingMessage={this.props.loadingMessage}
+                  history={this.props.history}
+                />
+              </Tab.Pane>
+            ),
+          },
+          {
+            menuItem: 'Payload',
+            render: () => (
+              <Tab.Pane>
+                <ReactJson src={payload} />
+              </Tab.Pane>
+            ),
+          },
+        ]
+      : [
+          {
+            menuItem: 'Payload',
+            render: () => (
+              <Tab.Pane>
+                <ReactJson src={payload} />
+              </Tab.Pane>
+            ),
+          },
+        ];
+    const timelineTab =
       payload.resourceType === 'Patient'
         ? {
             menuItem: 'Timeline',
@@ -122,7 +141,7 @@ class IdDetails extends React.Component {
           }
         : null;
 
-    const fourthTab =
+    const submitDataTab =
       payload.resourceType === 'Patient'
         ? {
             menuItem: 'Submit Data',
@@ -138,19 +157,8 @@ class IdDetails extends React.Component {
             ),
           }
         : null;
-    const panes = [
-      {
-        menuItem: 'Payload',
-        render: () => (
-          <Tab.Pane>
-            <ReactJson src={payload} />
-          </Tab.Pane>
-        ),
-      },
-      {...secondTab},
-      {...thirdTab},
-      {...fourthTab},
-    ];
+    const panes = firstTabs.concat(timelineTab).concat(submitDataTab);
+
     return (
       <div className="id-details">
         {this.state.loading ? (
