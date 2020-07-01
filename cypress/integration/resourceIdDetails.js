@@ -13,17 +13,6 @@ describe('Resource ID Details page', () => {
         'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/Observation/123',
       response: 'fixture:resourceIdDetails/resourceDetails.json',
     }).as('getResource');
-    cy.visit('/resources/Observation/id=123');
-    cy.wait(['@getStructureDefinition', '@getResource']);
-  });
-
-  it('loads the resource details', () => {
-    cy.url().should('include', '/resources/Observation/id=123');
-    cy.contains('Payload');
-  });
-
-  it('loads resource references', () => {
-    cy.server();
     cy.route({
       method: 'GET',
       url:
@@ -54,14 +43,24 @@ describe('Resource ID Details page', () => {
         'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/StructureDefinition?url=http://fhir.kids-first.io/StructureDefinition/Condition',
       response: 'fixture:resourceIdDetails/conditionStructureDefinition.json',
     }).as('getConditionSD');
-    cy.contains('References').click();
+    cy.visit('/resources/Observation/id=123');
     cy.wait([
+      '@getStructureDefinition',
+      '@getResource',
       '@getCapabilityStatementReferences',
       '@getPatientDetails',
       '@getPatientSD',
       '@getConditionDetails',
       '@getConditionSD',
     ]);
+  });
+
+  it('loads the resource details', () => {
+    cy.url().should('include', '/resources/Observation/id=123');
+    cy.contains('Payload');
+  });
+
+  it('loads resource references', () => {
     cy.get('.sortable-table')
       .eq(0)
       .children('table')
