@@ -31,14 +31,7 @@ class AttributeDetails extends React.Component {
   }
 
   getResource = () => {
-    const {
-      fetchResource,
-      getCapabilityStatementReferences,
-      schemaUrl,
-      baseUrl,
-      resourceId,
-      query,
-    } = this.props;
+    const {fetchResource, schemaUrl, baseUrl, resourceId, query} = this.props;
     this.setState({loading: true}, () => {
       this.props.setLoadingMessage(
         query === 'all'
