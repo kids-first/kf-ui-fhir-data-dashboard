@@ -1,5 +1,9 @@
 import {connect} from 'react-redux';
-import {fetchResource, fetchAllResources} from '../utils/api';
+import {
+  fetchResource,
+  fetchAllResources,
+  getCapabilityStatementReferences,
+} from '../utils/api';
 import {setLoadingMessage} from '../actions';
 import AttributeDetails from './AttributeDetails';
 
@@ -23,6 +27,14 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       }),
     fetchAllResources: (url, abortController) =>
       fetchAllResources(url, [], abortController).catch(err => {
+        throw err;
+      }),
+    getCapabilityStatementReferences: (url, resourceType, abortController) =>
+      getCapabilityStatementReferences(
+        url,
+        resourceType,
+        abortController,
+      ).catch(err => {
         throw err;
       }),
     setLoadingMessage: message => dispatch(setLoadingMessage(message)),
