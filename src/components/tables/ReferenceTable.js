@@ -77,9 +77,13 @@ class ReferenceTable extends React.Component {
     const referencingIds = Object.keys(this.props.resource)
       .map(field => this.props.resource[field].reference)
       .filter(field => field);
+    const links = this.props.resource.link
+      ? this.props.resource.link.map(link => link.other.reference)
+      : [];
+    const totalIds = referencingIds.concat(links);
     return await getReferences(
       this.props.baseUrl,
-      referencingIds,
+      totalIds,
       this.state.abortController,
     )
       .then(allReferences => this.getReferenceMap(allReferences))
