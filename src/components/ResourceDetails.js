@@ -365,15 +365,16 @@ class ResourceDetails extends React.Component {
                       `${this.props.baseUrl}CodeSystem?url=${system}`,
                       this.state.abortController,
                     )
-                    .then(data =>
-                      data &&
-                      data.entry &&
-                      data.entry[0] &&
-                      data.entry[0].resource &&
-                      data.entry[0].resource.concept
-                        ? data.entry[0].resource.concept
-                        : null,
-                    )
+                    .then(data => {
+                      if (data && data.entry) {
+                        return data.entry
+                          .filter(x => x.resource && x.resource.concept)
+                          .map(x => x.resource.concept)
+                          .flat();
+                      } else {
+                        return null;
+                      }
+                    })
                     .catch(err => {
                       logErrors('Error getting systems:', err);
                       throw err;
@@ -382,9 +383,17 @@ class ResourceDetails extends React.Component {
               );
               systemConcepts = systemConcepts.flat().filter(item => !!item);
               concepts.push(...systemConcepts);
+              const filteredArr = concepts.reduce((acc, current) => {
+                const x = acc.find(item => item.code === current.code);
+                if (!x) {
+                  return acc.concat([current]);
+                } else {
+                  return acc;
+                }
+              }, []);
               return {
                 ...attribute,
-                queryParams: concepts, // how to handle large sets of parameters? very slow
+                queryParams: filteredArr, // how to handle large sets of parameters? very slow
               };
             })
             .catch(err => {
