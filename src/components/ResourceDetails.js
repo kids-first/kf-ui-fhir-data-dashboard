@@ -382,9 +382,17 @@ class ResourceDetails extends React.Component {
               );
               systemConcepts = systemConcepts.flat().filter(item => !!item);
               concepts.push(...systemConcepts);
+              const filteredArr = concepts.reduce((acc, current) => {
+                const x = acc.find(item => item.code === current.code);
+                if (!x) {
+                  return acc.concat([current]);
+                } else {
+                  return acc;
+                }
+              }, []);
               return {
                 ...attribute,
-                queryParams: concepts, // how to handle large sets of parameters? very slow
+                queryParams: filteredArr, // how to handle large sets of parameters? very slow
               };
             })
             .catch(err => {
