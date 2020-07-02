@@ -365,15 +365,16 @@ class ResourceDetails extends React.Component {
                       `${this.props.baseUrl}CodeSystem?url=${system}`,
                       this.state.abortController,
                     )
-                    .then(data =>
-                      data &&
-                      data.entry &&
-                      data.entry[0] &&
-                      data.entry[0].resource &&
-                      data.entry[0].resource.concept
-                        ? data.entry[0].resource.concept
-                        : null,
-                    )
+                    .then(data => {
+                      if (data && data.entry) {
+                        return data.entry
+                          .filter(x => x.resource && x.resource.concept)
+                          .map(x => x.resource.concept)
+                          .flat();
+                      } else {
+                        return null;
+                      }
+                    })
                     .catch(err => {
                       logErrors('Error getting systems:', err);
                       throw err;
