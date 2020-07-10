@@ -30,7 +30,7 @@
   font-size: 0.75em;
 }
 
-.app-header.ui.dropdown .menu {
+.app-header .ui.dropdown .menu {
   font-size: 14px;
 }
 
@@ -44,7 +44,7 @@
 }
 
 .app-header.ui.link.menu .item:hover,
-.app-header .ui.menu .dropdown.item:hover,
+.app-header.ui.menu .dropdown.item:hover,
 .app-header.ui.menu .link.item:hover,
 .app-header.ui.menu a:hover,
 .app-header.ui.menu .active.item,
