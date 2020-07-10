@@ -4,43 +4,41 @@ describe('Resource Details', () => {
     cy.route({
       method: 'GET',
       url:
-        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/StructureDefinition/TestPatient/$snapshot',
+        'http://hapi.fhir.org/baseR4/StructureDefinition/TestPatient/$snapshot',
       response: 'fixture:resourceDetails/patientSnapshot.json',
     }).as('getPatientDetails');
     cy.route({
       method: 'GET',
-      url:
-        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/SearchParameter?base=Patient',
+      url: 'http://hapi.fhir.org/baseR4/SearchParameter?base=Patient',
       response: 'fixture:resourceDetails/patientSearchParams.json',
     }).as('getPatientSearchParams');
     cy.route({
       method: 'GET',
-      url:
-        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/metadata',
+      url: 'http://hapi.fhir.org/baseR4/metadata',
       response: 'fixture:resourceDetails/capabilityStatement.json',
     }).as('getCapabilityStatement');
     cy.route({
       method: 'GET',
       url:
-        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/Patient?_profile:below=http://fhir.kidsfirst.org/StructureDefinition/Patient&**',
+        'http://hapi.fhir.org/baseR4/Patient?_profile:below=http://fhir.kidsfirst.org/StructureDefinition/Patient&**',
       response: 'fixture:resourceDetails/resourceCount.json',
     }).as('getResourceCounts');
     cy.route({
       method: 'GET',
       url:
-        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/StructureDefinition?url=http://fhir.kids-first.io/StructureDefinition/karyotypic-sex',
+        'http://hapi.fhir.org/baseR4/StructureDefinition?url=http://fhir.kids-first.io/StructureDefinition/karyotypic-sex',
       response: 'fixture:resourceDetails/karyotypicSexSD.json',
     }).as('getExtension');
     cy.route({
       method: 'GET',
       url:
-        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/ValueSet?url=http://fhir.kids-first.io/ValueSet/karyotypic-sex',
+        'http://hapi.fhir.org/baseR4/ValueSet?url=http://fhir.kids-first.io/ValueSet/karyotypic-sex',
       response: 'fixture:resourceDetails/karyotypicSexVS.json',
     }).as('getValueSet');
     cy.route({
       method: 'GET',
       url:
-        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/CodeSystem?url=http://hl7.org/fhir/karyotypic-sex',
+        'http://hapi.fhir.org/baseR4/CodeSystem?url=http://hl7.org/fhir/karyotypic-sex',
       response: 'fixture:resourceDetails/karyotypicSexCS.json',
     }).as('getCodeSystem');
     cy.visit('/resources/TestPatient');

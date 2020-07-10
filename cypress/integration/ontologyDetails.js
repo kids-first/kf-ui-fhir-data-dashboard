@@ -3,26 +3,22 @@ describe('Ontology Details', () => {
     cy.server();
     cy.route({
       method: 'GET',
-      url:
-        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/StructureDefinition',
+      url: 'http://hapi.fhir.org/baseR4/StructureDefinition',
       response: {},
     }).as('getStructureDefinition');
     cy.route({
       method: 'GET',
-      url:
-        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/CodeSystem',
+      url: 'http://hapi.fhir.org/baseR4/CodeSystem',
       response: 'fixture:ontologies/ontologies.json',
     }).as('getOntologies');
     cy.route({
       method: 'GET',
-      url:
-        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/StructureDefinition/CodeSystem',
+      url: 'http://hapi.fhir.org/baseR4/StructureDefinition/CodeSystem',
       response: {type: 'CodeSystem'},
     }).as('getCodeSystemStructureDefinition');
     cy.route({
       method: 'GET',
-      url:
-        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/CodeSystem/**',
+      url: 'http://hapi.fhir.org/baseR4/CodeSystem/**',
       response: 'fixture:ontologies/ontologyDetails.json',
     }).as('getOntology');
 

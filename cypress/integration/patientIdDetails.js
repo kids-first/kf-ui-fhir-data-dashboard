@@ -3,14 +3,12 @@ describe('Resource ID Details page - Patient resources', () => {
     cy.server();
     cy.route({
       method: 'GET',
-      url:
-        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/StructureDefinition/**',
+      url: 'http://hapi.fhir.org/baseR4/StructureDefinition/**',
       response: {type: 'Patient'},
     }).as('getStructureDefinition');
     cy.route({
       method: 'GET',
-      url:
-        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/Patient/123',
+      url: 'http://hapi.fhir.org/baseR4/Patient/123',
       response: 'fixture:resourceIdDetails/patientResourceDetails.json',
     }).as('getResource');
     cy.visit('/resources/Patient/id=123');
@@ -26,32 +24,29 @@ describe('Resource ID Details page - Patient resources', () => {
     cy.server();
     cy.route({
       method: 'GET',
-      url:
-        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/metadata',
+      url: 'http://hapi.fhir.org/baseR4/metadata',
       response: 'fixture:resourceIdDetails/capabilityStatementReferences.json',
     }).as('getCapabilityStatementReferences');
     cy.route({
       method: 'GET',
-      url:
-        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/Condition?patient=Patient/123',
+      url: 'http://hapi.fhir.org/baseR4/Condition?patient=Patient/123',
       response: 'fixture:resourceIdDetails/conditionDetails.json',
     }).as('getConditionDetails');
     cy.route({
       method: 'GET',
       url:
-        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/StructureDefinition?url=http://fhir.kids-first.io/StructureDefinition/Condition',
+        'http://hapi.fhir.org/baseR4/StructureDefinition?url=http://fhir.kids-first.io/StructureDefinition/Condition',
       response: 'fixture:resourceIdDetails/conditionStructureDefinition.json',
     }).as('getConditionSD');
     cy.route({
       method: 'GET',
-      url:
-        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/Observation?patient=Patient/123',
+      url: 'http://hapi.fhir.org/baseR4/Observation?patient=Patient/123',
       response: 'fixture:resourceIdDetails/observationDetails.json',
     }).as('getObservationDetails');
     cy.route({
       method: 'GET',
       url:
-        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/StructureDefinition?url=http://fhir.kids-first.io/StructureDefinition/Observation',
+        'http://hapi.fhir.org/baseR4/StructureDefinition?url=http://fhir.kids-first.io/StructureDefinition/Observation',
       response: 'fixture:resourceIdDetails/observationStructureDefinition.json',
     }).as('getObservationSD');
     cy.contains('Timeline').click();

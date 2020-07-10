@@ -1,4 +1,4 @@
-import {shouldUseProxyUrl, proxyUrl, fhirUrl} from '../config';
+import {fhirUrl} from '../config';
 import {logErrors, replaceLocalhost} from '../utils/common';
 import store from '../store';
 
@@ -8,14 +8,16 @@ export const postWithHeaders = async (
   abortController,
   headers = [],
 ) => {
-  let fullUrl = shouldUseProxyUrl(url) ? `${proxyUrl}${url}` : `${url}`;
   const token = store.getState().app.token;
-  return fetch(`${fullUrl}`, {
+  const selectedServer = store.getState().app.selectedServer;
+  if (selectedServer.authType !== 'NO_AUTH') {
+    headers.push(`Authorization: Basic ${token}`);
+  }
+  return fetch(`${url}`, {
     signal: abortController ? abortController.signal : null,
     method: 'POST',
     headers: {
       ...headers,
-      Authorization: `Basic ${token}`,
       'Cache-Control': 'max-age=3600',
       Accept: 'application/fhir+json;charset=utf-8',
       'Content-Type': 'application/fhir+json;charset=utf-8',
@@ -41,18 +43,20 @@ const fetchWithHeaders = async (
   abortController,
   summary = false,
 ) => {
-  let fullUrl = shouldUseProxyUrl(url) ? `${proxyUrl}${url}` : `${url}`;
-  if (summary && !fullUrl.includes('_summary')) {
-    fullUrl = fullUrl
+  if (summary && !url.includes('_summary')) {
+    url = url
       .concat(`${url.includes('?') ? '&' : '?'}`)
       .concat('_summary=count');
   }
   const token = store.getState().app.token;
-  return fetch(`${fullUrl}`, {
+  const selectedServer = store.getState().app.selectedServer;
+  if (selectedServer.authType !== 'NO_AUTH') {
+    headers.push(`Authorization: Basic ${token}`);
+  }
+  return fetch(`${url}`, {
     signal: abortController ? abortController.signal : null,
     headers: {
       ...headers,
-      Authorization: `Basic ${token}`,
       'Cache-Control': 'max-age=3600',
     },
   })
@@ -261,10 +265,7 @@ export const userIsAuthorized = (
   abortController,
 ) => {
   const token = btoa(`${username}:${password}`);
-  const fullUrl = shouldUseProxyUrl(baseUrl)
-    ? `${proxyUrl}${baseUrl}`
-    : `${baseUrl}`;
-  return fetch(`${fullUrl}StructureDefinition`, {
+  return fetch(`${baseUrl}StructureDefinition`, {
     signal: abortController ? abortController.signal : null,
     headers: {
       Authorization: `Basic ${token}`,

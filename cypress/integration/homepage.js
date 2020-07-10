@@ -3,7 +3,7 @@ describe('Homepage', () => {
     cy.server();
     cy.route({
       method: 'GET',
-      url: 'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/**',
+      url: 'http://hapi.fhir.org/**',
       response: 'fixture:homepage/resources.json',
     }).as('getResources');
     cy.visit('/resources');

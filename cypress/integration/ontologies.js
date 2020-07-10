@@ -3,8 +3,7 @@ describe('Ontologies', () => {
     cy.server();
     cy.route({
       method: 'GET',
-      url:
-        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/CodeSystem',
+      url: 'http://hapi.fhir.org/baseR4/CodeSystem',
       response: 'fixture:ontologies/ontologies.json',
     }).as('getOntologies');
 

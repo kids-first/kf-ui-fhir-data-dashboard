@@ -3,14 +3,13 @@ describe('Attribute Details', () => {
     cy.server();
     cy.route({
       method: 'GET',
-      url:
-        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/StructureDefinition/Patient/$snapshot',
+      url: 'http://hapi.fhir.org/baseR4/StructureDefinition/Patient/$snapshot',
       response: 'fixture:attributeDetails/patientSnapshot.json',
     }).as('getSnapshot');
     cy.route({
       method: 'GET',
       url:
-        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/Patient?_profile:below=http://fhir.kidsfirst.org/StructureDefinition/Patient',
+        'http://hapi.fhir.org/baseR4/Patient?_profile:below=http://fhir.kidsfirst.org/StructureDefinition/Patient',
       response: 'fixture:attributeDetails/allPatients.json',
     }).as('getAll');
     cy.visit('/resources/Patient/all');
