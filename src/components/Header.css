@@ -1,12 +1,12 @@
 /* Semantic UI Overrides */
 .app-header.ui.menu {
-  background-color: var(--d3b-gray);
   border-radius: 0;
+  font-size: 18px !important;
 }
 
-.app-header .ui.menu .item {
-  color: var(--kf-blue);
-  font-size: 18px;
+.app-header .ui.menu .item,
+.ui.menu:not(.vertical) .item {
+  color: var(--kf-blue) !important;
 }
 
 .app-header.ui.menu .item:hover {
@@ -33,10 +33,6 @@
 
 .app-header .ui.dropdown .menu {
   font-size: 14px;
-}
-
-.app-header.ui.menu .dropdown.item .menu {
-  background-color: var(--d3b-gray) !important;
 }
 
 .app-header .ui.menu .ui.dropdown .menu > .item {
