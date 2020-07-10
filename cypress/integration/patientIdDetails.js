@@ -39,7 +39,7 @@ describe('Resource ID Details page - Patient resources', () => {
     cy.route({
       method: 'GET',
       url:
-        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/StructureDefinition?url=http://fhir.kids-first.io/StructureDefinition/Condition',
+        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/StructureDefinition?url=http://fhir.ncpi-fhir.io/StructureDefinition/Condition',
       response: 'fixture:resourceIdDetails/conditionStructureDefinition.json',
     }).as('getConditionSD');
     cy.route({
@@ -51,7 +51,7 @@ describe('Resource ID Details page - Patient resources', () => {
     cy.route({
       method: 'GET',
       url:
-        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/StructureDefinition?url=http://fhir.kids-first.io/StructureDefinition/Observation',
+        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/StructureDefinition?url=http://fhir.ncpi-fhir.io/StructureDefinition/Observation',
       response: 'fixture:resourceIdDetails/observationStructureDefinition.json',
     }).as('getObservationSD');
     cy.contains('Timeline').click();

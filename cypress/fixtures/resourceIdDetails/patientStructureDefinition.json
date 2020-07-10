@@ -9,7 +9,7 @@
   "link": [
     {
       "relation": "self",
-      "url": "http://localhost:8000/StructureDefinition?url=http%3A%2F%2Ffhir.kids-first.io%2FStructureDefinition%2FCondition"
+      "url": "http://localhost:8000/StructureDefinition?url=http%3A%2F%2Ffhir.ncpi-fhir.io%2FStructureDefinition%2FCondition"
     }
   ],
   "entry": [
@@ -76,7 +76,7 @@
                 {
                   "code": "Extension",
                   "profile": [
-                    "http://fhir.kids-first.io/StructureDefinition/karyotypic-sex"
+                    "http://fhir.ncpi-fhir.io/StructureDefinition/karyotypic-sex"
                   ]
                 }
               ]

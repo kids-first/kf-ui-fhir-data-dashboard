@@ -1,13 +1,11 @@
+# 🔥📊 Kids First FHIR Data Dashboard
+
 <p align="center">
-  <img src="public/fhir-data-dashboard.svg" alt="FHIR Data Dashboard logo" width="660px">
-</p>
-<p align="center">
-  <a href="https://github.com/kids-first/kf-ui-fhir-data-dashboard/blob/master/LICENSE"><img src="https://img.shields.io/github/license/kids-first/kf-ui-fhir-data-dashboard.svg?style=for-the-badge"></a>
-  <a href="https://circleci.com/gh/kids-first/kf-ui-fhir-data-dashboard"><img src="https://img.shields.io/circleci/project/github/kids-first/kf-ui-fhir-data-dashboard.svg?style=for-the-badge"></a>
-  <a href="https://codecov.io/gh/kids-first/kf-ui-fhir-data-dashboard"><img src="https://img.shields.io/codecov/c/gh/kids-first/kf-ui-fhir-data-dashboard?style=for-the-badge"></a>
+  <a href="https://github.com/ncpi-fhir/ncpi-ui-fhir-data-dashboard/blob/master/LICENSE"><img src="https://img.shields.io/github/license/ncpi-fhir/ncpi-ui-fhir-data-dashboard.svg?style=for-the-badge"></a>
+  <a href="https://circleci.com/gh/ncpi-fhir/ncpi-ui-fhir-data-dashboard"><img src="https://img.shields.io/circleci/project/github/ncpi-fhir/ncpi-ui-fhir-data-dashboard.svg?style=for-the-badge"></a>
+  <a href="https://codecov.io/gh/ncpi-fhir/ncpi-ui-fhir-data-dashboard"><img src="https://img.shields.io/codecov/c/gh/ncpi-fhir/ncpi-ui-fhir-data-dashboard?style=for-the-badge"></a>
 </p>
 
-# Kids First FHIR Data Dashboard
 
 💡📊A prototype data dashboard for any FHIR server. Spin this up in front of your server so people can get a quick visual understanding of what's in this server.
 
@@ -62,4 +60,4 @@ The dashboard uses [Cypress](https://www.cypress.io/) and the local development 
 
 `npm run cypress:open`
 
-This will pull up an interactive window for running tests. You must also be running the dashboard locally at `http://localhost:3000` to run the tests. Click on any of the tests listed to execute them.
+This will pull up an interactive window for running tests. You must also be running the dashboard locally at `http://localhost:3000` to run the tests. Click on any of the tests listed to execute them. 

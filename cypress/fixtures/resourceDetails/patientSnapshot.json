@@ -59,7 +59,7 @@
           {
             "code": "Extension",
             "profile": [
-              "http://fhir.kids-first.io/StructureDefinition/karyotypic-sex"
+              "http://fhir.ncpi-fhir.io/StructureDefinition/karyotypic-sex"
             ]
           }
         ]

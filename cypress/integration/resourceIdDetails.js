@@ -28,7 +28,7 @@ describe('Resource ID Details page', () => {
     cy.route({
       method: 'GET',
       url:
-        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/StructureDefinition?url=http://fhir.kids-first.io/StructureDefinition/Patient',
+        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/StructureDefinition?url=http://fhir.ncpi-fhir.io/StructureDefinition/Patient',
       response: 'fixture:resourceIdDetails/patientStructureDefinition.json',
     }).as('getPatientSD');
     cy.route({
@@ -40,7 +40,7 @@ describe('Resource ID Details page', () => {
     cy.route({
       method: 'GET',
       url:
-        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/StructureDefinition?url=http://fhir.kids-first.io/StructureDefinition/Condition',
+        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/StructureDefinition?url=http://fhir.ncpi-fhir.io/StructureDefinition/Condition',
       response: 'fixture:resourceIdDetails/conditionStructureDefinition.json',
     }).as('getConditionSD');
     cy.visit('/resources/Observation/id=123');

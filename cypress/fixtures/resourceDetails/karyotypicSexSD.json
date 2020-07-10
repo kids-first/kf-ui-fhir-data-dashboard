@@ -6,7 +6,7 @@
   "link": [
     {
       "relation": "self",
-      "url": "http://localhost:8000/StructureDefinition?url=http%3A%2F%2Ffhir.kids-first.io%2FStructureDefinition%2Fkaryotypic-sex"
+      "url": "http://localhost:8000/StructureDefinition?url=http%3A%2F%2Ffhir.ncpi-fhir.io%2FStructureDefinition%2Fkaryotypic-sex"
     }
   ],
   "entry": [
@@ -15,7 +15,7 @@
       "resource": {
         "resourceType": "StructureDefinition",
         "id": "karyotypic-sex",
-        "url": "http://fhir.kids-first.io/StructureDefinition/karyotypic-sex",
+        "url": "http://fhir.ncpi-fhir.io/StructureDefinition/karyotypic-sex",
         "name": "KaryotypicSex",
         "title": "Karyotypic Sex",
         "context": [
@@ -54,7 +54,7 @@
                   "code": "uri"
                 }
               ],
-              "fixedUri": "http://fhir.kids-first.io/StructureDefinition/karyotypic-sex"
+              "fixedUri": "http://fhir.ncpi-fhir.io/StructureDefinition/karyotypic-sex"
             },
             {
               "id": "Extension.valueCodeableConcept",
@@ -72,7 +72,7 @@
                   }
                 ],
                 "strength": "required",
-                "valueSet": "http://fhir.kids-first.io/ValueSet/karyotypic-sex"
+                "valueSet": "http://fhir.ncpi-fhir.io/ValueSet/karyotypic-sex"
               }
             }
           ]
