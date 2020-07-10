@@ -19,7 +19,7 @@
         "resourceType": "Patient",
         "id": "456",
         "meta": {
-          "profile": ["http://fhir.kids-first.io/StructureDefinition/Patient"]
+          "profile": ["http://fhir.ncpi-fhir.io/StructureDefinition/Patient"]
         },
         "subject": {
           "reference": "Observation/123"
@@ -35,7 +35,7 @@
         "resourceType": "Patient",
         "id": "789",
         "meta": {
-          "profile": ["http://fhir.kids-first.io/StructureDefinition/Patient"]
+          "profile": ["http://fhir.ncpi-fhir.io/StructureDefinition/Patient"]
         },
         "subject": {
           "reference": "Observation/123"

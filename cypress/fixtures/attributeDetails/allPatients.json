@@ -4,7 +4,7 @@
   "link": [
     {
       "relation": "self",
-      "url": "http://localhost:8000/Condition?_profile%3Abelow=http%3A%2F%2Ffhir.kids-first.io%2FStructureDefinition%2FPatient"
+      "url": "http://localhost:8000/Condition?_profile%3Abelow=http%3A%2F%2Ffhir.ncpi-fhir.io%2FStructureDefinition%2FPatient"
     }
   ],
   "entry": [
@@ -14,7 +14,7 @@
         "resourceType": "Patient",
         "id": "123",
         "meta": {
-          "profile": ["http://fhir.kids-first.io/StructureDefinition/Patient"]
+          "profile": ["http://fhir.ncpi-fhir.io/StructureDefinition/Patient"]
         }
       }
     },
@@ -25,7 +25,7 @@
         "id": "456",
         "meta": {
           "lastUpdated": "2020-03-04T20:33:42.445+00:00",
-          "profile": ["http://fhir.kids-first.io/StructureDefinition/Patient"]
+          "profile": ["http://fhir.ncpi-fhir.io/StructureDefinition/Patient"]
         }
       }
     },
@@ -36,7 +36,7 @@
         "id": "789",
         "meta": {
           "lastUpdated": "2020-03-04T20:33:42.445+00:00",
-          "profile": ["http://fhir.kids-first.io/StructureDefinition/Patient"]
+          "profile": ["http://fhir.ncpi-fhir.io/StructureDefinition/Patient"]
         }
       }
     }

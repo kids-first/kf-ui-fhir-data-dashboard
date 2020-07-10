@@ -1,5 +1,5 @@
 {
-  "name": "kf-ui-fhir-data-dashboard",
+  "name": "ncpi-ui-fhir-data-dashboard",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

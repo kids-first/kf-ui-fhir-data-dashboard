@@ -3,6 +3,6 @@
   "resourceType": "Observation",
   "meta": {
     "lastUpdated": "2020-04-24T19:04:06",
-    "profile": ["http://fhir.kids-first.io/StructureDefinition/Observation"]
+    "profile": ["http://fhir.ncpi-fhir.io/StructureDefinition/Observation"]
   }
 }

@@ -20,7 +20,7 @@
         "id": "321",
         "meta": {
           "profile": [
-            "http://fhir.kids-first.io/StructureDefinition/Observation"
+            "http://fhir.ncpi-fhir.io/StructureDefinition/Observation"
           ]
         },
         "category": [

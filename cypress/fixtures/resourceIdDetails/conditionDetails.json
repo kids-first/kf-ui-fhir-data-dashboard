@@ -19,7 +19,7 @@
         "resourceType": "Condition",
         "id": "456",
         "meta": {
-          "profile": ["http://fhir.kids-first.io/StructureDefinition/Condition"]
+          "profile": ["http://fhir.ncpi-fhir.io/StructureDefinition/Condition"]
         },
         "subject": {
           "reference": "Observation/123"

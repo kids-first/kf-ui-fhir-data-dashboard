@@ -1,7 +1,7 @@
 @Library(value='kids-first/aws-infra-jenkins-shared-libraries', changelog=false) _
 ecs_service_type_1_standard {
-    projectName                = "kf-ui-fhir-data-dashboard"
-    orgFullName                = "kids-first"
+    projectName                = "ncpi-ui-fhir-data-dashboard"
+    orgFullName                = "ncpi-fhir"
     account                    = "chopd3b"
     environments               = "dev,qa,prd"
     docker_image_type          = "debian"
@@ -12,4 +12,5 @@ ecs_service_type_1_standard {
     health_check_path          = "/"
     external_config_repo       = "false"
     deploy_scripts_version     = "master"
+    dependencies               = "ecr"
 }

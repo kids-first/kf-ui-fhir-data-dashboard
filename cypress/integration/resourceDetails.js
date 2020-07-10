@@ -28,13 +28,13 @@ describe('Resource Details', () => {
     cy.route({
       method: 'GET',
       url:
-        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/StructureDefinition?url=http://fhir.kids-first.io/StructureDefinition/karyotypic-sex',
+        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/StructureDefinition?url=http://fhir.ncpi-fhir.io/StructureDefinition/karyotypic-sex',
       response: 'fixture:resourceDetails/karyotypicSexSD.json',
     }).as('getExtension');
     cy.route({
       method: 'GET',
       url:
-        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/ValueSet?url=http://fhir.kids-first.io/ValueSet/karyotypic-sex',
+        'https://damp-castle-44220.herokuapp.com/http://hapi.fhir.org/baseR4/ValueSet?url=http://fhir.ncpi-fhir.io/ValueSet/karyotypic-sex',
       response: 'fixture:resourceDetails/karyotypicSexVS.json',
     }).as('getValueSet');
     cy.route({

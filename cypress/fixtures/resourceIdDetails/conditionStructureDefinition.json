@@ -9,7 +9,7 @@
   "link": [
     {
       "relation": "self",
-      "url": "http://localhost:8000/StructureDefinition?url=http%3A%2F%2Ffhir.kids-first.io%2FStructureDefinition%2FCondition"
+      "url": "http://localhost:8000/StructureDefinition?url=http%3A%2F%2Ffhir.ncpi-fhir.io%2FStructureDefinition%2FCondition"
     }
   ],
   "entry": [
@@ -22,7 +22,7 @@
           "versionId": "1",
           "lastUpdated": "2020-04-16T06:39:35.464+00:00"
         },
-        "url": "http://fhir.kids-first.io/StructureDefinition/Condition",
+        "url": "http://fhir.ncpi-fhir.io/StructureDefinition/Condition",
         "version": "0.1.0",
         "name": "TestCondition",
         "title": "TestCondition",
