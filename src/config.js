@@ -55,7 +55,7 @@ export const defaultFhirServers = getDefaultFhirServers();
 export const oAuthUrl = 'https://syntheticmass.mitre.org/oauth2/accesstoken';
 
 export const shouldUseProxyUrl = url =>
-  url.includes('hapi') || url.includes('synthea');
+  url.includes('hapi') || url.includes('synthea') || url.includes('ncpi');
 
 export const proxyUrl = 'https://damp-castle-44220.herokuapp.com/';
 export const fhirUrl = 'http://hl7.org/fhir/StructureDefinition/';
