@@ -30,7 +30,6 @@ jobs:
                            kidsfirstdrc/ncpi-ui-fhir-data-dashboard:$GIT_COMMIT
                 docker push kidsfirstdrc/ncpi-ui-fhir-data-dashboard:dev
                 docker push kidsfirstdrc/ncpi-ui-fhir-data-dashboard:latest
-                docker push kidsfirstdrc/ncpi-ui-fhir-data-dashboard:kidsfirst
                 docker push kidsfirstdrc/ncpi-ui-fhir-data-dashboard:$GIT_COMMIT
             fi
 

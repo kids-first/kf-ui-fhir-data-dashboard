@@ -1,4 +1,4 @@
-# 🔥📊 Kids First FHIR Data Dashboard
+# 🔥📊 NCPI FHIR Data Dashboard
 
 <p align="center">
   <a href="https://github.com/ncpi-fhir/ncpi-ui-fhir-data-dashboard/blob/master/LICENSE"><img src="https://img.shields.io/github/license/ncpi-fhir/ncpi-ui-fhir-data-dashboard.svg?style=for-the-badge"></a>
@@ -37,7 +37,7 @@ server, set the following environment variables
 `REACT_APP_FHIR_API_NAME`: The display name of the FHIR server<br>
 `REACT_APP_FHIR_API_AUTH_TYPE`: The two options for this are `NO_AUTH` or `BASIC_AUTH`
 
-The default server on startup if these variables are empty is the Kids First server.
+The default server on startup if these variables are empty is public HAPI test server.
 Servers are configurable and more can be added after startup.
 
 ## Development
@@ -60,4 +60,4 @@ The dashboard uses [Cypress](https://www.cypress.io/) and the local development 
 
 `npm run cypress:open`
 
-This will pull up an interactive window for running tests. You must also be running the dashboard locally at `http://localhost:3000` to run the tests. Click on any of the tests listed to execute them. 
+This will pull up an interactive window for running tests. You must also be running the dashboard locally at `http://localhost:3000` to run the tests. Click on any of the tests listed to execute them.
