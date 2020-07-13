@@ -131,7 +131,7 @@ class DataBarChart extends React.Component {
                 <XAxis type="number" orientation="top" />
                 <YAxis type="category" dataKey="truncatedName" width={150} />
                 <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="value" fill="#41b6e6" barSize={barSize} />
+                <Bar dataKey="value" fill="#009cb8" barSize={barSize} />
               </BarChart>
             </ResponsiveContainer>
           )}
