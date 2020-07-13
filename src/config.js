@@ -25,19 +25,7 @@ const getDefaultFhirServers = () => {
       name: 'HAPI',
       url: 'http://hapi.fhir.org/baseR4/',
       authType: NO_AUTH,
-    },
-    {
-      id: 1,
-      name: 'Phenopackets',
-      url: 'http://10.10.1.191:8000/',
-      authType: BASIC_AUTH,
-    },
-    {
-      id: 2,
-      name: 'Kids First',
-      url: 'http://10.10.1.141:8000/',
-      authType: BASIC_AUTH,
-    },
+    }
   ];
   if (envVar && servers.findIndex(x => x.url === envVar) < 0) {
     servers.push({
