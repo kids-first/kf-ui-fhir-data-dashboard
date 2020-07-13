@@ -1,5 +1,17 @@
 # Kids First FHIR Data Dashboard Change History
 
+## Release 0.2.0
+
+### Summary
+
+- Emojis: 💄 x1
+- Categories: Other Changes x1
+
+### New features and changes
+
+- [#100](https://github.com/kids-first/kf-ui-fhir-data-dashboard/pull/100) - 💄 Change from D3b to KF styling - [abe22290](https://github.com/kids-first/kf-ui-fhir-data-dashboard/commit/abe22290271b5999d99a7c97729681f3421ec08b) by [abgeorge7](https://github.com/abgeorge7)
+
+
 ## Release 0.1.0
 
 ### Summary
