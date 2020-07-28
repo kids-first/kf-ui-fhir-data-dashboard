@@ -2,7 +2,7 @@
   "name": "ncpi-ui-fhir-data-dashboard",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://ncpi-ui-fhir-data-dashboard-dev.kidsfirstdrc.org/dashboard",
+  "homepage": "https://ncpi-api-fhir-service-dev.kidsfirstdrc.org/dashboard",
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.4.0",
