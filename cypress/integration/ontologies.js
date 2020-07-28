@@ -45,6 +45,6 @@ describe('Ontologies', () => {
     cy.get('tr')
       .contains('Code1')
       .click();
-    cy.url().should('eq', 'http://localhost:3000/ontologies/Code1');
+    cy.url().should('eq', 'http://localhost:3000/dashboard/ontologies/Code1');
   });
 });

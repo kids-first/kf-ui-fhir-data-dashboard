@@ -130,6 +130,9 @@ describe('Homepage', () => {
     cy.get('.ui.card')
       .contains('TestEncounter')
       .click();
-    cy.url().should('eq', 'http://localhost:3000/resources/TestEncounter');
+    cy.url().should(
+      'eq',
+      'http://localhost:3000/dashboard/resources/TestEncounter',
+    );
   });
 });
