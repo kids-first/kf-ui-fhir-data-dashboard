@@ -49,7 +49,7 @@ class App extends React.Component {
 
   render() {
     return (
-      <Router>
+      <Router basename="/dashboard">
         <div className="app">
           <Header
             isAuthRequired={!!this.authRequired()}
