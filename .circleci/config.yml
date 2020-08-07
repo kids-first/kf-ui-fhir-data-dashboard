@@ -21,15 +21,6 @@ jobs:
                          -t "kidsfirstdrc/kf-ui-fhir-data-dashboard:latest" .
 
       - run:
-          name: Build docker kidsfirst image
-          command: |
-            if [ $CIRCLE_BRANCH == 'master' ]; then
-                docker build \
-                      --build-arg REACT_APP_FHIR_API_NAME="Kids First" \
-                      --build-arg REACT_APP_FHIR_API="http://10.10.1.141:8000/" \
-                      -t "kidsfirstdrc/kf-ui-fhir-data-dashboard:kidsfirst" .
-            fi
-      - run:
           name: 'Push docker images'
           command: |
             if [ $CIRCLE_BRANCH == 'master' ]; then
@@ -39,7 +30,6 @@ jobs:
                            kidsfirstdrc/kf-ui-fhir-data-dashboard:$GIT_COMMIT
                 docker push kidsfirstdrc/kf-ui-fhir-data-dashboard:dev
                 docker push kidsfirstdrc/kf-ui-fhir-data-dashboard:latest
-                docker push kidsfirstdrc/kf-ui-fhir-data-dashboard:kidsfirst
                 docker push kidsfirstdrc/kf-ui-fhir-data-dashboard:$GIT_COMMIT
             fi
 
