@@ -28,14 +28,14 @@ const getDefaultFhirServers = () => {
     },
     {
       id: 1,
-      name: 'Phenopackets',
-      url: 'http://10.10.1.191:8000/',
+      name: 'KF Dev',
+      url: 'https://kf-api-fhir-service-dev.kidsfirstdrc.org/',
       authType: BASIC_AUTH,
     },
     {
       id: 2,
-      name: 'Kids First',
-      url: 'http://10.10.1.141:8000/',
+      name: 'KF QA',
+      url: 'https://kf-api-fhir-service-qa.kidsfirstdrc.org/',
       authType: BASIC_AUTH,
     },
   ];
