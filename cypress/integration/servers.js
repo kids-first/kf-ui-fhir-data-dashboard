@@ -75,7 +75,7 @@ describe('Server page', () => {
     cy.get('.menu')
       .contains('Switch servers')
       .click();
-    cy.contains('Kids First').click();
+    cy.contains('KF Dev').click();
     cy.contains('Launch').click();
     cy.url().should('include', '/login');
     cy.contains('Login');
