@@ -28,13 +28,13 @@ const getDefaultFhirServers = () => {
     },
     {
       id: 1,
-      name: 'KF Dev',
+      name: 'Kids-First-Dev',
       url: 'https://kf-api-fhir-service-dev.kidsfirstdrc.org/',
       authType: BASIC_AUTH,
     },
     {
       id: 2,
-      name: 'KF QA',
+      name: 'Kids-First-QA',
       url: 'https://kf-api-fhir-service-qa.kidsfirstdrc.org/',
       authType: BASIC_AUTH,
     },
