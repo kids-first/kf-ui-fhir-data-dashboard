@@ -12,4 +12,5 @@ ecs_service_type_1_standard {
     health_check_path          = "/"
     external_config_repo       = "false"
     deploy_scripts_version     = "master"
+    dependencies               = "ecr"
 }
