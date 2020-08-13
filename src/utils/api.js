@@ -2,6 +2,21 @@ import {shouldUseProxyUrl, proxyUrl, fhirUrl} from '../config';
 import {logErrors, replaceLocalhost} from '../utils/common';
 import store from '../store';
 
+const getHeaders = headers => {
+  let allHeaders = {
+    'Cache-Control': 'max-age=3600',
+    Accept: 'application/fhir+json;charset=utf-8',
+    'Content-Type': 'application/fhir+json;charset=utf-8',
+    ...headers,
+  };
+  const server = store.getState().app.selectedServer;
+  if (server.authType !== 'NO_AUTH' && !shouldUseProxyUrl(server.url)) {
+    const token = store.getState().app.token;
+    allHeaders['Authorization'] = `Basic ${token}`;
+  }
+  return allHeaders;
+};
+
 export const postWithHeaders = async (
   url,
   body,
@@ -9,16 +24,11 @@ export const postWithHeaders = async (
   headers = [],
 ) => {
   let fullUrl = shouldUseProxyUrl(url) ? `${proxyUrl}${url}` : `${url}`;
-  const token = store.getState().app.token;
   return fetch(`${fullUrl}`, {
     signal: abortController ? abortController.signal : null,
     method: 'POST',
     headers: {
-      ...headers,
-      Authorization: `Basic ${token}`,
-      'Cache-Control': 'max-age=3600',
-      Accept: 'application/fhir+json;charset=utf-8',
-      'Content-Type': 'application/fhir+json;charset=utf-8',
+      ...getHeaders(headers),
     },
     body: JSON.stringify(body),
   })
@@ -47,13 +57,10 @@ const fetchWithHeaders = async (
       .concat(`${url.includes('?') ? '&' : '?'}`)
       .concat('_summary=count');
   }
-  const token = store.getState().app.token;
   return fetch(`${fullUrl}`, {
     signal: abortController ? abortController.signal : null,
     headers: {
-      ...headers,
-      Authorization: `Basic ${token}`,
-      'Cache-Control': 'max-age=3600',
+      ...getHeaders(headers),
     },
   })
     .then(res => {
