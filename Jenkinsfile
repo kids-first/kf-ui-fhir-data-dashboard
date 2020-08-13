@@ -1,7 +1,7 @@
 @Library(value='kids-first/aws-infra-jenkins-shared-libraries', changelog=false) _
 ecs_service_type_1_standard {
     projectName                = "kf-ui-fhir-data-dashboard"
-    orgFullName                = "kids-first"
+    orgFullName                = "kf-strides"
     account                    = "chopd3b"
     environments               = "dev,qa,prd"
     docker_image_type          = "debian"
