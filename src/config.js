@@ -28,15 +28,21 @@ const getDefaultFhirServers = () => {
     },
     {
       id: 1,
-      name: 'Phenopackets',
-      url: 'http://10.10.1.191:8000/',
-      authType: BASIC_AUTH,
+      name: 'Kids-First-Dev',
+      url: 'https://kf-api-fhir-service-dev.kidsfirstdrc.org/',
+      authType: NO_AUTH,
     },
     {
       id: 2,
-      name: 'Kids First',
-      url: 'http://10.10.1.141:8000/',
-      authType: BASIC_AUTH,
+      name: 'Kids-First-QA',
+      url: 'https://kf-api-fhir-service-qa.kidsfirstdrc.org/',
+      authType: NO_AUTH,
+    },
+    {
+      id: 3,
+      name: 'Kids-First-Prd',
+      url: 'https://kf-api-fhir-service.kidsfirstdrc.org/',
+      authType: NO_AUTH,
     },
   ];
   if (envVar && servers.findIndex(x => x.url === envVar) < 0) {

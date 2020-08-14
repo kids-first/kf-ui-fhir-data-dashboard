@@ -9,7 +9,7 @@ describe('Server page', () => {
       .children('tbody')
       .children('tr')
       .should($x => {
-        expect($x).to.have.length(3);
+        expect($x).to.have.length(4);
       });
   });
 
@@ -37,7 +37,7 @@ describe('Server page', () => {
       .children('tbody')
       .children('tr')
       .should($x => {
-        expect($x).to.have.length(4);
+        expect($x).to.have.length(5);
       });
     cy.contains('New Server');
   });
@@ -51,6 +51,11 @@ describe('Server page', () => {
       .eq(0)
       .clear()
       .type('Edited Server');
+    cy.get('.ui .selection .dropdown').click();
+    cy.get('.menu')
+      .children('div')
+      .contains('Basic')
+      .click();
     cy.get('.content')
       .children('div')
       .should('have.class', 'server-configuration__modal')
@@ -75,7 +80,7 @@ describe('Server page', () => {
     cy.get('.menu')
       .contains('Switch servers')
       .click();
-    cy.contains('Kids First').click();
+    cy.contains('Edited Server').click();
     cy.contains('Launch').click();
     cy.url().should('include', '/login');
     cy.contains('Login');
