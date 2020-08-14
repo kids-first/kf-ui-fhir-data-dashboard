@@ -9,7 +9,7 @@ describe('Server page', () => {
       .children('tbody')
       .children('tr')
       .should($x => {
-        expect($x).to.have.length(3);
+        expect($x).to.have.length(4);
       });
   });
 
@@ -37,7 +37,7 @@ describe('Server page', () => {
       .children('tbody')
       .children('tr')
       .should($x => {
-        expect($x).to.have.length(4);
+        expect($x).to.have.length(5);
       });
     cy.contains('New Server');
   });

@@ -38,6 +38,12 @@ const getDefaultFhirServers = () => {
       url: 'https://kf-api-fhir-service-qa.kidsfirstdrc.org/',
       authType: BASIC_AUTH,
     },
+    {
+      id: 3,
+      name: 'Kids-First-Prd',
+      url: 'https://kf-api-fhir-service.kidsfirstdrc.org/',
+      authType: BASIC_AUTH,
+    },
   ];
   if (envVar && servers.findIndex(x => x.url === envVar) < 0) {
     servers.push({
