@@ -63,3 +63,20 @@ The dashboard uses [Cypress](https://www.cypress.io/) and the local development 
 `npm run cypress:open`
 
 This will pull up an interactive window for running tests. You must also be running the dashboard locally at `http://localhost:3000` to run the tests. Click on any of the tests listed to execute them.
+
+## Kids First Dashboards
+
+There are three Kids First FHIR Data Dashboards deployed. Note that to access these,
+you'll have to follow the access instructions [here](https://github.com/kids-first/kf-api-fhir-service#access).
+
+### Dev
+
+https://kf-ui-fhir-data-dashboard-dev.kidsfirstdrc.org
+
+### QA
+
+https://kf-ui-fhir-data-dashboard-qa.kidsfirstdrc.org
+
+### Production
+
+https://kf-ui-fhir-data-dashboard.kidsfirstdrc.org
