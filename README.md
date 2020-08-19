@@ -11,6 +11,23 @@
 
 💡📊A prototype data dashboard for any FHIR server. Spin this up in front of your server so people can get a quick visual understanding of what's in this server.
 
+## Kids First Deployed Dashboards
+
+There are three Kids First FHIR Data Dashboards deployed. Note that to access these,
+you'll have to follow the access instructions [here](https://github.com/kids-first/kf-api-fhir-service#access).
+
+### Dev
+
+https://kf-ui-fhir-data-dashboard-dev.kidsfirstdrc.org
+
+### QA
+
+https://kf-ui-fhir-data-dashboard-qa.kidsfirstdrc.org
+
+### Production
+
+https://kf-ui-fhir-data-dashboard.kidsfirstdrc.org
+
 ## Getting Started
 
 If you want to run the dashboard app and don't want to install
