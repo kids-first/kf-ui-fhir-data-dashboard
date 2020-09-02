@@ -1,5 +1,19 @@
 # Kids First FHIR Data Dashboard Change History
 
+## Release 0.3.0
+
+### Summary
+
+- Emojis: ♻️ x1, 🐛 x2
+- Categories: Other Changes x1, Fixes x2
+
+### New features and changes
+
+- [#109](https://github.com/kids-first/kf-ui-fhir-data-dashboard/pull/109) - ♻️ Updating old default urls to be the KF dev and QA urls - [2c31931a](https://github.com/kids-first/kf-ui-fhir-cohort-builder/commit/2c31931a916197901d26c088aceff50ab0547413) by [abgeorge7](https://github.com/abgeorge7)
+- [#108](https://github.com/kids-first/kf-ui-fhir-data-dashboard/pull/108) - 🐛 Remove Auth headers from request if auth is not needed - [02665f1b](https://github.com/kids-first/kf-ui-fhir-cohort-builder/commit/02665f1b7140c9a2fb2d55df432a0bdd740fdb42) by [abgeorge7](https://github.com/abgeorge7)
+- [#107](https://github.com/kids-first/kf-ui-fhir-data-dashboard/pull/107) - 🐛 Add missing env vars to Docker Compose - [4c66efde](https://github.com/kids-first/kf-ui-fhir-cohort-builder/commit/4c66efdec76df70a74e346831a7ab813cb587721) by [znatty22](https://github.com/znatty22)
+
+
 ## Release 0.2.0
 
 ### Summary
