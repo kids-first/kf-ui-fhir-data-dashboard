@@ -2,7 +2,7 @@
 ecs_service_type_1_standard {
     projectName                = "kf-ui-fhir-data-dashboard"
     orgFullName                = "kids-first"
-    account                    = "chopd3b"
+    account                    = "kf-strides"
     environments               = "dev,qa,prd"
     docker_image_type          = "debian"
     create_default_iam_role    = "1"
@@ -12,4 +12,5 @@ ecs_service_type_1_standard {
     health_check_path          = "/"
     external_config_repo       = "false"
     deploy_scripts_version     = "master"
+    dependencies               = "ecr"
 }
