@@ -13,4 +13,5 @@ ecs_service_type_1_standard {
     external_config_repo       = "false"
     deploy_scripts_version     = "master"
     dependencies               = "ecr"
+    internal_app	       = "false"
 }
