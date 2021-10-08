@@ -7,7 +7,7 @@ ecs_service_existing_alb {
     alb_name                   = "nci-api-fhir-service"
     orgFullName                = "nci-fhir"
     environments               = "dev"
-    build_environments         = "dev"
+    build_environments         = "dev,qa,prd"
     docker_image_type          = "debian"
     create_default_iam_role    = "1"
     entrypoint_command         = "/start_up.sh"
