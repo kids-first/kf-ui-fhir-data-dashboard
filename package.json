@@ -25,7 +25,7 @@
     "redux": "^4.0.5",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.88.2",
-    "stylelint": "^13.0.0",
+    "stylelint": "^15.10.1",
     "whatwg-fetch": "^3.0.0"
   },
   "scripts": {
